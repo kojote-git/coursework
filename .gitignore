@@ -1,0 +1,12 @@
+# intellij
+.idea
+library.iml
+
+# maven
+target
+
+# vscode
+.vscode
+.settings
+.project
+.classpath
