@@ -3,12 +3,12 @@ package com.jkojote.library.domain.shared;
 /**
  * Represents a domain event
  */
-public abstract class DomainEvent {
+public abstract class DomainEvent<T extends DomainEntity> {
 
     /**
      * Object which has triggered the event
      */
-    private DomainEntity target;
+    private T target;
 
     /**
      * Optional message that describes the event
@@ -19,8 +19,16 @@ public abstract class DomainEvent {
      * @param target object which has triggered the event
      * @param message optional parameter that describes the event
      */
-    public DomainEvent(DomainEntity target, String message) {
+    public DomainEvent(T target, String message) {
         this.target = target;
         this.message = message;
+    }
+
+    public T getTarget() {
+        return target;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }
