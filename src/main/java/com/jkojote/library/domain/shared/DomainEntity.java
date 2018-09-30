@@ -1,5 +1,6 @@
 package com.jkojote.library.domain.shared;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,6 +15,7 @@ public abstract class DomainEntity {
 
     protected DomainEntity(long id) {
         this.id = id;
+        this.eventListeners = new ArrayList<>();
     }
 
     /**
