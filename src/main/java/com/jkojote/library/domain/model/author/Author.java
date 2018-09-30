@@ -36,7 +36,7 @@ public class Author extends DomainEntity {
         return new Author(id, name, new ArrayList<>(works));
     }
 
-    public List<Work> getWorks() {
+    public List<Work> filterWorks() {
         return Collections.unmodifiableList(works);
     }
 
@@ -44,7 +44,7 @@ public class Author extends DomainEntity {
         return name;
     }
 
-    public List<Work> getWorks(Predicate<Work> criteria) {
+    public List<Work> filterWorks(Predicate<Work> criteria) {
         return works.stream()
                 .filter(criteria)
                 .collect(Collectors.toList());

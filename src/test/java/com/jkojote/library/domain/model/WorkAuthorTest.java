@@ -2,9 +2,12 @@ package com.jkojote.library.domain.model;
 
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.author.Name;
+import com.jkojote.library.domain.model.book.instance.BookFormat;
 import com.jkojote.library.domain.model.work.Work;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.SQLOutput;
 
 import static org.junit.Assert.*;
 
@@ -24,7 +27,7 @@ public class WorkAuthorTest {
     public void addWork_AddsWorkToAuthorsWork() {
         Work work = Work.createNew(1, "Work1", a1);
         assertTrue(work.getAuthors().contains(a1));
-        assertTrue(a1.getWorks().contains(work));
+        assertTrue(a1.filterWorks().contains(work));
         // work already has this author
         assertFalse(work.addAuthor(a1));
         // the a2 already has this work
@@ -37,7 +40,7 @@ public class WorkAuthorTest {
         work.addAuthor(a2);
         // author's been successfully added
         assertTrue(work.getAuthors().contains(a2));
-        assertTrue(a2.getWorks().contains(work));
+        assertTrue(a2.filterWorks().contains(work));
         // work already contains this author so it can't be added again
         assertFalse(work.addAuthor(a2));
         // author already contains this work so it can't be added again
@@ -50,10 +53,10 @@ public class WorkAuthorTest {
         work.addAuthor(a2);
         assertTrue(work.removeAuthor(a2));
         assertFalse(work.getAuthors().contains(a2));
-        assertFalse(a2.getWorks().contains(work));
+        assertFalse(a2.filterWorks().contains(work));
         // assert that only one author's been removed
         // and no other author's been affected
-        assertTrue(a1.getWorks().contains(work));
+        assertTrue(a1.filterWorks().contains(work));
         assertTrue(work.getAuthors().contains(a1));
         // author's been successfully removed
         assertFalse(work.removeAuthor(a2));
@@ -69,15 +72,15 @@ public class WorkAuthorTest {
         // work's been successfully removed
         assertTrue(a2.removeWork(work));
         // a2 doesn't posses the work
-        assertFalse(a2.getWorks().contains(work));
+        assertFalse(a2.filterWorks().contains(work));
         // work doesn't has such author as a2
         assertFalse(work.getAuthors().contains(a2));
         // work's been already removed
         assertFalse(a2.removeWork(work));
 
-        assertTrue(a1.getWorks().contains(work));
+        assertTrue(a1.filterWorks().contains(work));
         assertTrue(work.getAuthors().contains(a1));
-        assertTrue(a1.getWorks().contains(work1));
+        assertTrue(a1.filterWorks().contains(work1));
         assertTrue(work1.getAuthors().contains(a1));
     }
 

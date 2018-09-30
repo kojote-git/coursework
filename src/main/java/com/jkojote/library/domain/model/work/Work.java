@@ -119,7 +119,7 @@ public class Work extends DomainEntity {
         if (!authors.contains(author))
             return false;
         authors.remove(author);
-        if (author.getWorks().contains(this)) {
+        if (author.filterWorks().contains(this)) {
             return author.removeWork(this);
         }
         return false;
@@ -129,7 +129,7 @@ public class Work extends DomainEntity {
         if (authors.contains(author))
             return false;
         authors.add(author);
-        if (!author.getWorks().contains(this)) {
+        if (!author.filterWorks().contains(this)) {
             return author.addWork(this);
         }
         return false;

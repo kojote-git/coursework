@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Name implements Comparable<Name> {
+public final class Name implements Comparable<Name> {
 
     private String firstName;
 
