@@ -1,4 +1,4 @@
-package com.jkojote.library.domain.model.author;
+package com.jkojote.library.domain.shared;
 
 import java.util.Objects;
 

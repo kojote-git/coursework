@@ -1,5 +1,6 @@
 package com.jkojote.library.domain.model.author;
 
+import com.jkojote.library.domain.shared.Name;
 import com.jkojote.library.domain.model.author.events.WorkAddedEvent;
 import com.jkojote.library.domain.model.author.events.WorkRemovedEvent;
 import com.jkojote.library.domain.model.work.Work;

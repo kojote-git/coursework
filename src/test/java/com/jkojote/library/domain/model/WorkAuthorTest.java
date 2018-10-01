@@ -1,13 +1,10 @@
 package com.jkojote.library.domain.model;
 
 import com.jkojote.library.domain.model.author.Author;
-import com.jkojote.library.domain.model.author.Name;
-import com.jkojote.library.domain.model.book.instance.BookFormat;
+import com.jkojote.library.domain.shared.Name;
 import com.jkojote.library.domain.model.work.Work;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.SQLOutput;
 
 import static org.junit.Assert.*;
 
