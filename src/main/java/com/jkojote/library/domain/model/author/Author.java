@@ -1,13 +1,10 @@
 package com.jkojote.library.domain.model.author;
 
-import com.jkojote.library.domain.shared.Name;
+import com.jkojote.library.domain.shared.*;
 import com.jkojote.library.domain.model.author.events.WorkAddedEvent;
 import com.jkojote.library.domain.model.author.events.WorkRemovedEvent;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.shared.DomainEntity;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -18,27 +15,27 @@ public class Author extends DomainEntity {
 
     private Name name;
 
-    private List<Work> works;
+    private EntityList<Work> works;
 
-    private Author(int id, Name name, List<Work> works) {
+    private Author(long id, Name name, EntityList<Work> works) {
         super(id);
         this.name = name;
         this.works = works;
     }
 
-    public static Author createNew(int id, Name name) {
+    public static Author createNew(long id, Name name) {
         checkNotNull(name);
-        return new Author(id, name, new ArrayList<>());
+        return new Author(id, name, new EntityArrayList<>());
     }
 
-    public static Author restore(int id, Name name, List<Work> works) {
+    public static Author restore(long id, Name name, EntityList<Work> works) {
         checkNotNull(name);
         checkNotNull(works);
-        return new Author(id, name, new ArrayList<>(works));
+        return new Author(id, name, works);
     }
 
-    public List<Work> filterWorks() {
-        return Collections.unmodifiableList(works);
+    public EntityList<Work> getWorks() {
+        return Utils.unmodifiableEntityList(works);
     }
 
     public Name getName() {

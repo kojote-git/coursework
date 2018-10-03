@@ -2,6 +2,9 @@ package com.jkojote.library.domain.model.publisher;
 
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.shared.DomainEntity;
+import com.jkojote.library.domain.shared.EntityArrayList;
+import com.jkojote.library.domain.shared.EntityList;
+import com.jkojote.library.domain.shared.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,16 +16,16 @@ public class Publisher extends DomainEntity {
 
     private String name;
 
-    private List<Book> books;
+    private EntityList<Book> books;
 
-    public Publisher(int id, String name, List<Book> books) {
+    public Publisher(int id, String name, EntityList<Book> books) {
         super(id);
-        this.books = new ArrayList<>(books);
+        this.books = books;
         this.name = name;
     }
 
-    public List<Book> getBooks() {
-        return Collections.unmodifiableList(books);
+    public EntityList<Book> getBooks() {
+        return Utils.unmodifiableEntityList(books);
     }
 
     public List<Book> filterBooks(Predicate<Book> book) {

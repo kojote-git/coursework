@@ -14,9 +14,22 @@ extends ForwardingList<ChildEntity> implements LazyList<ParentEntity, ChildEntit
 
     private ListFetcher<ParentEntity, ChildEntity> fetcher;
 
-    protected AbstractLazyList(ParentEntity entity, ListFetcher<ParentEntity, ChildEntity> fetcher) {
+    private boolean canSetParentEntity;
+
+    public AbstractLazyList(ParentEntity entity, ListFetcher<ParentEntity, ChildEntity> fetcher) {
         this.entity = entity;
         this.fetcher = fetcher;
+        canSetParentEntity = false;
+    }
+
+    public AbstractLazyList(ListFetcher<ParentEntity, ChildEntity> fetcher) {
+        this.fetcher = fetcher;
+        canSetParentEntity = true;
+    }
+
+    @Override
+    public boolean isFetched() {
+        return list != null;
     }
 
     @Override
@@ -30,5 +43,26 @@ extends ForwardingList<ChildEntity> implements LazyList<ParentEntity, ChildEntit
     @Override
     public ParentEntity getEntity() {
         return entity;
+    }
+
+    public void setParentEntity(ParentEntity entity) {
+        if (canSetParentEntity) {
+            this.entity = entity;
+        }
+        throw new ParentEntityCannotBeSet("cannot perform this " +
+                "action because object is sealed for external modifications");
+    }
+
+    public void seal() {
+        canSetParentEntity = false;
+    }
+
+    public static class ParentEntityCannotBeSet extends RuntimeException {
+        public ParentEntityCannotBeSet() {
+        }
+
+        public ParentEntityCannotBeSet(String message) {
+            super(message);
+        }
     }
 }

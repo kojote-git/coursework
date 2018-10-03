@@ -12,7 +12,7 @@ import java.util.List;
 
 @Component
 @Transactional
-public class LazyWorkListFetcher implements ListFetcher<Work, Author> {
+public class LazyWorkListFetcher implements ListFetcher<Author, Work> {
 
     private NamedParameterJdbcTemplate jdbcTemplate;
 

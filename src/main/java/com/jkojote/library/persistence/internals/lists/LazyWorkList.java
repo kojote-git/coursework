@@ -7,7 +7,11 @@ import com.jkojote.library.persistence.ListFetcher;
 
 public class LazyWorkList extends AbstractLazyList<Author, Work> {
 
-    protected LazyWorkList(Author entity, ListFetcher<Author, Work> fetcher) {
+    public LazyWorkList(Author entity, ListFetcher<Author, Work> fetcher) {
         super(entity, fetcher);
+    }
+
+    public LazyWorkList(ListFetcher<Author, Work> fetcher) {
+        super(fetcher);
     }
 }

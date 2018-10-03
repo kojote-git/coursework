@@ -16,6 +16,8 @@ public interface AuthorRepository {
                 .collect(Collectors.toList());
     }
 
+    long nextId();
+
     boolean exists(Author author);
 
     boolean save(Author author);

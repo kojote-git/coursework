@@ -43,6 +43,18 @@ public final class Name implements Comparable<Name> {
         return false;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(firstName, middleName, lastName);

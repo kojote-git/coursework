@@ -1,6 +1,7 @@
 package com.jkojote.library.persistence;
 
 import com.jkojote.library.domain.shared.DomainEntity;
+import com.jkojote.library.domain.shared.EntityList;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * @param <ParentEntity>
  */
 public interface LazyList<ParentEntity extends DomainEntity, ChildEntity extends DomainEntity>
-extends List<ChildEntity> {
+extends EntityList<ChildEntity> {
 
     ParentEntity getEntity();
 }
