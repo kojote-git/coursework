@@ -1,6 +1,7 @@
 package com.jkojote.library.persistence;
 
 import com.jkojote.library.domain.shared.DomainEntity;
+import com.jkojote.library.domain.shared.DomainObject;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * @param <ChildEntity>
  * @param <ParentEntity>
  */
-public interface ListFetcher<ParentEntity extends DomainEntity, ChildEntity extends DomainEntity>  {
+public interface ListFetcher<ParentEntity extends DomainEntity, ChildEntity extends DomainObject>  {
 
     List<ChildEntity> fetchFor(ParentEntity entity);
 }

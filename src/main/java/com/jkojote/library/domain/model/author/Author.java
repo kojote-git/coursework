@@ -4,6 +4,7 @@ import com.jkojote.library.domain.shared.*;
 import com.jkojote.library.domain.model.author.events.WorkAddedEvent;
 import com.jkojote.library.domain.model.author.events.WorkRemovedEvent;
 import com.jkojote.library.domain.model.work.Work;
+import com.jkojote.library.persistence.DomainList;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -15,9 +16,9 @@ public class Author extends DomainEntity {
 
     private Name name;
 
-    private EntityList<Work> works;
+    private DomainList<Work> works;
 
-    private Author(long id, Name name, EntityList<Work> works) {
+    private Author(long id, Name name, DomainList<Work> works) {
         super(id);
         this.name = name;
         this.works = works;
@@ -25,17 +26,17 @@ public class Author extends DomainEntity {
 
     public static Author createNew(long id, Name name) {
         checkNotNull(name);
-        return new Author(id, name, new EntityArrayList<>());
+        return new Author(id, name, new DomainArrayList<>());
     }
 
-    public static Author restore(long id, Name name, EntityList<Work> works) {
+    public static Author restore(long id, Name name, DomainList<Work> works) {
         checkNotNull(name);
         checkNotNull(works);
         return new Author(id, name, works);
     }
 
-    public EntityList<Work> getWorks() {
-        return Utils.unmodifiableEntityList(works);
+    public DomainList<Work> getWorks() {
+        return Utils.unmodifiableDomainList(works);
     }
 
     public Name getName() {

@@ -1,40 +1,61 @@
 package com.jkojote.library.domain.shared;
 
 import com.google.common.collect.ForwardingList;
+import com.jkojote.library.persistence.DomainList;
+import com.jkojote.library.persistence.LazyList;
 
 import java.util.*;
 
 public final class Utils {
-    public static <T extends DomainEntity>
-    EntityList<T> unmodifiableEntityList(EntityList<T> entityList) {
-        return new UnmodifiableEntityList(entityList);
+
+    @SuppressWarnings("unchecked")
+    public static <T extends DomainObject>
+    DomainList<T> unmodifiableDomainList(DomainList<T> entityList) {
+        return entityList instanceof LazyList ?
+                new UnmodifiableLazyList((LazyList<T>) entityList) :
+                new UnmodifiableDomainList<>(entityList);
     }
 
-    private static class UnmodifiableEntityList<T extends DomainEntity>
-    extends ForwardingList<T> implements EntityList<T> {
-
-        private EntityList<T> source;
+    private static class UnmodifiableDomainList<T extends DomainObject>
+    extends ForwardingList<T> implements DomainList<T> {
 
         private List<T> list;
 
-        UnmodifiableEntityList(EntityList<T> entityList) {
-            source = entityList;
-            if (entityList.isFetched()) {
-                list = Collections.unmodifiableList(entityList);
+        UnmodifiableDomainList(DomainList<T> list) {
+            this.list = Collections.unmodifiableList(list);
+        }
+
+        @Override
+        protected List<T> delegate() {
+            return list;
+        }
+    }
+
+    private static class UnmodifiableLazyList<T extends DomainObject>
+    extends ForwardingList<T> implements LazyList<T> {
+
+        private LazyList<T> source;
+
+        private List<T> list;
+
+        UnmodifiableLazyList(LazyList<T> list) {
+            this.source = list;
+            if (list.isFetched()) {
+                this.list = Collections.unmodifiableList(list);
             }
+        }
+
+        @Override
+        protected List<T> delegate() {
+            if (list == null)  {
+                list = Collections.unmodifiableList(source);
+            }
+            return list;
         }
 
         @Override
         public boolean isFetched() {
             return source.isFetched();
-        }
-
-        @Override
-        protected List<T> delegate() {
-            if (list == null) {
-                list = Collections.unmodifiableList(source);
-            }
-            return list;
         }
     }
 }

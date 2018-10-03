@@ -6,6 +6,8 @@ import com.jkojote.library.domain.model.work.Work;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.Assert.*;
 
 public class WorkAuthorTest {
@@ -22,7 +24,7 @@ public class WorkAuthorTest {
 
     @Test
     public void addWork_AddsWorkToAuthorsWork() {
-        Work work = Work.createNew(1, "Work1", a1);
+        Work work = Work.create(1, "Work1", a1, LocalDate.now());
         assertTrue(work.getAuthors().contains(a1));
         assertTrue(a1.getWorks().contains(work));
         // work already has this author
@@ -33,7 +35,7 @@ public class WorkAuthorTest {
 
     @Test
     public void addAuthor_AddsAuthorToWorksAuthors() {
-        Work work = Work.createNew(1, "Work1", a1);
+        Work work = Work.create(1, "Work1", a1, LocalDate.now());
         work.addAuthor(a2);
         // author's been successfully added
         assertTrue(work.getAuthors().contains(a2));
@@ -46,7 +48,7 @@ public class WorkAuthorTest {
 
     @Test
     public void removeAuthor_RemovesAuthorFromWorksAuthors() {
-        Work work = Work.createNew(1, "Work1", a1);
+        Work work = Work.create(1, "Work1", a1, LocalDate.now());
         work.addAuthor(a2);
         assertTrue(work.removeAuthor(a2));
         assertFalse(work.getAuthors().contains(a2));
@@ -62,8 +64,8 @@ public class WorkAuthorTest {
 
     @Test
     public void removeWork_RemovesWorkFromAuthorsWorks() {
-        Work work  = Work.createNew(1, "Work1", a1);
-        Work work1 = Work.createNew(2, "Work2", a1);
+        Work work  = Work.create(1, "Work1", a1, LocalDate.now());
+        Work work1 = Work.create(2, "Work2", a1, LocalDate.now());
         work.addAuthor(a2);
         a2.addWork(work1);
         // work's been successfully removed

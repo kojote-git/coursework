@@ -2,27 +2,28 @@ package com.jkojote.library.persistence;
 
 import com.google.common.collect.ForwardingList;
 import com.jkojote.library.domain.shared.DomainEntity;
+import com.jkojote.library.domain.shared.DomainObject;
 
 import java.util.List;
 
-public abstract class AbstractLazyList<ParentEntity extends DomainEntity, ChildEntity extends DomainEntity >
-extends ForwardingList<ChildEntity> implements LazyList<ParentEntity, ChildEntity> {
+public abstract class AbstractLazyList<ParentEntity extends DomainEntity, Child extends DomainObject>
+extends ForwardingList<Child> implements LazyList<Child> {
 
     private ParentEntity entity;
 
-    private List<ChildEntity> list;
+    private List<Child> list;
 
-    private ListFetcher<ParentEntity, ChildEntity> fetcher;
+    private ListFetcher<ParentEntity, Child> fetcher;
 
     private boolean canSetParentEntity;
 
-    public AbstractLazyList(ParentEntity entity, ListFetcher<ParentEntity, ChildEntity> fetcher) {
+    public AbstractLazyList(ParentEntity entity, ListFetcher<ParentEntity, Child> fetcher) {
         this.entity = entity;
         this.fetcher = fetcher;
         canSetParentEntity = false;
     }
 
-    public AbstractLazyList(ListFetcher<ParentEntity, ChildEntity> fetcher) {
+    public AbstractLazyList(ListFetcher<ParentEntity, Child> fetcher) {
         this.fetcher = fetcher;
         canSetParentEntity = true;
     }
@@ -33,14 +34,13 @@ extends ForwardingList<ChildEntity> implements LazyList<ParentEntity, ChildEntit
     }
 
     @Override
-    protected List<ChildEntity> delegate() {
+    protected List<Child> delegate() {
         if (list == null) {
             list = fetcher.fetchFor(entity);
         }
         return list;
     }
 
-    @Override
     public ParentEntity getEntity() {
         return entity;
     }

@@ -1,14 +1,14 @@
 package com.jkojote.library.domain.model.work;
 
 import com.jkojote.library.domain.model.author.Author;
-import com.jkojote.library.domain.model.work.events.WorkFinishedEvent;
+import com.jkojote.library.domain.model.work.events.SubjectAddedEvent;
+import com.jkojote.library.domain.model.work.events.SubjectRemovedEvent;
 import com.jkojote.library.domain.shared.DomainEntity;
-import com.jkojote.library.domain.shared.EntityArrayList;
-import com.jkojote.library.domain.shared.EntityList;
+import com.jkojote.library.domain.shared.DomainArrayList;
+import com.jkojote.library.domain.shared.Utils;
+import com.jkojote.library.persistence.DomainList;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -16,92 +16,84 @@ public class Work extends DomainEntity {
 
     private String title;
 
-    private LocalDate dateBegun;
+    private LocalDate written;
 
-    private LocalDate dateFinished;
+    private DomainList<Author> authors;
 
-    private boolean finished;
+    private DomainList<Subject> subjects;
 
-    private EntityList<Author> authors;
-
-    private Work(long id, String title,
-                 Author author,
-                 LocalDate dateBegun,
-                 LocalDate dateFinished) {
+    private Work(long id,
+                 String title,
+                 LocalDate written,
+                 Author author) {
         super(id);
-        this.title = title;
-        this.dateBegun = dateBegun;
-        if (dateFinished != null) {
-            this.finished = true;
-        }
-        this.dateFinished = dateFinished;
-        this.authors = new EntityArrayList<>();
+        this.title    = title;
+        this.authors  = new DomainArrayList<>();
+        this.subjects = new DomainArrayList<>();
+        this.written  = written;
         this.authors.add(author);
     }
 
     private Work(long id, String title,
-                 EntityList<Author> authors,
-                 LocalDate dateBegun,
-                 LocalDate dateFinished) {
+                 LocalDate written,
+                 DomainList<Author> authors,
+                 DomainList<Subject> subjects) {
         super(id);
-        this.title = title;
-        this.dateBegun = dateBegun;
-        if (dateFinished != null) {
-            this.finished = true;
-        }
-        this.dateFinished = dateFinished;
-        this.authors = authors;
+        this.title    = title;
+        this.authors  = authors;
+        this.written  = written;
+        this.subjects = subjects;
     }
 
-    public static Work createNew(long id, String title, Author author) {
+    public static Work create(long id, String title, Author author, LocalDate written) {
         checkNotNull(title);
         checkNotNull(author);
-        Work work = new Work(id, title, author, LocalDate.now(), null);
+        Work work = new Work(id, title, written, author);
         author.addWork(work);
         return work;
     }
 
-    public static Work createNew(long id, String title, EntityList<Author> authors) {
+    public static Work create(long id, String title, DomainList<Author> authors, LocalDate written) {
         checkNotNull(title);
         checkNotNull(authors);
-        Work work = new Work(id, title, authors, LocalDate.now(), null);
+        Work work = new Work(id, title, written, authors, new DomainArrayList<>());
         for (var author : authors)
             author.addWork(work);
         return work;
     }
 
-    public static Work restore(int id, String title, EntityList<Author> authors,
-                               LocalDate dateBegun,
-                               LocalDate dateFinished) {
+    public static Work restore(int id, String title,
+                               LocalDate written,
+                               DomainList<Author> authors,
+                               DomainList<Subject> subjects) {
         checkNotNull(authors);
         checkNotNull(title);
-        checkNotNull(dateBegun);
-        if (dateFinished != null && dateBegun.compareTo(dateFinished) > 0)
-            throw new IllegalStateException("work cannot be started after it is finished!");
-        return new Work(id, title, authors, dateBegun, dateFinished);
+        checkNotNull(subjects);
+        return new Work(id, title, written, authors, subjects);
     }
 
-    /**
-     * Mark the work as finished
-     * @return {@code true} if code has not been finished yet;
-     *         {@code false} if you try to invoke it on finished work
-     */
-    public boolean finish() {
-        if (!finished) {
-            finished = true;
-            dateFinished = LocalDate.now();
-            notifyAllListeners(new WorkFinishedEvent(this, ""));
-            return true;
-        }
-        return false;
+    public DomainList<Author> getAuthors() {
+        return Utils.unmodifiableDomainList(authors);
     }
 
-    public boolean isFinished() {
-        return finished;
+    public DomainList<Subject> getSubjects() {
+        return Utils.unmodifiableDomainList(subjects);
     }
 
-    public List<Author> getAuthors() {
-        return Collections.unmodifiableList(authors);
+    public boolean addSubject(Subject subject) {
+        if (subjects.contains(subject))
+            return false;
+        subjects.add(subject);
+        notifyAllListeners(new SubjectAddedEvent(this, subject, null));
+        return true;
+    }
+
+    public boolean removeSubject(Subject subject) {
+        if (!subjects.contains(subject))
+            return false;
+        subjects.remove(subject);
+        notifyAllListeners(new SubjectRemovedEvent(this, subject, null));
+        return true;
     }
 
     public boolean removeAuthor(Author author) {
@@ -124,12 +116,8 @@ public class Work extends DomainEntity {
         return false;
     }
 
-    public LocalDate getDateBegun() {
-        return dateBegun;
-    }
-
-    public LocalDate getDateFinished() {
-        return dateFinished;
+    public LocalDate whenWritten() {
+        return written;
     }
 
     public String getTitle() {

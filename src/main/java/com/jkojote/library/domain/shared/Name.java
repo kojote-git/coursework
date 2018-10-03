@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class Name implements Comparable<Name> {
+public final class Name extends ValueObject {
 
     private String firstName;
 
@@ -58,16 +58,5 @@ public final class Name implements Comparable<Name> {
     @Override
     public int hashCode() {
         return Objects.hash(firstName, middleName, lastName);
-    }
-
-    @Override
-    public int compareTo(Name o) {
-        int res = firstName.compareTo(o.firstName);
-        if (res != 0)
-            return res;
-        res = middleName.compareTo(o.middleName);
-        if (res != 0)
-            return res;
-        return lastName.compareTo(o.lastName);
     }
 }

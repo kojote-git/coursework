@@ -7,7 +7,7 @@ import java.util.List;
  * An abstract entity with the capabilities of event sourcing.
  * Every domain object derives from this class
  */
-public abstract class DomainEntity {
+public abstract class DomainEntity implements DomainObject {
 
     private long id;
 
