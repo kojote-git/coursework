@@ -2,7 +2,7 @@ package com.jkojote.library.domain.model.work.events;
 
 import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.shared.DomainEvent;
+import com.jkojote.library.domain.shared.domain.DomainEvent;
 
 public class SubjectAddedEvent extends DomainEvent<Work> {
 

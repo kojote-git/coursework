@@ -2,7 +2,7 @@ package com.jkojote.library.domain.model.book.instance;
 
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.isbn.Isbn13;
-import com.jkojote.library.domain.shared.DomainEntity;
+import com.jkojote.library.domain.shared.domain.DomainEntity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

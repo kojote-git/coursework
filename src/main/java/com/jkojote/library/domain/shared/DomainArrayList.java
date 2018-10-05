@@ -1,6 +1,7 @@
 package com.jkojote.library.domain.shared;
 
-import com.jkojote.library.persistence.DomainList;
+import com.jkojote.library.domain.shared.domain.DomainObject;
+import com.jkojote.library.domain.shared.domain.DomainList;
 
 import java.util.ArrayList;
 

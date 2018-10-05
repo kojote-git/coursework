@@ -1,4 +1,4 @@
-package com.jkojote.library.domain.shared;
+package com.jkojote.library.domain.shared.domain;
 
 import java.util.ArrayList;
 import java.util.List;

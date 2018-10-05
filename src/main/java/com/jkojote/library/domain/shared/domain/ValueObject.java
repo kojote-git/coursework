@@ -1,4 +1,4 @@
-package com.jkojote.library.domain.shared;
+package com.jkojote.library.domain.shared.domain;
 
 public abstract class ValueObject implements DomainObject {
 

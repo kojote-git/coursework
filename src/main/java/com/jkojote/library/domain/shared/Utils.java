@@ -1,7 +1,9 @@
 package com.jkojote.library.domain.shared;
 
 import com.google.common.collect.ForwardingList;
-import com.jkojote.library.persistence.DomainList;
+import com.jkojote.library.domain.shared.domain.DomainObject;
+import com.jkojote.library.domain.shared.domain.DomainList;
+import com.jkojote.library.domain.shared.values.DateRangePrecision;
 import com.jkojote.library.persistence.LazyList;
 
 import java.util.*;
@@ -14,6 +16,20 @@ public final class Utils {
         return entityList instanceof LazyList ?
                 new UnmodifiableLazyList((LazyList<T>) entityList) :
                 new UnmodifiableDomainList<>(entityList);
+    }
+
+    public static DateRangePrecision convertIntToDateRange(int code) {
+        switch (code) {
+            case 0:
+                return DateRangePrecision.FULL_RANGE;
+            case 1:
+                return DateRangePrecision.TO_YEAR;
+            case 2:
+                return DateRangePrecision.TO_MONTH;
+            case 3:
+                return DateRangePrecision.EXACT_DATE;
+        }
+        return null;
     }
 
     private static class UnmodifiableDomainList<T extends DomainObject>

@@ -4,7 +4,9 @@ import com.jkojote.library.domain.shared.*;
 import com.jkojote.library.domain.model.author.events.WorkAddedEvent;
 import com.jkojote.library.domain.model.author.events.WorkRemovedEvent;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.persistence.DomainList;
+import com.jkojote.library.domain.shared.domain.DomainEntity;
+import com.jkojote.library.domain.shared.domain.DomainList;
+import com.jkojote.library.domain.shared.values.Name;
 
 import java.util.List;
 import java.util.function.Predicate;

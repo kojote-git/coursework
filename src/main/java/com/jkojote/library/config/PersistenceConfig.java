@@ -20,7 +20,7 @@ public class PersistenceConfig {
         if (dataSource != null)
             return dataSource;
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://localhost:3306/library");
+        config.setJdbcUrl("jdbc:mysql://localhost:3306/library?serverTimezone=UTC");
         config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setUsername("libadm");
         config.setPassword("libadmpass951");

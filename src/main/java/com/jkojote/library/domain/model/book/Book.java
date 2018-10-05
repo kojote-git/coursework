@@ -5,7 +5,7 @@ import com.jkojote.library.domain.model.book.events.BookInstanceRemovedEvent;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.shared.DomainEntity;
+import com.jkojote.library.domain.shared.domain.DomainEntity;
 
 import java.util.ArrayList;
 import java.util.List;

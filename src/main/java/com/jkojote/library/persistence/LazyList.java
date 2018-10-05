@@ -1,6 +1,7 @@
 package com.jkojote.library.persistence;
 
-import com.jkojote.library.domain.shared.DomainObject;
+import com.jkojote.library.domain.shared.domain.DomainList;
+import com.jkojote.library.domain.shared.domain.DomainObject;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package com.jkojote.library.domain.model.publisher;
 
 import com.jkojote.library.domain.model.book.Book;
-import com.jkojote.library.domain.shared.DomainEntity;
-import com.jkojote.library.persistence.DomainList;
+import com.jkojote.library.domain.shared.domain.DomainEntity;
+import com.jkojote.library.domain.shared.domain.DomainList;
 import com.jkojote.library.domain.shared.Utils;
 
 import java.util.List;

@@ -7,7 +7,10 @@ CREATE TABLE Author (
 
 CREATE TABLE Work(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  title VARCHAR(128) NOT NULL DEFAULT ''
+  title VARCHAR(128) NOT NULL DEFAULT '',
+  appearedStarts DATE,
+  appearedEnds DATE,
+  appearedRangePrecision INT
 );
 
 CREATE TABLE WorkAuthor (

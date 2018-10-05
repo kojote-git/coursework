@@ -2,7 +2,7 @@ package com.jkojote.library.domain.model.author.events;
 
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.shared.DomainEvent;
+import com.jkojote.library.domain.shared.domain.DomainEvent;
 
 public class WorkRemovedEvent extends DomainEvent<Author> {
 

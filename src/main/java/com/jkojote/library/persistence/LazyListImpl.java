@@ -1,12 +1,12 @@
 package com.jkojote.library.persistence;
 
 import com.google.common.collect.ForwardingList;
-import com.jkojote.library.domain.shared.DomainEntity;
-import com.jkojote.library.domain.shared.DomainObject;
+import com.jkojote.library.domain.shared.domain.DomainEntity;
+import com.jkojote.library.domain.shared.domain.DomainObject;
 
 import java.util.List;
 
-public abstract class AbstractLazyList<ParentEntity extends DomainEntity, Child extends DomainObject>
+public class LazyListImpl<ParentEntity extends DomainEntity, Child extends DomainObject>
 extends ForwardingList<Child> implements LazyList<Child> {
 
     private ParentEntity entity;
@@ -17,13 +17,13 @@ extends ForwardingList<Child> implements LazyList<Child> {
 
     private boolean canSetParentEntity;
 
-    public AbstractLazyList(ParentEntity entity, ListFetcher<ParentEntity, Child> fetcher) {
+    public LazyListImpl(ParentEntity entity, ListFetcher<ParentEntity, Child> fetcher) {
         this.entity = entity;
         this.fetcher = fetcher;
         canSetParentEntity = false;
     }
 
-    public AbstractLazyList(ListFetcher<ParentEntity, Child> fetcher) {
+    public LazyListImpl(ListFetcher<ParentEntity, Child> fetcher) {
         this.fetcher = fetcher;
         canSetParentEntity = true;
     }
