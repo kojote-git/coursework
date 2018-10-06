@@ -1,9 +1,9 @@
-package com.jkojote.library.persistence.internals.fetchers;
+package com.jkojote.library.persistence.fetchers;
 
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.persistence.ListFetcher;
-import com.jkojote.library.persistence.entities.mappers.AuthorMapper;
+import com.jkojote.library.persistence.mappers.AuthorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,12 +23,16 @@ public class LazyAuthorListFetcher implements ListFetcher<Work, Author> {
 
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    @Autowired
     private AuthorMapper authorMapper;
 
     @Autowired
     public LazyAuthorListFetcher(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Autowired
+    public void setAuthorMapper(AuthorMapper authorMapper) {
+        this.authorMapper = authorMapper;
     }
 
     public AuthorMapper getAuthorMapper() {

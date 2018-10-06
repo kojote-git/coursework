@@ -18,8 +18,8 @@ CREATE TABLE WorkAuthor (
   workId BIGINT,
   isFinished BOOLEAN,
   UNIQUE (authorId, workId),
-  CONSTRAINT author_fk FOREIGN KEY (authorId) REFERENCES Author(id),
-  CONSTRAINT work_fk FOREIGN KEY (workId) REFERENCES Work(id)
+  CONSTRAINT author_fk FOREIGN KEY (authorId) REFERENCES Author(id) ON DELETE CASCADE,
+  CONSTRAINT work_fk FOREIGN KEY (workId) REFERENCES Work(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Subject (
@@ -31,8 +31,8 @@ CREATE TABLE WorkSubject (
   workId BIGINT,
   subjectId INT,
   UNIQUE (workId, subjectId),
-  CONSTRAINT work_s_fk FOREIGN KEY (workId) REFERENCES Work(id),
-  CONSTRAINT subject_w_fk FOREIGN KEY (subjectId) REFERENCES Subject(id)
+  CONSTRAINT work_s_fk FOREIGN KEY (workId) REFERENCES Work(id) ON DELETE CASCADE,
+  CONSTRAINT subject_w_fk FOREIGN KEY (subjectId) REFERENCES Subject(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Publisher(

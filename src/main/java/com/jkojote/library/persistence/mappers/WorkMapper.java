@@ -1,11 +1,11 @@
-package com.jkojote.library.persistence.entities.mappers;
+package com.jkojote.library.persistence.mappers;
 
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.domain.shared.values.DateRange;
 import com.jkojote.library.persistence.LazyListImpl;
-import com.jkojote.library.persistence.internals.fetchers.LazyAuthorListFetcher;
-import com.jkojote.library.persistence.internals.fetchers.LazySubjectListFetcher;
+import com.jkojote.library.persistence.fetchers.LazyAuthorListFetcher;
+import com.jkojote.library.persistence.fetchers.LazySubjectListFetcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -20,10 +20,14 @@ public class WorkMapper implements RowMapper<Work> {
 
     private LazySubjectListFetcher lazySubjectListFetcher;
 
+
     @Autowired
-    public WorkMapper(LazyAuthorListFetcher lazyAuthorListFetcher,
-                      LazySubjectListFetcher lazySubjectListFetcher) {
+    public void setLazyAuthorListFetcher(LazyAuthorListFetcher lazyAuthorListFetcher) {
         this.lazyAuthorListFetcher = lazyAuthorListFetcher;
+    }
+
+    @Autowired
+    public void setLazySubjectListFetcher(LazySubjectListFetcher lazySubjectListFetcher) {
         this.lazySubjectListFetcher = lazySubjectListFetcher;
     }
 

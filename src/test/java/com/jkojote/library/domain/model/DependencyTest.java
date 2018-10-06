@@ -1,11 +1,11 @@
 package com.jkojote.library.domain.model;
 
 import com.jkojote.library.config.TestConfig;
-import com.jkojote.library.persistence.entities.mappers.AuthorMapper;
-import com.jkojote.library.persistence.entities.mappers.WorkMapper;
-import com.jkojote.library.persistence.internals.fetchers.LazyAuthorListFetcher;
-import com.jkojote.library.persistence.internals.fetchers.LazySubjectListFetcher;
-import com.jkojote.library.persistence.internals.fetchers.LazyWorkListFetcher;
+import com.jkojote.library.persistence.mappers.AuthorMapper;
+import com.jkojote.library.persistence.mappers.WorkMapper;
+import com.jkojote.library.persistence.fetchers.LazyAuthorListFetcher;
+import com.jkojote.library.persistence.fetchers.LazySubjectListFetcher;
+import com.jkojote.library.persistence.fetchers.LazyWorkListFetcher;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

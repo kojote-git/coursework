@@ -1,9 +1,11 @@
-package com.jkojote.library.persistence.entities.mappers;
+package com.jkojote.library.persistence.mappers;
 
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.shared.values.Name;
 import com.jkojote.library.persistence.LazyListImpl;
-import com.jkojote.library.persistence.internals.fetchers.LazyWorkListFetcher;
+import com.jkojote.library.persistence.entities.AuthorStateListener;
+import com.jkojote.library.persistence.fetchers.LazyWorkListFetcher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +17,16 @@ public class AuthorMapper implements RowMapper<Author> {
 
     private LazyWorkListFetcher lazyWorkListFetcher;
 
-    public AuthorMapper(LazyWorkListFetcher lazyWorkListFetcher) {
+    private AuthorStateListener listener;
+
+    @Autowired
+    public void setLazyWorkListFetcher(LazyWorkListFetcher lazyWorkListFetcher) {
         this.lazyWorkListFetcher = lazyWorkListFetcher;
+    }
+
+    @Autowired
+    public void setListener(AuthorStateListener listener) {
+        this.listener = listener;
     }
 
     public LazyWorkListFetcher getLazyWorkListFetcher() {
@@ -34,6 +44,7 @@ public class AuthorMapper implements RowMapper<Author> {
         var author = Author.restore(id, name, works);
         works.setParentEntity(author);
         works.seal();
+        author.addEventListener(listener);
         return author;
     }
 }

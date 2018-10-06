@@ -1,14 +1,21 @@
 package com.jkojote.library.domain.shared;
 
 import com.google.common.collect.ForwardingList;
+import com.jkojote.library.domain.model.author.Author;
+import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainObject;
 import com.jkojote.library.domain.shared.domain.DomainList;
 import com.jkojote.library.domain.shared.values.DateRangePrecision;
 import com.jkojote.library.persistence.LazyList;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import java.util.*;
 
 public final class Utils {
+
+    private static final SqlParameterSource EMPTY = new EmptySqlParameterSource();
 
     @SuppressWarnings("unchecked")
     public static <T extends DomainObject>
@@ -30,6 +37,25 @@ public final class Utils {
                 return DateRangePrecision.EXACT_DATE;
         }
         return null;
+    }
+
+    public static SqlParameterSource emptyParams() {
+        return EMPTY;
+    }
+
+    public static SqlParameterSource paramsForAuthor(Author author) {
+        return new MapSqlParameterSource("id", author.getId())
+                .addValue("firstName", author.getName().getFirstName())
+                .addValue("middleName", author.getName().getMiddleName())
+                .addValue("lastName", author.getName().getLastName());
+    }
+
+    public static SqlParameterSource paramsForWork(Work work) {
+        return new MapSqlParameterSource("id", work.getId())
+                .addValue("title", work.getTitle())
+                .addValue("appearedBegins", work.whenAppeared().getBegins())
+                .addValue("appearedEnds", work.whenAppeared().getEnds())
+                .addValue("rangePrecision", work.whenAppeared().getPrecision().code());
     }
 
     private static class UnmodifiableDomainList<T extends DomainObject>

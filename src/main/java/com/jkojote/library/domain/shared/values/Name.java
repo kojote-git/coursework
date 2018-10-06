@@ -27,10 +27,10 @@ public final class Name extends ValueObject {
         return new Name(firstName, "", lastName);
     }
 
-    private Name(String firstName, String lastName, String middleName) {
+    private Name(String firstName, String middleName, String lastName) {
         this.firstName = firstName;
-        this.lastName = lastName;
         this.middleName = middleName;
+        this.lastName = lastName;
     }
 
     @Override

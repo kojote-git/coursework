@@ -1,4 +1,4 @@
-package com.jkojote.library.persistence.internals.fetchers;
+package com.jkojote.library.persistence.fetchers;
 
 import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.Work;
