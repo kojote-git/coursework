@@ -20,7 +20,7 @@ public class LazySubjectListFetcher implements ListFetcher<Work, Subject> {
     private static final String QUERY =
         "SELECT subject FROM Subject s " +
           "INNER JOIN WorkSubject ws " +
-             "ON s.id = ws.subjectId"+
+             "ON s.id = ws.subjectId "+
           "WHERE ws.workId = :workId";
 
     @Autowired

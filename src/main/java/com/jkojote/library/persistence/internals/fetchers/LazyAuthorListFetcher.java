@@ -37,7 +37,7 @@ public class LazyAuthorListFetcher implements ListFetcher<Work, Author> {
 
     @Override
     public List<Author> fetchFor(Work work) {
-        var params = new MapSqlParameterSource("id", work.getId());
+        var params = new MapSqlParameterSource("workId", work.getId());
         return jdbcTemplate.query(QUERY, params, authorMapper);
     }
 }

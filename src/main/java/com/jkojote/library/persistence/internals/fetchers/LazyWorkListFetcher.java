@@ -18,7 +18,7 @@ import java.util.List;
 public class LazyWorkListFetcher implements ListFetcher<Author, Work> {
 
     private static final String QUERY =
-        "SELECT id, title, written FROM Work w " +
+        "SELECT id, title, appearedBegins, appearedEnds, rangePrecision FROM Work w " +
           "INNER JOIN WorkAuthor wa "+
             "ON wa.workId = w.id "+
         "WHERE wa.authorId = :authorId";

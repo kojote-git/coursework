@@ -18,7 +18,7 @@ public final class Utils {
                 new UnmodifiableDomainList<>(entityList);
     }
 
-    public static DateRangePrecision convertIntToDateRange(int code) {
+    public static DateRangePrecision convertIntToDateRangePrecision(int code) {
         switch (code) {
             case 0:
                 return DateRangePrecision.FULL_RANGE;

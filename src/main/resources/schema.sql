@@ -8,9 +8,9 @@ CREATE TABLE Author (
 CREATE TABLE Work(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(128) NOT NULL DEFAULT '',
-  appearedStarts DATE,
+  appearedBegins DATE,
   appearedEnds DATE,
-  appearedRangePrecision INT
+  rangePrecision INT DEFAULT 0
 );
 
 CREATE TABLE WorkAuthor (

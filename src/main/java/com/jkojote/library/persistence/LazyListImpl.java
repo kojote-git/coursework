@@ -48,9 +48,10 @@ extends ForwardingList<Child> implements LazyList<Child> {
     public void setParentEntity(ParentEntity entity) {
         if (canSetParentEntity) {
             this.entity = entity;
+        } else {
+            throw new ParentEntityCannotBeSet("cannot perform this " +
+                    "action because object is sealed for external modifications");
         }
-        throw new ParentEntityCannotBeSet("cannot perform this " +
-                "action because object is sealed for external modifications");
     }
 
     public void seal() {
