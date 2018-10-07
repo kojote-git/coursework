@@ -47,11 +47,10 @@ public class WorkAuthorBridgeTableProcessor implements BridgeTableProcessor<Work
 
     @Override
     public boolean exists(Work work, Author author) {
-        var QUERY = "SELECT COUNT(*) FROM WorkAuthor WHERE workId = :workId AND authorId = :authorId";
+        var QUERY = "SELECT * FROM WorkAuthor WHERE workId = :workId AND authorId = :authorId";
         var params = new MapSqlParameterSource("workId", work.getId())
                 .addValue("authorId", author.getId());
         var rs = namedJdbcTemplate.queryForRowSet(QUERY, params);
-        rs.next();
-        return rs.getLong(1) != 0;
+        return rs.next();
     }
 }

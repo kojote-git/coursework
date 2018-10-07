@@ -63,6 +63,6 @@ public class SubjectRepositoryImpl implements SubjectRepository {
         var DELETE = "DELETE FROM Subject WHERE id = :id";
         var params = new MapSqlParameterSource("id", t);
         namedJdbcTemplate.update(DELETE, params);
-        cache.remove(t);
+        cache.remove(subject.asString());
     }
 }

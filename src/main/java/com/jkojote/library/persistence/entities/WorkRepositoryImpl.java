@@ -33,12 +33,15 @@ public class WorkRepositoryImpl implements WorkRepository {
 
     @Autowired
     public WorkRepositoryImpl(WorkMapper workMapper,
-                              NamedParameterJdbcTemplate namedJdbcTemplate,
-                              WorkStateListener workStateListener) {
+                              NamedParameterJdbcTemplate namedJdbcTemplate) {
         this.workMapper = workMapper;
         this.namedJdbcTemplate = namedJdbcTemplate;
-        this.workStateListener = workStateListener;
         initLastId();
+    }
+
+    @Autowired
+    public void setWorkStateListener(WorkStateListener workStateListener) {
+        this.workStateListener = workStateListener;
     }
 
     @Autowired
@@ -92,24 +95,21 @@ public class WorkRepositoryImpl implements WorkRepository {
     public boolean update(Work work) {
         if (!exists(work))
             return false;
-        var UPDATE =
-            "UPDATE Work SET " +
-               "title = :title, appearedBegins = :appearedBegins, "+
-               "appearedEnds = :appearedEnds, rangePrecision = :rangePrecision " +
-               "WHERE id = :id";
-        var params = Utils.paramsForWork(work);
-        namedJdbcTemplate.update(UPDATE, params);
+        cascadePersistence.updateWork(work);
         return true;
     }
 
     @Override
-    public boolean delete(Work work) {
+    public boolean remove(Work work) {
         if (!exists(work))
             return false;
         var DELETE = "DELETE FROM Work WHERE id = :id";
         var params = new MapSqlParameterSource("id", work.getId());
         namedJdbcTemplate.update(DELETE, params);
         work.removeListener(workStateListener);
+        var authors = work.getAuthors();
+        for (int i = 0; i < authors.size(); )
+            authors.get(i).removeWork(work);
         return true;
     }
 

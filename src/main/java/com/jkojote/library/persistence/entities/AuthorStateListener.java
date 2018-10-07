@@ -28,6 +28,16 @@ public class AuthorStateListener implements DomainEventListener {
         this.namedJdbcTemplate = namedJdbcTemplate;
     }
 
+    @Autowired
+    public void setBridgeTableProcessor(BridgeTableProcessor<Work, Author> bridgeTableProcessor) {
+        this.bridgeTableProcessor = bridgeTableProcessor;
+    }
+
+    @Autowired
+    public void setWorkRepository(WorkRepository workRepository) {
+        this.workRepository = workRepository;
+    }
+
     @Override
     public void perform(DomainEvent domainEvent) {
         if (domainEvent instanceof WorkAddedEvent)
@@ -39,13 +49,17 @@ public class AuthorStateListener implements DomainEventListener {
     private void onWorkAdded(WorkAddedEvent e) {
         var author = e.getTarget();
         var work = e.getWork();
-        bridgeTableProcessor.addRecord(work, author);
+        if (!workRepository.exists(work))
+            workRepository.save(work);
+        else
+            bridgeTableProcessor.addRecord(work, author);
     }
 
     private void onWorkRemoved(WorkRemovedEvent e) {
         var author = e.getTarget();
         var work = e.getWork();
+        if (!workRepository.exists(work))
+            return;
         bridgeTableProcessor.removeRecord(work, author);
     }
-
 }

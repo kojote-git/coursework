@@ -1,7 +1,9 @@
 package com.jkojote.library.domain.shared.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An abstract entity with the capabilities of event sourcing.
@@ -11,11 +13,11 @@ public abstract class DomainEntity implements DomainObject {
 
     private long id;
 
-    private List<DomainEventListener> eventListeners;
+    private Set<DomainEventListener> eventListeners;
 
     protected DomainEntity(long id) {
         this.id = id;
-        this.eventListeners = new ArrayList<>();
+        this.eventListeners = new HashSet<>();
     }
 
     /**

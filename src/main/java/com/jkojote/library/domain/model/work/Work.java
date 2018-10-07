@@ -1,6 +1,8 @@
 package com.jkojote.library.domain.model.work;
 
 import com.jkojote.library.domain.model.author.Author;
+import com.jkojote.library.domain.model.work.events.AuthorAddedEvent;
+import com.jkojote.library.domain.model.work.events.AuthorRemovedEvent;
 import com.jkojote.library.domain.model.work.events.SubjectAddedEvent;
 import com.jkojote.library.domain.model.work.events.SubjectRemovedEvent;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
@@ -102,7 +104,9 @@ public class Work extends DomainEntity {
             return false;
         authors.remove(author);
         if (author.getWorks().contains(this)) {
-            return author.removeWork(this);
+            author.removeWork(this);
+            notifyAllListeners(new AuthorRemovedEvent(this, author, null));
+            return true;
         }
         return false;
     }
@@ -112,7 +116,9 @@ public class Work extends DomainEntity {
             return false;
         authors.add(author);
         if (!author.getWorks().contains(this)) {
-            return author.addWork(this);
+            author.addWork(this);
+            notifyAllListeners(new AuthorAddedEvent(this, author, null));
+            return true;
         }
         return false;
     }

@@ -24,6 +24,6 @@ public interface WorkRepository {
 
     boolean update(Work work);
 
-    boolean delete(Work work);
+    boolean remove(Work work);
 
 }

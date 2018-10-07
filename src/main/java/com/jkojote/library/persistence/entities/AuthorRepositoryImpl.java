@@ -35,18 +35,10 @@ public class AuthorRepositoryImpl implements AuthorRepository {
     private AtomicLong lastId;
 
     @Autowired
-    public void setCascadePersistence(CascadeWorkAuthorPersistence cascadePersistence) {
-        this.cascadePersistence = cascadePersistence;
-    }
-
     private AuthorRepositoryImpl(NamedParameterJdbcTemplate namedJdbcTemplate,
-                                 JdbcTemplate jdbcTemplate,
-                                 AuthorMapper authorMapper,
-                                 AuthorStateListener authorStateListener) {
+                                 JdbcTemplate jdbcTemplate) {
         this.namedJdbcTemplate = namedJdbcTemplate;
-        this.authorMapper = authorMapper;
         this.jdbcTemplate = jdbcTemplate;
-        this.authorStateListener = authorStateListener;
         initLastId();
     }
 
@@ -63,6 +55,21 @@ public class AuthorRepositoryImpl implements AuthorRepository {
         } catch (RuntimeException e) {
             return null;
         }
+    }
+
+    @Autowired
+    public void setAuthorStateListener(AuthorStateListener authorStateListener) {
+        this.authorStateListener = authorStateListener;
+    }
+
+    @Autowired
+    public void setCascadePersistence(CascadeWorkAuthorPersistence cascadePersistence) {
+        this.cascadePersistence = cascadePersistence;
+    }
+
+    @Autowired
+    public void setAuthorMapper(AuthorMapper authorMapper) {
+        this.authorMapper = authorMapper;
     }
 
     @Override
@@ -87,7 +94,6 @@ public class AuthorRepositoryImpl implements AuthorRepository {
         if (exists(author))
             return false;
         cascadePersistence.saveAuthor(author);
-        author.addEventListener(authorStateListener);
         return true;
     }
 
@@ -95,12 +101,7 @@ public class AuthorRepositoryImpl implements AuthorRepository {
     public boolean update(Author author) {
         if (!exists(author))
             return false;
-        var UPDATE =
-            "UPDATE Author SET " +
-                "firstName = :firstName, middleName = :middleName, "+
-                "lastName = :lastName WHERE id = :id";
-        var params = Utils.paramsForAuthor(author);
-        namedJdbcTemplate.update(UPDATE, params);
+        cascadePersistence.updateAuthor(author);
         return true;
     }
 
@@ -109,11 +110,13 @@ public class AuthorRepositoryImpl implements AuthorRepository {
         if (!exists(author))
             return false;
         var DELETE =
-            "DELETE FROM Author WHERE id =: id";
+            "DELETE FROM Author WHERE id =:id";
         var params = new MapSqlParameterSource("id", author.getId());
         namedJdbcTemplate.update(DELETE, params);
         cache.remove(author.getId());
-        author.removeListener(authorStateListener);
+        var works = author.getWorks();
+        for (int i = 0; i < works.size(); i++)
+            works.get(i).removeAuthor(author);
         return true;
     }
 

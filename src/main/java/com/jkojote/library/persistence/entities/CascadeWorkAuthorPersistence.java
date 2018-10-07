@@ -3,7 +3,6 @@ package com.jkojote.library.persistence.entities;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.author.AuthorRepository;
 import com.jkojote.library.domain.model.work.Subject;
-import com.jkojote.library.domain.model.work.SubjectRepository;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.model.work.WorkRepository;
 import com.jkojote.library.domain.shared.Utils;
@@ -26,7 +25,9 @@ class CascadeWorkAuthorPersistence {
 
     private WorkRepository workRepository;
 
-    private SubjectRepository subjectRepository;
+    private AuthorStateListener authorStateListener;
+
+    private WorkStateListener workStateListener;
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
@@ -55,23 +56,82 @@ class CascadeWorkAuthorPersistence {
     }
 
     @Autowired
-    public void setSubjectRepository(SubjectRepository subjectRepository) {
-        this.subjectRepository = subjectRepository;
+    public void setAuthorStateListener(AuthorStateListener authorStateListener) {
+        this.authorStateListener = authorStateListener;
     }
 
-    public void saveAuthor(Author author) {
+    @Autowired
+    public void setWorkStateListener(WorkStateListener workStateListener) {
+        this.workStateListener = workStateListener;
+    }
+
+    void saveAuthor(Author author) {
         saveAuthor(author, new HashSet<>(), new HashSet<>());
     }
 
-    public void saveWork(Work work) {
+    void saveWork(Work work) {
         saveWork(work, new HashSet<>(), new HashSet<>());
+        work.addEventListener(workStateListener);
+    }
+
+    public void updateWork(Work work) {
+        updateWork(work, new HashSet<>(), new HashSet<>());
+    }
+
+    public void updateAuthor(Author author) {
+        updateAuthor(author, new HashSet<>(), new HashSet<>());
+    }
+
+    private void updateWork(Work work, Set<Long> updatedAuthors, Set<Long> updatedWorks) {
+        if (updatedWorks.contains(work.getId()))
+            return;
+        updateWorkRecord(work);
+        updatedWorks.add(work.getId());
+        var authors = work.getAuthors();
+        var authorsIsFetched = !(authors instanceof LazyList) || ((LazyList<Author>) authors).isFetched();
+        if (!authorsIsFetched)
+            return;
+        for (var author : authors) {
+            if (updatedAuthors.contains(author.getId()))
+                continue;
+            if (!authorRepository.exists(author))
+                saveAuthor(author);
+            else
+                updateAuthor(author, updatedAuthors, updatedWorks);
+        }
+    }
+
+    private void updateAuthor(Author author, Set<Long> updatedAuthors, Set<Long> updatedWorks) {
+        if (updatedAuthors.contains(author.getId()))
+            return;
+        updateAuthorRecord(author);
+        updatedAuthors.add(author.getId());
+        var works = author.getWorks();
+        var worksIsLazyList = works instanceof LazyList;
+        var worksIsFetched = !worksIsLazyList || ((LazyList) works).isFetched();
+        if (!worksIsFetched)
+            return;
+        for (var work : works) {
+            if (updatedWorks.contains(work.getId()))
+                continue;
+            if (!workRepository.exists(work))
+                saveWork(work);
+            else
+                updateWork(work, updatedAuthors, updatedWorks);
+        }
     }
 
     private void saveAuthor(Author author, Set<Long> savedAuthors, Set<Long> savedWorks) {
         if (savedAuthors.contains(author.getId()))
             return;
-        if (!authorRepository.exists(author))
+        if (!authorRepository.exists(author)) {
             persistAuthor(author);
+            author.addEventListener(authorStateListener);
+        }
+        else {
+            savedAuthors.add(author.getId());
+            return;
+        }
         savedAuthors.add(author.getId());
         var works = author.getWorks();
         var worksIsLazyList = works instanceof LazyList;
@@ -89,8 +149,14 @@ class CascadeWorkAuthorPersistence {
     private void saveWork(Work work, Set<Long> savedAuthors, Set<Long> savedWorks) {
         if (savedWorks.contains(work.getId()))
             return;
-        if (!workRepository.exists(work))
+        if (!workRepository.exists(work)) {
             persistWork(work);
+            work.addEventListener(workStateListener);
+        }
+        else {
+            savedWorks.add(work.getId());
+            return;
+        }
         savedWorks.add(work.getId());
         var authors = work.getAuthors();
         var authorsIsLazyList = authors instanceof LazyList;
@@ -115,6 +181,26 @@ class CascadeWorkAuthorPersistence {
         for (var subject : subjects) {
             workSubjectBridge.addRecord(work, subject);
         }
+    }
+
+    private void updateAuthorRecord(Author author) {
+        var UPDATE =
+            "UPDATE Author SET " +
+              "firstName = :firstName, middleName = :middleName, "+
+              "lastName = :lastName " +
+            "WHERE id = :id";
+        var params = Utils.paramsForAuthor(author);
+        namedJdbcTemplate.update(UPDATE, params);
+    }
+
+    private void updateWorkRecord(Work work) {
+        var UPDATE =
+            "UPDATE Work SET " +
+              "title = :title, appearedBegins = :appearedBegins, "+
+              "appearedEnds = :appearedEnds, rangePrecision = :rangePrecision " +
+            "WHERE id = :id";
+        var params = Utils.paramsForWork(work);
+        namedJdbcTemplate.update(UPDATE, params);
     }
 
     private void persistAuthor(Author author) {

@@ -3,42 +3,42 @@ CREATE TABLE Author (
   firstName VARCHAR(32) NOT NULL DEFAULT '',
   middleName VARCHAR(32) NOT NULL DEFAULT '',
   lastName VARCHAR(32) NOT NULL DEFAULT ''
-);
+) ENGINE=INNODB;
 
-CREATE TABLE Work(
+CREATE TABLE Work (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(128) NOT NULL DEFAULT '',
   appearedBegins DATE,
   appearedEnds DATE,
   rangePrecision INT DEFAULT 0
-);
+) ENGINE=INNODB;
 
 CREATE TABLE WorkAuthor (
   authorId BIGINT,
   workId BIGINT,
   isFinished BOOLEAN,
-  UNIQUE (authorId, workId),
+  PRIMARY KEY (authorId, workId),
   CONSTRAINT author_fk FOREIGN KEY (authorId) REFERENCES Author(id) ON DELETE CASCADE,
   CONSTRAINT work_fk FOREIGN KEY (workId) REFERENCES Work(id) ON DELETE CASCADE
-);
+) ENGINE=INNODB;
 
 CREATE TABLE Subject (
   id INT PRIMARY KEY AUTO_INCREMENT,
   subject VARCHAR(32) UNIQUE NOT NULL
-);
+) ENGINE=INNODB;
 
 CREATE TABLE WorkSubject (
   workId BIGINT,
   subjectId INT,
-  UNIQUE (workId, subjectId),
+  PRIMARY KEY (workId, subjectId),
   CONSTRAINT work_s_fk FOREIGN KEY (workId) REFERENCES Work(id) ON DELETE CASCADE,
   CONSTRAINT subject_w_fk FOREIGN KEY (subjectId) REFERENCES Subject(id) ON DELETE CASCADE
-);
+) ENGINE=INNODB;
 
 CREATE TABLE Publisher(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(64)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE Book(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -46,18 +46,18 @@ CREATE TABLE Book(
   publisherId BIGINT,
   CONSTRAINT work_b_fk FOREIGN KEY (workId) REFERENCES Work(id),
   CONSTRAINT publisher_b_fk FOREIGN KEY (publisherId) REFERENCES  Publisher(id)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE Format (
   id INT PRIMARY KEY AUTO_INCREMENT,
   format VARCHAR(12) UNIQUE
-);
+) ENGINE=INNODB;
 
 CREATE TABLE BookInstance(
   bookId BIGINT,
   format INT,
   isbn VARCHAR(32),
-  PRIMARY KEY(bookId, format),
+  PRIMARY KEY (bookId, format),
   CONSTRAINT book_fk FOREIGN KEY (bookId) REFERENCES Book(id),
   CONSTRAINT format_fk FOREIGN KEY (format) REFERENCES Format(id)
-);
+) ENGINE=INNODB;
