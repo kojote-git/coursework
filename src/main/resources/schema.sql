@@ -16,7 +16,6 @@ CREATE TABLE Work (
 CREATE TABLE WorkAuthor (
   authorId BIGINT,
   workId BIGINT,
-  isFinished BOOLEAN,
   PRIMARY KEY (authorId, workId),
   CONSTRAINT author_fk FOREIGN KEY (authorId) REFERENCES Author(id) ON DELETE CASCADE,
   CONSTRAINT work_fk FOREIGN KEY (workId) REFERENCES Work(id) ON DELETE CASCADE
