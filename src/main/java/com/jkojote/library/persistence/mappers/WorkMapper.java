@@ -2,8 +2,8 @@ package com.jkojote.library.persistence.mappers;
 
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.Utils;
-import com.jkojote.library.domain.shared.values.DateRange;
-import com.jkojote.library.persistence.LazyListImpl;
+import com.jkojote.library.values.DateRange;
+import com.jkojote.library.persistence.lazy.LazyListImpl;
 import com.jkojote.library.persistence.fetchers.LazyAuthorListFetcher;
 import com.jkojote.library.persistence.fetchers.LazySubjectListFetcher;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,10 @@
-package com.jkojote.library.persistence;
+package com.jkojote.library.persistence.lazy;
 
 import com.google.common.collect.ForwardingList;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
 import com.jkojote.library.domain.shared.domain.DomainObject;
+import com.jkojote.library.persistence.LazyList;
+import com.jkojote.library.persistence.ListFetcher;
 
 import java.util.List;
 
@@ -35,10 +37,7 @@ extends ForwardingList<Child> implements LazyList<Child> {
 
     @Override
     protected List<Child> delegate() {
-        if (list == null) {
-            list = fetcher.fetchFor(entity);
-        }
-        return list;
+        return get();
     }
 
     public ParentEntity getEntity() {
@@ -58,11 +57,19 @@ extends ForwardingList<Child> implements LazyList<Child> {
         canSetParentEntity = false;
     }
 
+    @Override
+    public List<Child> get() {
+        if (list == null) {
+            list = fetcher.fetchFor(entity);
+        }
+        return list;
+    }
+
     public static class ParentEntityCannotBeSet extends RuntimeException {
         public ParentEntityCannotBeSet() {
         }
 
-        public ParentEntityCannotBeSet(String message) {
+        ParentEntityCannotBeSet(String message) {
             super(message);
         }
     }

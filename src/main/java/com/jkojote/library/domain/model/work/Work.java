@@ -9,9 +9,7 @@ import com.jkojote.library.domain.shared.domain.DomainEntity;
 import com.jkojote.library.domain.shared.DomainArrayList;
 import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.domain.shared.domain.DomainList;
-import com.jkojote.library.domain.shared.values.DateRange;
-
-import java.time.LocalDate;
+import com.jkojote.library.values.DateRange;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

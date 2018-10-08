@@ -1,13 +1,11 @@
 package com.jkojote.library.domain.model;
 
 import com.jkojote.library.domain.model.author.Author;
-import com.jkojote.library.domain.shared.values.DateRange;
-import com.jkojote.library.domain.shared.values.Name;
+import com.jkojote.library.values.DateRange;
+import com.jkojote.library.values.Name;
 import com.jkojote.library.domain.model.work.Work;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.time.LocalDate;
 
 import static org.junit.Assert.*;
 

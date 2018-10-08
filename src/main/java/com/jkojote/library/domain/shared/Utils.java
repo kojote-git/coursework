@@ -5,7 +5,7 @@ import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainObject;
 import com.jkojote.library.domain.shared.domain.DomainList;
-import com.jkojote.library.domain.shared.values.DateRangePrecision;
+import com.jkojote.library.values.DateRangePrecision;
 import com.jkojote.library.persistence.LazyList;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -98,6 +98,14 @@ public final class Utils {
         @Override
         public boolean isFetched() {
             return source.isFetched();
+        }
+
+        @Override
+        public List<T> get() {
+            if (list == null)  {
+                list = Collections.unmodifiableList(source);
+            }
+            return list;
         }
     }
 }

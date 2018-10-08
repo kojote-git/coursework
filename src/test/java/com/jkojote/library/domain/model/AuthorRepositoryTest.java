@@ -1,9 +1,9 @@
 package com.jkojote.library.domain.model;
 
-import com.jkojote.library.config.TestConfig;
+import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.author.AuthorRepository;
-import com.jkojote.library.domain.shared.values.Name;
+import com.jkojote.library.values.Name;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = ForRepositories.class)
 public class AuthorRepositoryTest {
 
     @Autowired

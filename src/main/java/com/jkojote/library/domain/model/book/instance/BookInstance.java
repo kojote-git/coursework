@@ -3,8 +3,8 @@ package com.jkojote.library.domain.model.book.instance;
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.isbn.Isbn13;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
+import com.jkojote.library.files.FileInstance;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BookInstance extends DomainEntity {
 
@@ -14,9 +14,9 @@ public class BookInstance extends DomainEntity {
 
     private BookFormat format;
 
-    private byte[] file;
+    private FileInstance file;
 
-    private BookInstance(int id, Book book, Isbn13 isbn13, BookFormat format, byte[] file) {
+    private BookInstance(int id, Book book, Isbn13 isbn13, BookFormat format, FileInstance file) {
         super(id);
         this.book = book;
         this.isbn13 = isbn13;
@@ -24,22 +24,11 @@ public class BookInstance extends DomainEntity {
         this.file = file;
     }
 
-    public static BookInstance restore(int id, Book book,
-                                       Isbn13 isbn13,
-                                       BookFormat format,
-                                       byte[] file) {
-        checkNotNull(book);
-        checkNotNull(isbn13);
-        checkNotNull(format);
-        checkNotNull(file);
-        return new BookInstance(id, book, isbn13, format, file);
-    }
-
     public Book getBook() {
         return book;
     }
 
-    public byte[] getFile() {
+    public FileInstance getFile() {
         return file;
     }
 

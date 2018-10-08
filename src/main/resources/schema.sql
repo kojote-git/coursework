@@ -52,11 +52,12 @@ CREATE TABLE Format (
   format VARCHAR(12) UNIQUE
 ) ENGINE=INNODB;
 
-CREATE TABLE BookInstance(
+CREATE TABLE BookInstance (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
   bookId BIGINT,
-  format INT,
-  isbn VARCHAR(32),
-  PRIMARY KEY (bookId, format),
-  CONSTRAINT book_fk FOREIGN KEY (bookId) REFERENCES Book(id),
-  CONSTRAINT format_fk FOREIGN KEY (format) REFERENCES Format(id)
-) ENGINE=INNODB;
+  isbn13 VARCHAR(32),
+  formatId INT,
+  file LONGBLOB,
+  CONSTRAINT FOREIGN KEY FK_BookInstance_Book (bookId) REFERENCES Book(id),
+  CONSTRAINT FOREIGN KEY FK_BookInstance_Format (formatId) REFERENCES Format(id)
+) ENGINE = InnoDB;

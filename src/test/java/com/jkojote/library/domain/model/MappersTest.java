@@ -1,8 +1,8 @@
 package com.jkojote.library.domain.model;
 
-import com.jkojote.library.config.TestConfig;
-import com.jkojote.library.domain.shared.values.DateRange;
-import com.jkojote.library.domain.shared.values.Name;
+import com.jkojote.library.config.tests.ForRepositories;
+import com.jkojote.library.values.DateRange;
+import com.jkojote.library.values.Name;
 import com.jkojote.library.persistence.mappers.AuthorMapper;
 import com.jkojote.library.persistence.mappers.WorkMapper;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = ForRepositories.class)
 public class MappersTest {
 
     @Autowired

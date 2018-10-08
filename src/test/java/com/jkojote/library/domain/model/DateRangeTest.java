@@ -1,7 +1,7 @@
 package com.jkojote.library.domain.model;
 
-import com.jkojote.library.domain.shared.values.DateRange;
-import com.jkojote.library.domain.shared.values.DateRangePrecision;
+import com.jkojote.library.values.DateRange;
+import com.jkojote.library.values.DateRangePrecision;
 import org.junit.Test;
 
 import java.time.LocalDate;

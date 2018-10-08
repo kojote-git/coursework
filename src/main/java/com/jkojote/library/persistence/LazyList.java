@@ -9,13 +9,13 @@ import java.util.List;
  * In few words, it represents a list whose contents are dynamically loaded from any data source
  * after invoking any method defined in {@link List} interface.
  * To be more precise, some entity mat have a list of {@code DomainObject}s
- * as one of its attributes and it may be desired not to fetch all these objects
+ * as one of its attributes and it may be desired not to fetch all these shared
  * when the entity is loaded but delay this fetching until the moment when it is needed.
  * Thus, {@code LazyList} represents an idea of lazy loading
  * @param <T>
  */
 public interface LazyList<T extends DomainObject>
-extends DomainList<T> {
+extends DomainList<T>, LazyObject<List<T>> {
 
     /**
      * Whether contents of this list has been fetched from data source

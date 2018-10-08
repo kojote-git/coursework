@@ -1,7 +1,8 @@
-package com.jkojote.library.config;
+package com.jkojote.library.config.tests;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,7 +14,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @ComponentScan("com.jkojote.library")
-public class TestConfig {
+public class ForRepositories {
 
     private DataSource dataSource;
 

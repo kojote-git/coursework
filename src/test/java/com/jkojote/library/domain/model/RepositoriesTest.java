@@ -1,13 +1,13 @@
 package com.jkojote.library.domain.model;
 
-import com.jkojote.library.config.TestConfig;
+import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.author.AuthorRepository;
 import com.jkojote.library.domain.model.work.SubjectRepository;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.model.work.WorkRepository;
-import com.jkojote.library.domain.shared.values.DateRange;
-import com.jkojote.library.domain.shared.values.Name;
+import com.jkojote.library.values.DateRange;
+import com.jkojote.library.values.Name;
 import com.jkojote.library.persistence.entities.WorkAuthorBridgeTableProcessor;
 import com.jkojote.library.persistence.entities.WorkSubjectBridgeTableProcessor;
 import org.junit.Test;
@@ -19,7 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = ForRepositories.class)
 public class RepositoriesTest {
 
     @Autowired

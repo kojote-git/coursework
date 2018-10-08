@@ -1,7 +1,6 @@
-package com.jkojote.library.domain.shared.values;
+package com.jkojote.library.values;
 
 import com.jkojote.library.domain.shared.Utils;
-import com.jkojote.library.domain.shared.domain.ValueObject;
 
 import java.time.LocalDate;
 import java.util.Objects;

@@ -1,13 +1,13 @@
 package com.jkojote.library.domain.model.book.instance;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class BookFormat {
 
-    private static final Map<String, BookFormat> CACHE = new HashMap<>();
+    private static final Map<String, BookFormat> CACHE = new ConcurrentHashMap<>();
 
     public static final BookFormat FB2 = new BookFormat("fb2");
 
@@ -30,7 +30,12 @@ public final class BookFormat {
     public static BookFormat of(String format) {
         checkNotNull(format);
         BookFormat t = CACHE.get(format);
-        return t != null ? t : new BookFormat(format);
+        if (t == null) {
+            t = new BookFormat(format);
+            if (CACHE.size() < 128)
+                CACHE.put(format, t);
+        }
+        return t;
     }
 
     @Override

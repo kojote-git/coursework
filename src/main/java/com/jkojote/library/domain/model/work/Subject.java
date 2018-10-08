@@ -1,6 +1,6 @@
 package com.jkojote.library.domain.model.work;
 
-import com.jkojote.library.domain.shared.domain.ValueObject;
+import com.jkojote.library.values.ValueObject;
 
 import java.util.HashMap;
 import java.util.Map;

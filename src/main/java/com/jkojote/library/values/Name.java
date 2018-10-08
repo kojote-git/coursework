@@ -1,6 +1,4 @@
-package com.jkojote.library.domain.shared.values;
-
-import com.jkojote.library.domain.shared.domain.ValueObject;
+package com.jkojote.library.values;
 
 import java.util.Objects;
 

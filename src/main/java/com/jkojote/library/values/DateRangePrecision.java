@@ -1,4 +1,4 @@
-package com.jkojote.library.domain.shared.values;
+package com.jkojote.library.values;
 
 public enum DateRangePrecision {
 

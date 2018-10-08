@@ -25,6 +25,15 @@ public final class Isbn13 {
         return false;
     }
 
+    public String asString() {
+        return number;
+    }
+
+    @Override
+    public String toString() {
+        return asString();
+    }
+
     @Override
     public int hashCode() {
         return number.hashCode();

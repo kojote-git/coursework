@@ -1,0 +1,67 @@
+package com.jkojote.library.domain.model;
+
+import com.jkojote.library.config.tests.ForBookInstance;
+import com.jkojote.library.domain.model.book.Book;
+import com.jkojote.library.domain.model.book.instance.BookInstance;
+import com.jkojote.library.domain.model.book.instance.isbn.Isbn13;
+import com.jkojote.library.files.StandardFileInstance;
+import com.jkojote.library.persistence.LazyObjectFetcher;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.Blob;
+import java.sql.SQLException;
+
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = ForBookInstance.class)
+public class LazyBookFileFetcherTest {
+
+    @Autowired
+    private LazyObjectFetcher<BookInstance, byte[]> fetcher;
+
+    @Autowired
+    private NamedParameterJdbcTemplate namedJdbcTemplate;
+
+    @Test
+    public void test() {
+        BookInstance bi = mock(BookInstance.class);
+        Book b = mock(Book.class);
+        when(b.getId()).thenReturn(1L);
+        when(bi.getBook()).thenReturn(b);
+        when(bi.getIsbn13()).thenReturn(Isbn13.of("978-0-1523-1221-1"));
+        initData(bi);
+        byte[] array = fetcher.fetchFor(bi);
+        assertNotNull(array);
+    }
+
+    private void initData(BookInstance bookInstance) {
+        var INSERT =
+            "INSERT INTO BookInstance (id, file, formatId, bookId, isbn13) " +
+            "VALUES (:id, :file, :formatId, :bookId, :isbn13)";
+        var file = new StandardFileInstance("/home/isaac/Desktop/file");
+        Blob blob;
+        try {
+            blob = new SerialBlob(file.asBytes());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        var params = new MapSqlParameterSource("id", bookInstance.getId())
+                .addValue("file", blob)
+                .addValue("formatId", 1)
+                .addValue("bookId", bookInstance.getBook().getId())
+                .addValue("isbn13", bookInstance.getIsbn13().toString());
+        namedJdbcTemplate.update(INSERT, params);
+    }
+
+}

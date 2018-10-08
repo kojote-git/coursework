@@ -1,6 +1,6 @@
 package com.jkojote.library.domain.model;
 
-import com.jkojote.library.config.TestConfig;
+import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.persistence.mappers.AuthorMapper;
 import com.jkojote.library.persistence.mappers.WorkMapper;
 import com.jkojote.library.persistence.fetchers.LazyAuthorListFetcher;
@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = ForRepositories.class)
 public class DependencyTest {
 
     @Autowired

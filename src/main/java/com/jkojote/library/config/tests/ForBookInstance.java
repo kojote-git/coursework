@@ -1,20 +1,26 @@
-package com.jkojote.library.config;
+package com.jkojote.library.config.tests;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import com.jkojote.library.persistence.fetchers.LazyBookFileFetcher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
 
-@ContextConfiguration
-@ComponentScan("com.jkojote.library.persistence")
-public class PersistenceConfig {
+@Configuration
+@ComponentScan(
+    basePackageClasses = LazyBookFileFetcher.class,
+    useDefaultFilters = false,
+    includeFilters = @ComponentScan.Filter(
+        type = FilterType.ASSIGNABLE_TYPE, value = LazyBookFileFetcher.class
+))
+public class ForBookInstance {
 
     private DataSource dataSource;
 
@@ -22,14 +28,12 @@ public class PersistenceConfig {
     public DataSource dataSource() {
         if (dataSource != null)
             return dataSource;
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://localhost:3306/library?serverTimezone=UTC");
-        config.setDriverClassName("com.mysql.jdbc.Driver");
-        config.setUsername("libadm");
-        config.setPassword("libadmpass951");
-        return dataSource = new HikariDataSource(config);
-    }
+        return new EmbeddedDatabaseBuilder()
+                .addScript("bookinstance.sql")
+                .setType(EmbeddedDatabaseType.H2)
+                .build();
 
+    }
     @Bean
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
         return new NamedParameterJdbcTemplate(dataSource());
@@ -39,6 +43,7 @@ public class PersistenceConfig {
     public JdbcTemplate jdbcTemplate() {
         return new JdbcTemplate(dataSource());
     }
+
     @Bean
     public DataSourceTransactionManager transactionManager() {
         return new DataSourceTransactionManager(dataSource());

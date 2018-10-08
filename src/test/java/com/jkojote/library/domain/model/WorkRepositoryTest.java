@@ -1,12 +1,12 @@
 package com.jkojote.library.domain.model;
 
-import com.jkojote.library.config.TestConfig;
+import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.author.AuthorRepository;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.model.work.WorkRepository;
-import com.jkojote.library.domain.shared.values.DateRange;
-import com.jkojote.library.domain.shared.values.Name;
+import com.jkojote.library.values.DateRange;
+import com.jkojote.library.values.Name;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = ForRepositories.class)
 public class WorkRepositoryTest {
 
     @Autowired
