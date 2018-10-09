@@ -1,4 +1,4 @@
-package com.jkojote.library.persistence.entities;
+package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.SubjectRepository;

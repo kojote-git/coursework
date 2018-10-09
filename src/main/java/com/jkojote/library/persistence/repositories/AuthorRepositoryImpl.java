@@ -1,8 +1,9 @@
-package com.jkojote.library.persistence.entities;
+package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.author.AuthorRepository;
 import com.jkojote.library.domain.shared.Utils;
+import com.jkojote.library.persistence.listeners.AuthorStateListener;
 import com.jkojote.library.persistence.mappers.AuthorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,7 +36,7 @@ public class AuthorRepositoryImpl implements AuthorRepository {
     private AtomicLong lastId;
 
     @Autowired
-    private AuthorRepositoryImpl(NamedParameterJdbcTemplate namedJdbcTemplate,
+    public AuthorRepositoryImpl(NamedParameterJdbcTemplate namedJdbcTemplate,
                                  JdbcTemplate jdbcTemplate) {
         this.namedJdbcTemplate = namedJdbcTemplate;
         this.jdbcTemplate = jdbcTemplate;
@@ -114,6 +115,7 @@ public class AuthorRepositoryImpl implements AuthorRepository {
         var params = new MapSqlParameterSource("id", author.getId());
         namedJdbcTemplate.update(DELETE, params);
         cache.remove(author.getId());
+        author.removeListener(authorStateListener);
         var works = author.getWorks();
         for (int i = 0; i < works.size(); i++)
             works.get(i).removeAuthor(author);

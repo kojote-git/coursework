@@ -16,7 +16,7 @@ public class BookInstance extends DomainEntity {
 
     private FileInstance file;
 
-    private BookInstance(int id, Book book, Isbn13 isbn13, BookFormat format, FileInstance file) {
+    public BookInstance(long id, Book book, Isbn13 isbn13, BookFormat format, FileInstance file) {
         super(id);
         this.book = book;
         this.isbn13 = isbn13;
@@ -24,8 +24,19 @@ public class BookInstance extends DomainEntity {
         this.file = file;
     }
 
+    public BookInstance(long id, Book book, Isbn13 isbn13, BookFormat format) {
+        super(id);
+        this.book = book;
+        this.isbn13 = isbn13;
+        this.format = format;
+    }
+
     public Book getBook() {
         return book;
+    }
+
+    public void setFile(FileInstance file) {
+        this.file = file;
     }
 
     public FileInstance getFile() {

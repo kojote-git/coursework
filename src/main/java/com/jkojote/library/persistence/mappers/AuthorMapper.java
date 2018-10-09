@@ -3,7 +3,7 @@ package com.jkojote.library.persistence.mappers;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.values.Name;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
-import com.jkojote.library.persistence.entities.AuthorStateListener;
+import com.jkojote.library.persistence.listeners.AuthorStateListener;
 import com.jkojote.library.persistence.fetchers.LazyWorkListFetcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;

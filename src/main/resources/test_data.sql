@@ -44,3 +44,16 @@ INSERT INTO WorkSubject (workId, subjectId)
   VALUES (3, 4);
 INSERT INTO WorkSubject (workId, subjectId)
   VALUES (4, 4);
+
+/*UNKNOWN PUBLISHER*/
+INSERT INTO Publisher (id, name)
+  VALUES (1, NULL);
+INSERT INTO Publisher (id, name)
+  VALUES (2, 'Bantam Books');
+INSERT INTO Publisher (id, name)
+  VALUES (3, 'Oxford University Press');
+
+INSERT INTO Book (id, workId, publisherId, edition)
+  VALUES (1, 1, 2, 1);
+INSERT INTO Book (id, workId, publisherId, edition)
+  VALUES (2, 2, 3, 1);

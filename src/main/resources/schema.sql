@@ -43,21 +43,17 @@ CREATE TABLE Book(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   workId BIGINT,
   publisherId BIGINT,
+  edition INT,
   CONSTRAINT work_b_fk FOREIGN KEY (workId) REFERENCES Work(id),
   CONSTRAINT publisher_b_fk FOREIGN KEY (publisherId) REFERENCES  Publisher(id)
 ) ENGINE=INNODB;
 
-CREATE TABLE Format (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  format VARCHAR(12) UNIQUE
-) ENGINE=INNODB;
 
 CREATE TABLE BookInstance (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   bookId BIGINT,
   isbn13 VARCHAR(32),
-  formatId INT,
+  format VARCHAR(8),
   file LONGBLOB,
-  CONSTRAINT FOREIGN KEY FK_BookInstance_Book (bookId) REFERENCES Book(id),
-  CONSTRAINT FOREIGN KEY FK_BookInstance_Format (formatId) REFERENCES Format(id)
-) ENGINE = InnoDB;
+  CONSTRAINT FK_BookInstance_Book FOREIGN KEY (bookId) REFERENCES Book(id)
+) ENGINE=INNODB;

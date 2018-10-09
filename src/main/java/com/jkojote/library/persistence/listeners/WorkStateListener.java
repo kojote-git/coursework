@@ -1,4 +1,4 @@
-package com.jkojote.library.persistence.entities;
+package com.jkojote.library.persistence.listeners;
 
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.author.AuthorRepository;

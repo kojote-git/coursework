@@ -1,4 +1,4 @@
-package com.jkojote.library.persistence.entities;
+package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.author.AuthorRepository;
@@ -8,6 +8,8 @@ import com.jkojote.library.domain.model.work.WorkRepository;
 import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.persistence.BridgeTableProcessor;
 import com.jkojote.library.persistence.LazyList;
+import com.jkojote.library.persistence.listeners.AuthorStateListener;
+import com.jkojote.library.persistence.listeners.WorkStateListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;

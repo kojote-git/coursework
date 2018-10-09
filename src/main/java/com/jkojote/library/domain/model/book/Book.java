@@ -5,10 +5,10 @@ import com.jkojote.library.domain.model.book.events.BookInstanceRemovedEvent;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
+import com.jkojote.library.domain.shared.DomainArrayList;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
+import com.jkojote.library.domain.shared.domain.DomainList;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class Book extends DomainEntity {
 
@@ -18,14 +18,16 @@ public class Book extends DomainEntity {
 
     private int edition;
 
-    private List<BookInstance> bookInstances;
+    private DomainList<BookInstance> bookInstances;
 
-    public Book(int id, Work basedOn, Publisher publisher, int edition) {
+    public Book(long id, Work basedOn,
+                Publisher publisher, int edition,
+                DomainList<BookInstance> instances) {
         super(id);
         this.basedOn   = basedOn;
         this.publisher = publisher;
         this.edition   = edition;
-        this.bookInstances = new ArrayList<>();
+        this.bookInstances = instances;
     }
 
     public Work getBasedOn() {

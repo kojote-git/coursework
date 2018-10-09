@@ -21,10 +21,16 @@ implements FileInstance, LazyObject<FileInstance> {
 
     private boolean fetched;
 
+    private boolean sealed;
+
     public LazyFileInstance(T parentEntity, LazyObjectFetcher<T, byte[]> fetcher) {
         this.parentEntity = parentEntity;
         this.fetcher = fetcher;
         this.fetched = false;
+    }
+
+    public LazyFileInstance(LazyObjectFetcher<T, byte[]> fetcher) {
+        this.fetcher = fetcher;
     }
 
     @Override
@@ -65,6 +71,18 @@ implements FileInstance, LazyObject<FileInstance> {
             this.file = fetcher.fetchFor(parentEntity);
             this.fetched = true;
         }
+    }
+
+    public void setParentEntity(T parentEntity) {
+        if (!sealed)
+            this.parentEntity = parentEntity;
+        else
+            throw new IllegalStateException("file instance cannot be modified as it's sealed");
+    }
+
+    public void seal() {
+        if (!sealed)
+            sealed = true;
     }
 
     @Override

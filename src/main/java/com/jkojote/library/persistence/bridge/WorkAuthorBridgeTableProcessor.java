@@ -1,4 +1,4 @@
-package com.jkojote.library.persistence.entities;
+package com.jkojote.library.persistence.bridge;
 
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;

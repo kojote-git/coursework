@@ -2,6 +2,6 @@ CREATE TABLE BookInstance (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   bookId BIGINT,
   isbn13 VARCHAR(32),
-  formatId INT,
+  format VARCHAR(8),
   file LONGBLOB
 ) ENGINE = InnoDB;
