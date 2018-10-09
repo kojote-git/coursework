@@ -8,6 +8,7 @@ import com.jkojote.library.persistence.mappers.WorkMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ForRepositories.class)
+@DirtiesContext
 public class MappersTest {
 
     @Autowired
@@ -32,7 +34,7 @@ public class MappersTest {
     @Autowired
     private WorkMapper workMapper;
 
-    private ResultSet forWorMapper;
+    private ResultSet forWorkMapper;
 
     private ResultSet forAuthorMapper;
 
@@ -45,11 +47,11 @@ public class MappersTest {
 
     @Test
     public void testWorkMapper() throws SQLException {
-        var work = workMapper.mapRow(forWorMapper, 1);
+        var work = workMapper.mapRow(forWorkMapper, 1);
         assertEquals("The Tower", work.getTitle());
         assertEquals(1, work.getId());
 
-        work = workMapper.mapRow(forWorMapper, 2);
+        work = workMapper.mapRow(forWorkMapper, 2);
         assertNotNull(work);
         assertEquals(2, work.getId());
         assertEquals("Two Towers", work.getTitle());
@@ -70,19 +72,24 @@ public class MappersTest {
     }
 
     private void initResultSetForWorkMapper() throws SQLException {
-        forWorMapper = mock(ResultSet.class);
+        forWorkMapper = mock(ResultSet.class);
         var calendar = new GregorianCalendar();
         calendar.set(76, Calendar.APRIL, 28);
         long begins = calendar.toInstant().toEpochMilli();
         calendar.set(78, Calendar.AUGUST, 15);
         long ends = calendar.toInstant().toEpochMilli();
-        when(forWorMapper.getDate("appearedBegins")).thenReturn(new Date(begins))
+        when(forWorkMapper.getDate("appearedBegins"))
+                .thenReturn(new Date(begins))
                 .thenReturn(null);
-        when(forWorMapper.getDate("appearedEnds")).thenReturn(new Date(ends))
+        when(forWorkMapper.getDate("appearedEnds"))
+                .thenReturn(new Date(ends))
                 .thenReturn(null);
-        when(forWorMapper.getString("title")).thenReturn("The Tower")
+        when(forWorkMapper.getString("title"))
+                .thenReturn("The Tower")
                 .thenReturn("Two Towers");
-        when(forWorMapper.getLong("id")).thenReturn(1L);
+        when(forWorkMapper.getLong("id"))
+                .thenReturn(1L)
+                .thenReturn(2L);
     }
 
     private void initResultSetForAuthorMapper() throws SQLException {

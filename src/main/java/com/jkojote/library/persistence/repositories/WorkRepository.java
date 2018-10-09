@@ -1,8 +1,8 @@
 package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.model.work.WorkRepository;
 import com.jkojote.library.domain.shared.Utils;
+import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.listeners.WorkStateListener;
 import com.jkojote.library.persistence.mappers.WorkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 @Transactional
-public class WorkRepositoryImpl implements WorkRepository {
+public class WorkRepository implements DomainRepository<Work> {
 
     private final Map<Long, Work> cache = new ConcurrentHashMap<>();
 
@@ -33,8 +33,8 @@ public class WorkRepositoryImpl implements WorkRepository {
     private AtomicLong lastId;
 
     @Autowired
-    public WorkRepositoryImpl(WorkMapper workMapper,
-                              NamedParameterJdbcTemplate namedJdbcTemplate) {
+    public WorkRepository(WorkMapper workMapper,
+                          NamedParameterJdbcTemplate namedJdbcTemplate) {
         this.workMapper = workMapper;
         this.namedJdbcTemplate = namedJdbcTemplate;
         initLastId();

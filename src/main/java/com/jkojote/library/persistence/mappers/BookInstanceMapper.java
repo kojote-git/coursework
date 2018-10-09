@@ -1,9 +1,10 @@
 package com.jkojote.library.persistence.mappers;
 
-import com.jkojote.library.domain.model.book.BookRepository;
+import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookFormat;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.book.instance.isbn.Isbn13;
+import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.fetchers.LazyBookFileFetcher;
 import com.jkojote.library.persistence.lazy.LazyFileInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import java.sql.SQLException;
 @Component
 public class BookInstanceMapper implements RowMapper<BookInstance> {
 
-    private BookRepository bookRepository;
+    private DomainRepository<Book> bookRepository;
 
     private LazyBookFileFetcher fileFetcher;
 
@@ -26,7 +27,7 @@ public class BookInstanceMapper implements RowMapper<BookInstance> {
     }
 
     @Autowired
-    public void setBookRepository(BookRepository bookRepository) {
+    public void setBookRepository(DomainRepository<Book> bookRepository) {
         this.bookRepository = bookRepository;
     }
 

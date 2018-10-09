@@ -3,7 +3,6 @@ package com.jkojote.library.persistence.bridge;
 import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.SubjectRepository;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.model.work.WorkRepository;
 import com.jkojote.library.persistence.BridgeTableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

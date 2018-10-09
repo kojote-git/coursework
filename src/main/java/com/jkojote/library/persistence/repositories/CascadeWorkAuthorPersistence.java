@@ -1,11 +1,10 @@
 package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.author.Author;
-import com.jkojote.library.domain.model.author.AuthorRepository;
 import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.model.work.WorkRepository;
 import com.jkojote.library.domain.shared.Utils;
+import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.BridgeTableProcessor;
 import com.jkojote.library.persistence.LazyList;
 import com.jkojote.library.persistence.listeners.AuthorStateListener;
@@ -23,9 +22,9 @@ import java.util.Set;
 @Transactional
 class CascadeWorkAuthorPersistence {
 
-    private AuthorRepository authorRepository;
+    private DomainRepository<Author> authorRepository;
 
-    private WorkRepository workRepository;
+    private DomainRepository<Work> workRepository;
 
     private AuthorStateListener authorStateListener;
 
@@ -48,12 +47,12 @@ class CascadeWorkAuthorPersistence {
     }
 
     @Autowired
-    public void setAuthorRepository(AuthorRepository authorRepository) {
+    public void setAuthorRepository(DomainRepository<Author> authorRepository) {
         this.authorRepository = authorRepository;
     }
 
     @Autowired
-    public void setWorkRepository(WorkRepository workRepository) {
+    public void setWorkRepository(DomainRepository<Work> workRepository) {
         this.workRepository = workRepository;
     }
 

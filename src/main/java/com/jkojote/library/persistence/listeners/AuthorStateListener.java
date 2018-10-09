@@ -4,9 +4,9 @@ import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.author.events.WorkAddedEvent;
 import com.jkojote.library.domain.model.author.events.WorkRemovedEvent;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.model.work.WorkRepository;
 import com.jkojote.library.domain.shared.domain.DomainEvent;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
+import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.BridgeTableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -19,7 +19,7 @@ public class AuthorStateListener implements DomainEventListener {
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
-    private WorkRepository workRepository;
+    private DomainRepository<Work> workRepository;
 
     private BridgeTableProcessor<Work, Author> bridgeTableProcessor;
 
@@ -34,7 +34,7 @@ public class AuthorStateListener implements DomainEventListener {
     }
 
     @Autowired
-    public void setWorkRepository(WorkRepository workRepository) {
+    public void setWorkRepository(DomainRepository<Work> workRepository) {
         this.workRepository = workRepository;
     }
 

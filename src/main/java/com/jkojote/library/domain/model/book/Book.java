@@ -5,7 +5,7 @@ import com.jkojote.library.domain.model.book.events.BookInstanceRemovedEvent;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.shared.DomainArrayList;
+import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
 import com.jkojote.library.domain.shared.domain.DomainList;
 
@@ -40,6 +40,10 @@ public class Book extends DomainEntity {
 
     public Publisher getPublisher() {
         return publisher;
+    }
+
+    public DomainList<BookInstance> getBookInstances() {
+        return Utils.unmodifiableDomainList(bookInstances);
     }
 
     public boolean addBookInstance(BookInstance instance) {

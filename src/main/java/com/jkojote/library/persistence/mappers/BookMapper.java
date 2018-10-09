@@ -1,8 +1,9 @@
 package com.jkojote.library.persistence.mappers;
 
 import com.jkojote.library.domain.model.book.Book;
-import com.jkojote.library.domain.model.publisher.PublisherRepository;
-import com.jkojote.library.domain.model.work.WorkRepository;
+import com.jkojote.library.domain.model.publisher.Publisher;
+import com.jkojote.library.domain.model.work.Work;
+import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.fetchers.LazyBookInstancesListFetcher;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +17,15 @@ import java.sql.SQLException;
 @Component
 public class BookMapper implements RowMapper<Book> {
 
-    private WorkRepository workRepository;
+    private DomainRepository<Work> workRepository;
 
-    private PublisherRepository publisherRepository;
+    private DomainRepository<Publisher> publisherRepository;
 
     private LazyBookInstancesListFetcher listFetcher;
 
     @Autowired
-    public BookMapper(WorkRepository workRepository,
-                      PublisherRepository publisherRepository) {
+    public BookMapper(DomainRepository<Work> workRepository,
+                      DomainRepository<Publisher> publisherRepository) {
         this.workRepository = workRepository;
         this.publisherRepository = publisherRepository;
     }

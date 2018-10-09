@@ -2,6 +2,7 @@ package com.jkojote.library.domain.model;
 
 import com.jkojote.library.config.tests.ForBookInstance;
 import com.jkojote.library.domain.model.book.Book;
+import com.jkojote.library.domain.model.book.instance.BookFormat;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.book.instance.isbn.Isbn13;
 import com.jkojote.library.files.StandardFileInstance;
@@ -11,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -22,9 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ForBookInstance.class)
+@DirtiesContext
 public class LazyBookFileFetcherTest {
 
     @Autowired
@@ -40,6 +42,7 @@ public class LazyBookFileFetcherTest {
         when(b.getId()).thenReturn(1L);
         when(bi.getBook()).thenReturn(b);
         when(bi.getIsbn13()).thenReturn(Isbn13.of("978-0-1523-1221-1"));
+        when(bi.getFormat()).thenReturn(BookFormat.PDF);
         initData(bi);
         byte[] array = fetcher.fetchFor(bi);
         assertNotNull(array);
@@ -47,8 +50,8 @@ public class LazyBookFileFetcherTest {
 
     private void initData(BookInstance bookInstance) {
         var INSERT =
-            "INSERT INTO BookInstance (id, file, formatId, bookId, isbn13) " +
-            "VALUES (:id, :file, :formatId, :bookId, :isbn13)";
+                "INSERT INTO BookInstance (id, file, format, bookId, isbn13) " +
+                        "VALUES (:id, :file, :format, :bookId, :isbn13)";
         var file = new StandardFileInstance("/home/isaac/Desktop/file");
         Blob blob;
         try {
@@ -58,10 +61,11 @@ public class LazyBookFileFetcherTest {
         }
         var params = new MapSqlParameterSource("id", bookInstance.getId())
                 .addValue("file", blob)
-                .addValue("formatId", 1)
+                .addValue("format", bookInstance.getFormat().asString())
                 .addValue("bookId", bookInstance.getBook().getId())
                 .addValue("isbn13", bookInstance.getIsbn13().toString());
         namedJdbcTemplate.update(INSERT, params);
     }
 
 }
+

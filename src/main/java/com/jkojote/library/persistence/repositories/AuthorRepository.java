@@ -1,8 +1,8 @@
 package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.author.Author;
-import com.jkojote.library.domain.model.author.AuthorRepository;
 import com.jkojote.library.domain.shared.Utils;
+import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.listeners.AuthorStateListener;
 import com.jkojote.library.persistence.mappers.AuthorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 @Transactional
-public class AuthorRepositoryImpl implements AuthorRepository {
+public class AuthorRepository implements DomainRepository<Author> {
 
     private final Map<Long, Author> cache = new ConcurrentHashMap<>();
 
@@ -36,8 +36,8 @@ public class AuthorRepositoryImpl implements AuthorRepository {
     private AtomicLong lastId;
 
     @Autowired
-    public AuthorRepositoryImpl(NamedParameterJdbcTemplate namedJdbcTemplate,
-                                 JdbcTemplate jdbcTemplate) {
+    public AuthorRepository(NamedParameterJdbcTemplate namedJdbcTemplate,
+                            JdbcTemplate jdbcTemplate) {
         this.namedJdbcTemplate = namedJdbcTemplate;
         this.jdbcTemplate = jdbcTemplate;
         initLastId();

@@ -1,7 +1,6 @@
 package com.jkojote.library.persistence.listeners;
 
 import com.jkojote.library.domain.model.author.Author;
-import com.jkojote.library.domain.model.author.AuthorRepository;
 import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.model.work.events.AuthorAddedEvent;
@@ -10,6 +9,7 @@ import com.jkojote.library.domain.model.work.events.SubjectAddedEvent;
 import com.jkojote.library.domain.model.work.events.SubjectRemovedEvent;
 import com.jkojote.library.domain.shared.domain.DomainEvent;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
+import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.BridgeTableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ public class WorkStateListener implements DomainEventListener {
 
     private BridgeTableProcessor<Work, Author> waBridgeTableProcessor;
 
-    private AuthorRepository authorRepository;
+    private DomainRepository<Author> authorRepository;
 
     @Autowired
     public WorkStateListener(BridgeTableProcessor<Work, Subject> bridgeTableProcessor,
@@ -33,7 +33,7 @@ public class WorkStateListener implements DomainEventListener {
     }
 
     @Autowired
-    public void setAuthorRepository(AuthorRepository authorRepository) {
+    public void setAuthorRepository(DomainRepository<Author> authorRepository) {
         this.authorRepository = authorRepository;
     }
 

@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.test.annotation.DirtiesContext;
 
 import javax.sql.DataSource;
 
@@ -20,6 +21,7 @@ import javax.sql.DataSource;
     includeFilters = @ComponentScan.Filter(
         type = FilterType.ASSIGNABLE_TYPE, value = LazyBookFileFetcher.class
 ))
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class ForBookInstance {
 
     private DataSource dataSource;
