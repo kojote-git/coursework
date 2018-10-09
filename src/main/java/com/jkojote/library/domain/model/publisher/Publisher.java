@@ -15,7 +15,7 @@ public class Publisher extends DomainEntity {
 
     private DomainList<Book> books;
 
-    public Publisher(int id, String name, DomainList<Book> books) {
+    public Publisher(long id, String name, DomainList<Book> books) {
         super(id);
         this.books = books;
         this.name = name;

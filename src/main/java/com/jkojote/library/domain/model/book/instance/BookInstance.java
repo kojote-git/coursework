@@ -47,6 +47,10 @@ public class BookInstance extends DomainEntity {
         return isbn13;
     }
 
+    public void setFormat(BookFormat format) {
+        this.format = format;
+    }
+
     public BookFormat getFormat() {
         return format;
     }

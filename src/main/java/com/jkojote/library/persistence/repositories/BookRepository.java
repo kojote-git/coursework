@@ -1,6 +1,8 @@
 package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.book.Book;
+import com.jkojote.library.domain.model.book.instance.BookInstance;
+import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.mappers.BookMapper;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 @Transactional
@@ -25,7 +28,13 @@ public class BookRepository implements DomainRepository<Book> {
 
     private BookMapper bookMapper;
 
+    private AtomicLong lastId;
+
     private DomainRepository<Work> workRepository;
+
+    private DomainRepository<BookInstance> bookInstanceRepository;
+
+    private DomainRepository<Publisher> publisherRepository;
 
     private final Map<Long, Book> cache;
 
@@ -35,6 +44,7 @@ public class BookRepository implements DomainRepository<Book> {
         this.namedJdbcTemplate = namedJdbcTemplate;
         this.jdbcTemplate = jdbcTemplate;
         cache = new ConcurrentHashMap<>();
+        initLastId();
     }
 
     @Autowired
@@ -65,16 +75,14 @@ public class BookRepository implements DomainRepository<Book> {
 
     @Override
     public long nextId() {
-        return 0;
+        return lastId.incrementAndGet();
     }
 
     @Override
     public boolean exists(Book book) {
-        var QUERY = "SELECT id FROM Book WHERE id = ?";
-        return jdbcTemplate.queryForRowSet(QUERY, book.getId()).next();
+        return findById(book.getId()) != null;
     }
 
-    //TODO
     @Override
     public boolean save(Book book) {
         if (exists(book))
@@ -86,6 +94,14 @@ public class BookRepository implements DomainRepository<Book> {
                 .addValue("workId", book.getBasedOn().getId())
                 .addValue("publisherId", book.getPublisher().getId())
                 .addValue("edition", book.getEdition());
+        if (!workRepository.exists(book.getBasedOn()))
+            workRepository.save(book.getBasedOn());
+        if (!publisherRepository.exists(book.getPublisher()))
+            publisherRepository.save(book.getPublisher());
+        else
+            jdbcTemplate.update(INSERT, book);
+        cache.put(book.getId(), book);
+        bookInstanceRepository.saveAll(book.getBookInstances());
         return true;
     }
 
@@ -101,5 +117,12 @@ public class BookRepository implements DomainRepository<Book> {
         if (!exists(book))
             return false;
         return true;
+    }
+
+    private void initLastId() {
+        var QUERY = "SELECT MAX(id) FROM Book";
+        var rs = jdbcTemplate.queryForRowSet(QUERY);
+        rs.next();
+        lastId = new AtomicLong(rs.getLong(1));
     }
 }
