@@ -5,6 +5,7 @@ import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.persistence.mappers.AuthorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class LazyAuthorListFetcher implements ListFetcher<Work, Author> {
 
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    private AuthorMapper authorMapper;
+    private RowMapper<Author> authorMapper;
 
     @Autowired
     public LazyAuthorListFetcher(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -31,11 +32,11 @@ public class LazyAuthorListFetcher implements ListFetcher<Work, Author> {
     }
 
     @Autowired
-    public void setAuthorMapper(AuthorMapper authorMapper) {
+    public void setAuthorMapper(RowMapper<Author> authorMapper) {
         this.authorMapper = authorMapper;
     }
 
-    public AuthorMapper getAuthorMapper() {
+    public RowMapper<Author> getAuthorMapper() {
         return authorMapper;
     }
 

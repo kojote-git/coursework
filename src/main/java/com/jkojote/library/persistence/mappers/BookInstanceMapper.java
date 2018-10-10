@@ -5,6 +5,7 @@ import com.jkojote.library.domain.model.book.instance.BookFormat;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.book.instance.isbn.Isbn13;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.persistence.LazyObjectFetcher;
 import com.jkojote.library.persistence.fetchers.LazyBookFileFetcher;
 import com.jkojote.library.persistence.lazy.LazyFileInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,10 @@ public class BookInstanceMapper implements RowMapper<BookInstance> {
 
     private DomainRepository<Book> bookRepository;
 
-    private LazyBookFileFetcher fileFetcher;
+    private LazyObjectFetcher<BookInstance, byte[]> fileFetcher;
 
     @Autowired
-    public BookInstanceMapper(LazyBookFileFetcher fetcher) {
+    public BookInstanceMapper(LazyObjectFetcher<BookInstance, byte[]> fetcher) {
         this.fileFetcher = fetcher;
     }
 

@@ -1,6 +1,9 @@
 package com.jkojote.library.persistence.mappers;
 
 import com.jkojote.library.domain.model.author.Author;
+import com.jkojote.library.domain.model.work.Work;
+import com.jkojote.library.domain.shared.domain.DomainEventListener;
+import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.values.Name;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
 import com.jkojote.library.persistence.listeners.AuthorStateListener;
@@ -15,21 +18,21 @@ import java.sql.SQLException;
 @Component
 public class AuthorMapper implements RowMapper<Author> {
 
-    private LazyWorkListFetcher lazyWorkListFetcher;
+    private ListFetcher<Author, Work> lazyWorkListFetcher;
 
-    private AuthorStateListener listener;
+    private DomainEventListener<Author> listener;
 
     @Autowired
-    public void setLazyWorkListFetcher(LazyWorkListFetcher lazyWorkListFetcher) {
+    public void setLazyWorkListFetcher(ListFetcher<Author, Work> lazyWorkListFetcher) {
         this.lazyWorkListFetcher = lazyWorkListFetcher;
     }
 
     @Autowired
-    public void setListener(AuthorStateListener listener) {
+    public void setListener(DomainEventListener<Author> listener) {
         this.listener = listener;
     }
 
-    public LazyWorkListFetcher getLazyWorkListFetcher() {
+    public ListFetcher<Author, Work> getLazyWorkListFetcher() {
         return lazyWorkListFetcher;
     }
 

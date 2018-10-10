@@ -12,12 +12,13 @@ import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.BridgeTableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Transactional
-public class WorkStateListener implements DomainEventListener {
+public class WorkStateListener implements DomainEventListener<Work> {
 
     private BridgeTableProcessor<Work, Subject> bridgeTableProcessor;
 
@@ -26,8 +27,11 @@ public class WorkStateListener implements DomainEventListener {
     private DomainRepository<Author> authorRepository;
 
     @Autowired
-    public WorkStateListener(BridgeTableProcessor<Work, Subject> bridgeTableProcessor,
-                             BridgeTableProcessor<Work, Author> workAuthorBridgeTableProcessor) {
+    public WorkStateListener(
+            @Qualifier("WorkSubject")
+            BridgeTableProcessor<Work, Subject> bridgeTableProcessor,
+            @Qualifier("WorkAuthor")
+            BridgeTableProcessor<Work, Author> workAuthorBridgeTableProcessor) {
         this.bridgeTableProcessor = bridgeTableProcessor;
         this.waBridgeTableProcessor = workAuthorBridgeTableProcessor;
     }

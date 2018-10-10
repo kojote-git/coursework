@@ -1,9 +1,11 @@
 package com.jkojote.library.persistence.mappers;
 
 import com.jkojote.library.domain.model.book.Book;
+import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.persistence.fetchers.LazyBookInstancesListFetcher;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +23,20 @@ public class BookMapper implements RowMapper<Book> {
 
     private DomainRepository<Publisher> publisherRepository;
 
-    private LazyBookInstancesListFetcher listFetcher;
+    private ListFetcher<Book, BookInstance> listFetcher;
 
     @Autowired
-    public BookMapper(DomainRepository<Work> workRepository,
-                      DomainRepository<Publisher> publisherRepository) {
-        this.workRepository = workRepository;
+    public void setPublisherRepository(DomainRepository<Publisher> publisherRepository) {
         this.publisherRepository = publisherRepository;
     }
 
     @Autowired
-    public void setListFetcher(LazyBookInstancesListFetcher listFetcher) {
+    public void setWorkRepository(DomainRepository<Work> workRepository) {
+        this.workRepository = workRepository;
+    }
+
+    @Autowired
+    public void setListFetcher(ListFetcher<Book, BookInstance> listFetcher) {
         this.listFetcher = listFetcher;
     }
 

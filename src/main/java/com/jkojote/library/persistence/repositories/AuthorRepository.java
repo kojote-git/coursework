@@ -2,11 +2,13 @@ package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.shared.Utils;
+import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.listeners.AuthorStateListener;
 import com.jkojote.library.persistence.mappers.AuthorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -23,7 +25,7 @@ public class AuthorRepository implements DomainRepository<Author> {
 
     private final Map<Long, Author> cache = new ConcurrentHashMap<>();
 
-    private AuthorMapper authorMapper;
+    private RowMapper<Author> authorMapper;
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
@@ -31,7 +33,7 @@ public class AuthorRepository implements DomainRepository<Author> {
 
     private CascadeWorkAuthorPersistence cascadePersistence;
 
-    private AuthorStateListener authorStateListener;
+    private DomainEventListener<Author> authorStateListener;
 
     private AtomicLong lastId;
 
@@ -59,7 +61,7 @@ public class AuthorRepository implements DomainRepository<Author> {
     }
 
     @Autowired
-    public void setAuthorStateListener(AuthorStateListener authorStateListener) {
+    public void setAuthorStateListener(DomainEventListener<Author> authorStateListener) {
         this.authorStateListener = authorStateListener;
     }
 

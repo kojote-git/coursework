@@ -2,6 +2,8 @@ INSERT INTO Author (id, firstName, lastName, middleName)
   VALUES (1, 'Richard', 'Dawkins', '');
 INSERT INTO Author (id, firstName, lastName, middleName)
   VALUES (3, 'Arthur', 'Doyle', 'Conan');
+INSERT INTO Author (id, firstName, lastName, middleName)
+  VALUES (4, 'Imaginary', 'Imaginary', 'Imaginary');
 
 INSERT INTO Work (id, title, appearedBegins, appearedEnds, rangePrecision)
   VALUES (1, 'The God Delusion', '2006-10-2', '2006-10-2', 3);
@@ -12,6 +14,9 @@ INSERT INTO Work (id, title, appearedBegins, appearedEnds, rangePrecision)
 INSERT INTO Work (id, title, appearedBegins, appearedEnds, rangePrecision)
   VALUES (4, 'A Study in Scarlet', '1887-01-01', '1887-12-31', 1);
 
+INSERT INTO Work (id, title, appearedBegins, appearedEnds, rangePrecision)
+  VALUES (5, 'Imaginary', NULL, NULL, 0);
+
 INSERT INTO WorkAuthor (workId, authorId)
   VALUES (1, 1);
 INSERT INTO WorkAuthor(workId, authorId)
@@ -20,6 +25,8 @@ INSERT INTO WorkAuthor(workId, authorId)
   VALUES (3, 3);
 INSERT INTO WorkAuthor(workId, authorId)
   VALUES (4, 3);
+INSERT INTO WorkAuthor(workId, authorId)
+  VALUES (5, 4);
 
 INSERT INTO Subject (id, subject)
   VALUES (1, 'Biology');
@@ -29,6 +36,9 @@ INSERT INTO Subject (id, subject)
   VALUES (3, 'Religion');
 INSERT INTO Subject (id, subject)
   VALUES (4, 'Detective');
+
+INSERT INTO Subject (id, subject)
+  VALUES (5, 'Imaginary');
 
 INSERT INTO WorkSubject (workId, subjectId)
   VALUES (1, 1);
@@ -44,6 +54,9 @@ INSERT INTO WorkSubject (workId, subjectId)
   VALUES (3, 4);
 INSERT INTO WorkSubject (workId, subjectId)
   VALUES (4, 4);
+INSERT INTO WorkSubject(workId, subjectId)
+  VALUES (5, 5);
+
 
 /*UNKNOWN PUBLISHER*/
 INSERT INTO Publisher (id, name)

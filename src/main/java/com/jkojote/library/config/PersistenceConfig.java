@@ -9,11 +9,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
 @ContextConfiguration
-@ComponentScan("com.jkojote.library.persistence")
+@ComponentScan("com.jkojote.library")
+@EnableTransactionManagement
 public class PersistenceConfig {
 
     private DataSource dataSource;

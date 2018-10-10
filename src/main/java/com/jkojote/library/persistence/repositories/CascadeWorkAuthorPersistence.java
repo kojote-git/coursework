@@ -4,12 +4,14 @@ import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.Utils;
+import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.BridgeTableProcessor;
 import com.jkojote.library.persistence.LazyList;
 import com.jkojote.library.persistence.listeners.AuthorStateListener;
 import com.jkojote.library.persistence.listeners.WorkStateListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
@@ -26,9 +28,9 @@ class CascadeWorkAuthorPersistence {
 
     private DomainRepository<Work> workRepository;
 
-    private AuthorStateListener authorStateListener;
+    private DomainEventListener<Author> authorStateListener;
 
-    private WorkStateListener workStateListener;
+    private DomainEventListener<Work> workStateListener;
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
@@ -39,7 +41,9 @@ class CascadeWorkAuthorPersistence {
     @Autowired
     public CascadeWorkAuthorPersistence(
             NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+            @Qualifier("WorkAuthor")
             BridgeTableProcessor<Work, Author> workAuthorBridgeTableProcessor,
+            @Qualifier("WorkSubject")
             BridgeTableProcessor<Work, Subject> workSubjectBridgeTableProcessor) {
         this.namedJdbcTemplate = namedParameterJdbcTemplate;
         this.workAuthorBridge = workAuthorBridgeTableProcessor;
@@ -57,12 +61,12 @@ class CascadeWorkAuthorPersistence {
     }
 
     @Autowired
-    public void setAuthorStateListener(AuthorStateListener authorStateListener) {
+    public void setAuthorStateListener(DomainEventListener<Author> authorStateListener) {
         this.authorStateListener = authorStateListener;
     }
 
     @Autowired
-    public void setWorkStateListener(WorkStateListener workStateListener) {
+    public void setWorkStateListener(DomainEventListener<Work> workStateListener) {
         this.workStateListener = workStateListener;
     }
 

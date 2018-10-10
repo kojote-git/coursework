@@ -2,6 +2,7 @@ package com.jkojote.library.persistence.fetchers;
 
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
+import com.jkojote.library.persistence.LazyObjectFetcher;
 import com.jkojote.library.persistence.ListFetcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,15 +18,11 @@ public class LazyBookInstancesListFetcher implements ListFetcher<Book, BookInsta
 
     private JdbcTemplate jdbcTemplate;
 
-    private LazyBookFileFetcher bookFileFetcher;
-
     private RowMapper<BookInstance> bookInstanceMapper;
 
     @Autowired
-    public LazyBookInstancesListFetcher(JdbcTemplate jdbcTemplate,
-                                        LazyBookFileFetcher bookFileFetcher) {
+    public LazyBookInstancesListFetcher(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.bookFileFetcher = bookFileFetcher;
     }
 
     @Autowired

@@ -9,13 +9,14 @@ import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.BridgeTableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Transactional
-public class AuthorStateListener implements DomainEventListener {
+public class AuthorStateListener implements DomainEventListener<Author> {
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
@@ -29,6 +30,7 @@ public class AuthorStateListener implements DomainEventListener {
     }
 
     @Autowired
+    @Qualifier("WorkAuthor")
     public void setBridgeTableProcessor(BridgeTableProcessor<Work, Author> bridgeTableProcessor) {
         this.bridgeTableProcessor = bridgeTableProcessor;
     }

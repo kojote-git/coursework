@@ -2,10 +2,12 @@ package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.Utils;
+import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.listeners.WorkStateListener;
 import com.jkojote.library.persistence.mappers.WorkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -26,14 +28,14 @@ public class WorkRepository implements DomainRepository<Work> {
 
     private CascadeWorkAuthorPersistence cascadePersistence;
 
-    private WorkMapper workMapper;
+    private RowMapper<Work> workMapper;
 
-    private WorkStateListener workStateListener;
+    private DomainEventListener<Work> workStateListener;
 
     private AtomicLong lastId;
 
     @Autowired
-    public WorkRepository(WorkMapper workMapper,
+    public WorkRepository(RowMapper<Work> workMapper,
                           NamedParameterJdbcTemplate namedJdbcTemplate) {
         this.workMapper = workMapper;
         this.namedJdbcTemplate = namedJdbcTemplate;
@@ -41,7 +43,7 @@ public class WorkRepository implements DomainRepository<Work> {
     }
 
     @Autowired
-    public void setWorkStateListener(WorkStateListener workStateListener) {
+    public void setWorkStateListener(DomainEventListener<Work> workStateListener) {
         this.workStateListener = workStateListener;
     }
 

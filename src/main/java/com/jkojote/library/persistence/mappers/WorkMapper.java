@@ -1,7 +1,10 @@
 package com.jkojote.library.persistence.mappers;
 
+import com.jkojote.library.domain.model.author.Author;
+import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.Utils;
+import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.values.DateRange;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
 import com.jkojote.library.persistence.fetchers.LazyAuthorListFetcher;
@@ -16,26 +19,26 @@ import java.sql.SQLException;
 @Component
 public class WorkMapper implements RowMapper<Work> {
 
-    private LazyAuthorListFetcher lazyAuthorListFetcher;
+    private ListFetcher<Work, Author> lazyAuthorListFetcher;
 
-    private LazySubjectListFetcher lazySubjectListFetcher;
+    private ListFetcher<Work, Subject> lazySubjectListFetcher;
 
 
     @Autowired
-    public void setLazyAuthorListFetcher(LazyAuthorListFetcher lazyAuthorListFetcher) {
+    public void setLazyAuthorListFetcher(ListFetcher<Work, Author> lazyAuthorListFetcher) {
         this.lazyAuthorListFetcher = lazyAuthorListFetcher;
     }
 
     @Autowired
-    public void setLazySubjectListFetcher(LazySubjectListFetcher lazySubjectListFetcher) {
+    public void setLazySubjectListFetcher(ListFetcher<Work, Subject> lazySubjectListFetcher) {
         this.lazySubjectListFetcher = lazySubjectListFetcher;
     }
 
-    public LazyAuthorListFetcher getLazyAuthorListFetcher() {
+    public ListFetcher<Work, Author> getLazyAuthorListFetcher() {
         return lazyAuthorListFetcher;
     }
 
-    public LazySubjectListFetcher getLazySubjectListFetcher() {
+    public ListFetcher<Work, Subject> getLazySubjectListFetcher() {
         return lazySubjectListFetcher;
     }
 

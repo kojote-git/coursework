@@ -25,6 +25,14 @@ public class Publisher extends DomainEntity {
         return Utils.unmodifiableDomainList(books);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public List<Book> filterBooks(Predicate<Book> book) {
         return books.stream()
                 .filter(book)

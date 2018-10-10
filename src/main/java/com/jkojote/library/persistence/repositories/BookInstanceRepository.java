@@ -1,5 +1,7 @@
 package com.jkojote.library.persistence.repositories;
 
+import com.google.common.collect.Iterators;
+import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.LazyObject;
@@ -11,9 +13,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -29,6 +29,8 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
+    private DomainRepository<Book> bookRepository;
+
     private AtomicLong lastId;
 
     @Autowired
@@ -42,6 +44,11 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
     @Autowired
     public void setMapper(RowMapper<BookInstance> mapper) {
         this.mapper = mapper;
+    }
+
+    @Autowired
+    public void setBookRepository(DomainRepository<Book> bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
     @Override
@@ -88,8 +95,8 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
                 .addValue("format", instance.getFormat().asString())
                 .addValue("isbn13", instance.getIsbn13().asString())
                 .addValue("file", instance.getFile().asBlob());
+        cache.put(instance.getId(), instance);
         namedJdbcTemplate.update(INSERT, params);
-
         return true;
     }
 
@@ -126,7 +133,12 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
     @Override
     public void saveAll(Collection<BookInstance> instances) {
         var INSERT = BookInstancesBatchSetter.STATEMENT;
-        jdbcTemplate.batchUpdate(INSERT, new BookInstancesBatchSetter(instances));
+        var copy = new HashSet<>(instances);
+        for (var instance : copy) {
+            if (!bookRepository.exists(instance.getBook()))
+                copy.remove(instance);
+        }
+        jdbcTemplate.batchUpdate(INSERT, new BookInstancesBatchSetter(copy));
     }
 
     private void initLastId() {

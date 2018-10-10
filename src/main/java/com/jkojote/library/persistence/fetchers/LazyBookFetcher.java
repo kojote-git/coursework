@@ -6,6 +6,7 @@ import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.persistence.mappers.BookMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,12 +18,15 @@ public class LazyBookFetcher implements ListFetcher<Publisher, Book> {
 
     private JdbcTemplate jdbcTemplate;
 
-    private BookMapper bookMapper;
+    private RowMapper<Book> bookMapper;
 
     @Autowired
-    public LazyBookFetcher(JdbcTemplate jdbcTemplate,
-                           BookMapper bookMapper) {
+    public LazyBookFetcher(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Autowired
+    public void setBookMapper(RowMapper<Book> bookMapper) {
         this.bookMapper = bookMapper;
     }
 
