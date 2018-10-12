@@ -101,11 +101,12 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
     }
 
     @Override
-    public boolean remove(BookInstance entity) {
-        if (!exists(entity))
+    public boolean remove(BookInstance instance) {
+        if (!exists(instance))
             return false;
         var DELETE = "DELETE FROM BookInstance WHERE id = ?";
-        jdbcTemplate.update(DELETE, entity.getId());
+        jdbcTemplate.update(DELETE, instance.getId());
+        cache.remove(instance.getId());
         return true;
     }
 

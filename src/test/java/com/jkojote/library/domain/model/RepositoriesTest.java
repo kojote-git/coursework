@@ -2,7 +2,7 @@ package com.jkojote.library.domain.model;
 
 import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.author.Author;
-import com.jkojote.library.domain.model.work.SubjectRepository;
+import com.jkojote.library.domain.model.work.SubjectTable;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.values.DateRange;
@@ -30,7 +30,7 @@ public class RepositoriesTest {
     private DomainRepository<Author> authorRepository;
 
     @Autowired
-    private SubjectRepository subjectRepository;
+    private SubjectTable subjectRepository;
 
     @Autowired
     private WorkAuthorBridgeTableProcessor waBridgeTable;
@@ -91,6 +91,9 @@ public class RepositoriesTest {
         assertEquals(Name.of("Richard", "Dawkins"), a1.getName());
         assertEquals("The Hound of the Baskervilles", w1.getTitle());
 
+        // after adding work to authors work
+        // state listener writes corresponding
+        // record into bridge table WorkAuthor
         a1.addWork(w1);
         assertTrue(waBridgeTable.exists(w1, a1));
         a1.removeWork(w1);

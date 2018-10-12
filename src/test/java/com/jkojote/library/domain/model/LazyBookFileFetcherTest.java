@@ -52,7 +52,7 @@ public class LazyBookFileFetcherTest {
         var INSERT =
                 "INSERT INTO BookInstance (id, file, format, bookId, isbn13) " +
                         "VALUES (:id, :file, :format, :bookId, :isbn13)";
-        var file = new StandardFileInstance("/home/isaac/Desktop/file");
+        var file = new StandardFileInstance("src/main/resources/file1.txt");
         Blob blob;
         try {
             blob = new SerialBlob(file.asBytes());

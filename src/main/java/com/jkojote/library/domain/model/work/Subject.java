@@ -4,12 +4,13 @@ import com.jkojote.library.values.ValueObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Subject extends ValueObject {
 
-    private static final Map<String, Subject> CACHE = new HashMap<>();
+    private static final Map<String, Subject> CACHE = new ConcurrentHashMap<>();
 
     private String subject;
 

@@ -109,6 +109,7 @@ public class WorkRepository implements DomainRepository<Work> {
         var DELETE = "DELETE FROM Work WHERE id = :id";
         var params = new MapSqlParameterSource("id", work.getId());
         namedJdbcTemplate.update(DELETE, params);
+        cache.remove(work.getId());
         work.removeListener(workStateListener);
         var authors = work.getAuthors();
         for (int i = 0; i < authors.size(); )

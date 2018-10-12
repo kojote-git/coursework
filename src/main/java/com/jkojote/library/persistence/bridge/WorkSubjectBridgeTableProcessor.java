@@ -1,11 +1,10 @@
 package com.jkojote.library.persistence.bridge;
 
 import com.jkojote.library.domain.model.work.Subject;
-import com.jkojote.library.domain.model.work.SubjectRepository;
+import com.jkojote.library.domain.model.work.SubjectTable;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.persistence.BridgeTableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class WorkSubjectBridgeTableProcessor implements BridgeTableProcessor<Work, Subject> {
 
-    private SubjectRepository subjectRepository;
+    private SubjectTable subjectRepository;
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
@@ -62,7 +61,7 @@ public class WorkSubjectBridgeTableProcessor implements BridgeTableProcessor<Wor
     }
 
     @Autowired
-    public void setSubjectRepository(SubjectRepository subjectRepository) {
+    public void setSubjectRepository(SubjectTable subjectRepository) {
         this.subjectRepository = subjectRepository;
     }
 }

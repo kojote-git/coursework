@@ -49,10 +49,10 @@ public class AuthorRepository implements DomainRepository<Author> {
     public Author findById(long id) {
         if (cache.containsKey(id))
             return cache.get(id);
-        final var query  = "SELECT id, firstName, middleName, lastName FROM Author WHERE id = :id";
-        var params = new MapSqlParameterSource("id", id);
+        final var QUERY =
+            "SELECT id, firstName, middleName, lastName FROM Author WHERE id = ?";
         try {
-            var author = namedJdbcTemplate.queryForObject(query, params, authorMapper);
+            var author = jdbcTemplate.queryForObject(QUERY, authorMapper, id);
             cache.put(id, author);
             return author;
         } catch (RuntimeException e) {
@@ -113,9 +113,8 @@ public class AuthorRepository implements DomainRepository<Author> {
         if (!exists(author))
             return false;
         var DELETE =
-            "DELETE FROM Author WHERE id =:id";
-        var params = new MapSqlParameterSource("id", author.getId());
-        namedJdbcTemplate.update(DELETE, params);
+            "DELETE FROM Author WHERE id = ?";
+        jdbcTemplate.update(DELETE, author.getId());
         cache.remove(author.getId());
         author.removeListener(authorStateListener);
         var works = author.getWorks();

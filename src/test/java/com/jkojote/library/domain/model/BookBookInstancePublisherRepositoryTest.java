@@ -1,6 +1,5 @@
 package com.jkojote.library.domain.model;
 
-import com.jkojote.library.config.PersistenceConfig;
 import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookFormat;
@@ -15,13 +14,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = PersistenceConfig.class)
+@ContextConfiguration(classes = ForRepositories.class)
 @DirtiesContext
 public class BookBookInstancePublisherRepositoryTest implements InitializingBean {
 
@@ -32,6 +36,9 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
     private BookInstance bi1;
 
     private BookInstance bi2;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private DomainRepository<Work> workRepository;
@@ -46,21 +53,72 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
     private DomainRepository<Book> bookRepository;
 
     @Test(expected = NullPointerException.class)
-    public void save() {
+    public void save_ThrowsNullPointerExceptionsAsBookHasNullPublisher() {
+        // imaginary work
+        Work work = workRepository.findById(5);
+        // when saving book, NullPointerException is thrown to test
+        // transaction management works and it then rolls back
+        this.book = new Book(bookRepository.nextId(), work, null, 1, new DomainArrayList<>());
+        initBook(this.book);
         bookRepository.save(book);
     }
+
+    @Test
+    public void save_SuccessfullySavesBook() {
+        // ImaginaryBook
+        Work work = workRepository.findById(5);
+        long id = bookRepository.nextId();
+        this.book = new Book(id, work, publisher, 1, new DomainArrayList<>());
+        initBook(this.book);
+        bookRepository.save(this.book);
+
+        var tBook  = bookRepository.findById(id);
+        var tPublisher = publisherRepository.findById(4);
+        var tInstanceId1 = tBook.getBookInstances().get(0).getId();
+        var tInstanceId2 = tBook.getBookInstances().get(1).getId();
+        var tInstance1 = bookInstanceRepository.findById(tInstanceId1);
+        var tInstance2 = bookInstanceRepository.findById(tInstanceId2);
+
+        assertNotNull(tBook);
+        assertNotNull(tPublisher);
+        assertNotNull(tInstance1);
+        assertNotNull(tInstance2);
+
+        // check if data really have been saved into database
+        // and corresponding records exist in database
+        assertTrue(recordExists("BookInstance", tInstanceId1));
+        assertTrue(recordExists("BookInstance", tInstanceId2));
+        assertTrue(recordExists("Publisher", tPublisher.getId()));
+        assertTrue(recordExists("Book", id));
+    }
+
+    @Test
+    public void remove_RemovesBookAndAllAssociatedBookInstances() {
+        Work work = workRepository.findById(5);
+        long id = bookRepository.nextId();
+        book = new Book(id, work, this.publisher, 2, new DomainArrayList<>());
+        initBook(book);
+        bookRepository.save(book);
+        var tInstanceId1 = book.getBookInstances().get(0).getId();
+        var tInstanceId2 = book.getBookInstances().get(1).getId();
+        bookRepository.remove(book);
+
+        assertFalse(bookRepository.exists(book));
+        assertFalse(bookInstanceRepository.exists(book.getBookInstances().get(0)));
+        assertFalse(bookInstanceRepository.exists(book.getBookInstances().get(1)));
+
+        // assert that all related records have been deleted from tables
+        assertFalse(recordExists("Book", book.getId()));
+        assertFalse(recordExists("BookInstance", tInstanceId1));
+        assertFalse(recordExists("BookInstance", tInstanceId2));
+    }
+
 
     private void initPublisher() {
         this.publisher = new Publisher(4, "Imaginary publisher", new DomainArrayList<>());
     }
 
-    private void initBook() {
-        // imaginary work
-        Work work = workRepository.findById(5);
-        // when saving book, NullPointerException is thrown to test
-        // transaction management works and it then rolls back
-        this.book = new Book(bookRepository.nextId(), null, publisher, 1, new DomainArrayList<>());
-
+    private void initBook(Book book) {
         var file1 = new StandardFileInstance("src/main/resources/file1.txt");
         var file2 = new StandardFileInstance("src/main/resources/file2.pdf");
         bi1 = new BookInstance(bookInstanceRepository.nextId(),
@@ -71,9 +129,18 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
         book.addBookInstance(bi2);
     }
 
+    /*
+     * Check if any record in table with specified id exists
+     */
+    private boolean recordExists(String table, long id) {
+        var QUERY = "SELECT COUNT(id) FROM " + table + " WHERE id = ?";
+        var rs = jdbcTemplate.queryForRowSet(QUERY, id);
+        rs.next();
+        return rs.getLong(1) == 1;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         initPublisher();
-        initBook();
     }
 }

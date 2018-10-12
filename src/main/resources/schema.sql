@@ -44,8 +44,10 @@ CREATE TABLE Book(
   workId BIGINT,
   publisherId BIGINT,
   edition INT,
-  CONSTRAINT work_b_fk FOREIGN KEY (workId) REFERENCES Work(id),
+  CONSTRAINT work_b_fk FOREIGN KEY (workId) REFERENCES Work(id)
+  ON DELETE SET NULL,
   CONSTRAINT publisher_b_fk FOREIGN KEY (publisherId) REFERENCES  Publisher(id)
+  ON DELETE SET NULL
 ) ENGINE=INNODB;
 
 
@@ -56,4 +58,5 @@ CREATE TABLE BookInstance (
   format VARCHAR(8),
   file LONGBLOB,
   CONSTRAINT FK_BookInstance_Book FOREIGN KEY (bookId) REFERENCES Book(id)
+  ON DELETE CASCADE
 ) ENGINE=INNODB;

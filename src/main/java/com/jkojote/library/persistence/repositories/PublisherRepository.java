@@ -96,6 +96,7 @@ public class PublisherRepository implements DomainRepository<Publisher> {
         var DELETE =
             "DELETE FROM Publisher WHERE id = ?";
         jdbcTemplate.update(DELETE, publisher.getId());
+        cache.remove(publisher.getId(), 1);
         return true;
     }
 

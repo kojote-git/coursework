@@ -4,6 +4,7 @@ import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.Work;
+import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.values.DateRange;
 import com.jkojote.library.values.Name;
 import com.jkojote.library.persistence.fetchers.LazyAuthorListFetcher;
@@ -28,13 +29,13 @@ import static org.junit.Assert.assertTrue;
 public class FetchersTest {
 
     @Autowired
-    private LazyAuthorListFetcher authorFetcher;
+    private ListFetcher<Work, Author> authorFetcher;
 
     @Autowired
-    private LazyWorkListFetcher workFetcher;
+    private ListFetcher<Author, Work> workFetcher;
 
     @Autowired
-    private LazySubjectListFetcher subjectFetcher;
+    private ListFetcher<Work, Subject> subjectFetcher;
 
     @Test
     public void testWorksFetcher() {

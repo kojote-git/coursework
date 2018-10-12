@@ -1,7 +1,7 @@
 package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.work.Subject;
-import com.jkojote.library.domain.model.work.SubjectRepository;
+import com.jkojote.library.domain.model.work.SubjectTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,14 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @Transactional
-public class SubjectRepositoryImpl implements SubjectRepository {
+public class SubjectTableImpl implements SubjectTable {
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     private final Map<String, Integer> cache = new ConcurrentHashMap<>();
 
     @Autowired
-    public SubjectRepositoryImpl(NamedParameterJdbcTemplate namedJdbcTemplate) {
+    public SubjectTableImpl(NamedParameterJdbcTemplate namedJdbcTemplate) {
         this.namedJdbcTemplate = namedJdbcTemplate;
     }
 

@@ -5,14 +5,12 @@ import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
-import com.jkojote.library.persistence.mappers.BookMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
@@ -106,8 +104,8 @@ public class BookRepository implements DomainRepository<Book> {
         if (exists(book))
             return false;
         final var INSERT =
-                "INSERT INTO Book (id, workId, publisherId, edition) " +
-                        "VALUES (:id, :workId, :publisherId, :edition)";
+            "INSERT INTO Book (id, workId, publisherId, edition) " +
+              "VALUES (:id, :workId, :publisherId, :edition)";
         if (!publisherRepository.exists(book.getPublisher())) {
             publisherRepository.save(book.getPublisher());
         }
@@ -128,6 +126,14 @@ public class BookRepository implements DomainRepository<Book> {
     public boolean update(Book book) {
         if (!exists(book))
             return false;
+        var UPDATE =
+            "UPDATE Book SET workId = ?, publisherId = ?, edition = ? WHERE id = ?";
+        jdbcTemplate
+            .update(UPDATE, book.getBasedOn().getId(),
+                    book.getPublisher().getId(),
+                    book.getEdition(),
+                    book.getId()
+            );
         return true;
     }
 
@@ -138,6 +144,9 @@ public class BookRepository implements DomainRepository<Book> {
         var DELETE =
             "DELETE FROM Book WHERE id = ?";
         jdbcTemplate.update(DELETE, book.getId());
+        cache.remove(book.getId());
+        for (var inst : book.getBookInstances())
+            bookInstanceRepository.remove(inst);
         return true;
     }
 
@@ -148,9 +157,4 @@ public class BookRepository implements DomainRepository<Book> {
         lastId = new AtomicLong(rs.getLong(1));
     }
 
-    @Override
-    public void saveAll(Collection<Book> entities) {
-        for (var book : entities)
-            save(book);
-    }
 }
