@@ -31,13 +31,10 @@ public class WorkStateListener implements DomainEventListener<Work> {
             @Qualifier("WorkSubject")
             BridgeTableProcessor<Work, Subject> bridgeTableProcessor,
             @Qualifier("WorkAuthor")
-            BridgeTableProcessor<Work, Author> workAuthorBridgeTableProcessor) {
+            BridgeTableProcessor<Work, Author> workAuthorBridgeTableProcessor,
+            DomainRepository<Author> authorRepository) {
         this.bridgeTableProcessor = bridgeTableProcessor;
         this.waBridgeTableProcessor = workAuthorBridgeTableProcessor;
-    }
-
-    @Autowired
-    public void setAuthorRepository(DomainRepository<Author> authorRepository) {
         this.authorRepository = authorRepository;
     }
 

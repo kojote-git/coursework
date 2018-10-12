@@ -18,16 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AuthorStateListener implements DomainEventListener<Author> {
 
-    private NamedParameterJdbcTemplate namedJdbcTemplate;
-
     private DomainRepository<Work> workRepository;
 
     private BridgeTableProcessor<Work, Author> bridgeTableProcessor;
-
-    @Autowired
-    public AuthorStateListener(NamedParameterJdbcTemplate namedJdbcTemplate) {
-        this.namedJdbcTemplate = namedJdbcTemplate;
-    }
 
     @Autowired
     @Qualifier("WorkAuthor")

@@ -8,8 +8,10 @@ import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.BridgeTableProcessor;
 import com.jkojote.library.persistence.LazyList;
+import com.jkojote.library.persistence.TableProcessor;
 import com.jkojote.library.persistence.listeners.AuthorStateListener;
 import com.jkojote.library.persistence.listeners.WorkStateListener;
+import com.jkojote.library.persistence.tables.WorkTableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -22,43 +24,35 @@ import java.util.Set;
 
 @Component
 @Transactional
+@SuppressWarnings("Duplicates")
 class CascadeWorkAuthorPersistence {
-
-    private DomainRepository<Author> authorRepository;
-
-    private DomainRepository<Work> workRepository;
 
     private DomainEventListener<Author> authorStateListener;
 
     private DomainEventListener<Work> workStateListener;
 
-    private NamedParameterJdbcTemplate namedJdbcTemplate;
-
     private BridgeTableProcessor<Work, Author> workAuthorBridge;
 
     private BridgeTableProcessor<Work, Subject> workSubjectBridge;
 
+    private TableProcessor<Author> authorTable;
+
+    private TableProcessor<Work> workTable;
+
     @Autowired
     public CascadeWorkAuthorPersistence(
-            NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-            @Qualifier("WorkAuthor")
-            BridgeTableProcessor<Work, Author> workAuthorBridgeTableProcessor,
-            @Qualifier("WorkSubject")
-            BridgeTableProcessor<Work, Subject> workSubjectBridgeTableProcessor) {
-        this.namedJdbcTemplate = namedParameterJdbcTemplate;
+                @Qualifier("WorkAuthor")
+                BridgeTableProcessor<Work, Author> workAuthorBridgeTableProcessor,
+                @Qualifier("WorkSubject")
+                BridgeTableProcessor<Work, Subject> workSubjectBridgeTableProcessor,
+                TableProcessor<Author> authorTableProcessor,
+                TableProcessor<Work> workWorkTableProcessor) {
         this.workAuthorBridge = workAuthorBridgeTableProcessor;
         this.workSubjectBridge = workSubjectBridgeTableProcessor;
+        this.authorTable = authorTableProcessor;
+        this.workTable = workWorkTableProcessor;
     }
 
-    @Autowired
-    public void setAuthorRepository(DomainRepository<Author> authorRepository) {
-        this.authorRepository = authorRepository;
-    }
-
-    @Autowired
-    public void setWorkRepository(DomainRepository<Work> workRepository) {
-        this.workRepository = workRepository;
-    }
 
     @Autowired
     public void setAuthorStateListener(DomainEventListener<Author> authorStateListener) {
@@ -90,7 +84,7 @@ class CascadeWorkAuthorPersistence {
     private void updateWork(Work work, Set<Long> updatedAuthors, Set<Long> updatedWorks) {
         if (updatedWorks.contains(work.getId()))
             return;
-        updateWorkRecord(work);
+        workTable.update(work);
         updatedWorks.add(work.getId());
         var authors = work.getAuthors();
         var authorsIsFetched = !(authors instanceof LazyList) || ((LazyList<Author>) authors).isFetched();
@@ -99,7 +93,7 @@ class CascadeWorkAuthorPersistence {
         for (var author : authors) {
             if (updatedAuthors.contains(author.getId()))
                 continue;
-            if (!authorRepository.exists(author))
+            if (!authorTable.exists(author))
                 saveAuthor(author);
             else
                 updateAuthor(author, updatedAuthors, updatedWorks);
@@ -109,7 +103,7 @@ class CascadeWorkAuthorPersistence {
     private void updateAuthor(Author author, Set<Long> updatedAuthors, Set<Long> updatedWorks) {
         if (updatedAuthors.contains(author.getId()))
             return;
-        updateAuthorRecord(author);
+        authorTable.update(author);
         updatedAuthors.add(author.getId());
         var works = author.getWorks();
         var worksIsLazyList = works instanceof LazyList;
@@ -119,7 +113,7 @@ class CascadeWorkAuthorPersistence {
         for (var work : works) {
             if (updatedWorks.contains(work.getId()))
                 continue;
-            if (!workRepository.exists(work))
+            if (!workTable.exists(work))
                 saveWork(work);
             else
                 updateWork(work, updatedAuthors, updatedWorks);
@@ -129,8 +123,8 @@ class CascadeWorkAuthorPersistence {
     private void saveAuthor(Author author, Set<Long> savedAuthors, Set<Long> savedWorks) {
         if (savedAuthors.contains(author.getId()))
             return;
-        if (!authorRepository.exists(author)) {
-            persistAuthor(author);
+        if (!authorTable.exists(author)) {
+            authorTable.insert(author);
             author.addEventListener(authorStateListener);
         }
         else {
@@ -154,8 +148,8 @@ class CascadeWorkAuthorPersistence {
     private void saveWork(Work work, Set<Long> savedAuthors, Set<Long> savedWorks) {
         if (savedWorks.contains(work.getId()))
             return;
-        if (!workRepository.exists(work)) {
-            persistWork(work);
+        if (!workTable.exists(work)) {
+            workTable.insert(work);
             work.addEventListener(workStateListener);
         }
         else {
@@ -186,41 +180,5 @@ class CascadeWorkAuthorPersistence {
         for (var subject : subjects) {
             workSubjectBridge.addRecord(work, subject);
         }
-    }
-
-    private void updateAuthorRecord(Author author) {
-        var UPDATE =
-            "UPDATE Author SET " +
-              "firstName = :firstName, middleName = :middleName, "+
-              "lastName = :lastName " +
-            "WHERE id = :id";
-        var params = Utils.paramsForAuthor(author);
-        namedJdbcTemplate.update(UPDATE, params);
-    }
-
-    private void updateWorkRecord(Work work) {
-        var UPDATE =
-            "UPDATE Work SET " +
-              "title = :title, appearedBegins = :appearedBegins, "+
-              "appearedEnds = :appearedEnds, rangePrecision = :rangePrecision " +
-            "WHERE id = :id";
-        var params = Utils.paramsForWork(work);
-        namedJdbcTemplate.update(UPDATE, params);
-    }
-
-    private void persistAuthor(Author author) {
-        var INSERT =
-            "INSERT INTO Author (id, firstName, middleName, lastName) "+
-              "VALUES (:id, :firstName, :middleName, :lastName)";
-        SqlParameterSource params = Utils.paramsForAuthor(author);
-        namedJdbcTemplate.update(INSERT, params);
-    }
-
-    private void persistWork(Work work) {
-        var INSERT =
-            "INSERT INTO Work (id, title, appearedBegins, appearedEnds, rangePrecision) "+
-              "VALUES (:id, :title, :appearedBegins, :appearedEnds, :rangePrecision)";
-        var params = Utils.paramsForWork(work);
-        namedJdbcTemplate.update(INSERT, params);
     }
 }

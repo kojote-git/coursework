@@ -4,6 +4,7 @@ import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.persistence.TableProcessor;
 import com.jkojote.library.persistence.listeners.AuthorStateListener;
 import com.jkojote.library.persistence.mappers.AuthorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,21 +28,25 @@ public class AuthorRepository implements DomainRepository<Author> {
 
     private RowMapper<Author> authorMapper;
 
-    private NamedParameterJdbcTemplate namedJdbcTemplate;
-
     private JdbcTemplate jdbcTemplate;
 
     private CascadeWorkAuthorPersistence cascadePersistence;
+
+    private TableProcessor<Author> authorTable;
 
     private DomainEventListener<Author> authorStateListener;
 
     private AtomicLong lastId;
 
     @Autowired
-    public AuthorRepository(NamedParameterJdbcTemplate namedJdbcTemplate,
-                            JdbcTemplate jdbcTemplate) {
-        this.namedJdbcTemplate = namedJdbcTemplate;
+    public AuthorRepository(RowMapper<Author> authorMapper,
+                            TableProcessor<Author> authorTable,
+                            JdbcTemplate jdbcTemplate,
+                            CascadeWorkAuthorPersistence cascadePersistence) {
         this.jdbcTemplate = jdbcTemplate;
+        this.authorTable = authorTable;
+        this.cascadePersistence = cascadePersistence;
+        this.authorMapper = authorMapper;
         initLastId();
     }
 
@@ -65,16 +70,6 @@ public class AuthorRepository implements DomainRepository<Author> {
         this.authorStateListener = authorStateListener;
     }
 
-    @Autowired
-    public void setCascadePersistence(CascadeWorkAuthorPersistence cascadePersistence) {
-        this.cascadePersistence = cascadePersistence;
-    }
-
-    @Autowired
-    public void setAuthorMapper(AuthorMapper authorMapper) {
-        this.authorMapper = authorMapper;
-    }
-
     @Override
     public List<Author> findAll() {
         final var query = "SELECT id, firstName, middleName, lastName FROM Author";
@@ -88,7 +83,7 @@ public class AuthorRepository implements DomainRepository<Author> {
 
     @Override
     public boolean exists(Author author) {
-        return findById(author.getId()) != null;
+        return authorTable.exists(author);
     }
 
     @Override
@@ -112,10 +107,9 @@ public class AuthorRepository implements DomainRepository<Author> {
     public boolean remove(Author author) {
         if (!exists(author))
             return false;
-        var DELETE =
-            "DELETE FROM Author WHERE id = ?";
-        jdbcTemplate.update(DELETE, author.getId());
+        authorTable.delete(author);
         cache.remove(author.getId());
+
         author.removeListener(authorStateListener);
         var works = author.getWorks();
         for (int i = 0; i < works.size(); i++)
@@ -125,7 +119,7 @@ public class AuthorRepository implements DomainRepository<Author> {
 
     private void initLastId() {
         var QUERY = "SELECT MAX(id) FROM Author";
-        var rs = namedJdbcTemplate.queryForRowSet(QUERY, Utils.emptyParams());
+        var rs = jdbcTemplate.queryForRowSet(QUERY);
         rs.next();
         this.lastId = new AtomicLong(rs.getLong(1));
     }

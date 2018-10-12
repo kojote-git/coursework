@@ -4,9 +4,11 @@ import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.persistence.TableProcessor;
 import com.jkojote.library.persistence.listeners.WorkStateListener;
 import com.jkojote.library.persistence.mappers.WorkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,11 +22,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 @Transactional
+@SuppressWarnings("Duplicates")
 public class WorkRepository implements DomainRepository<Work> {
 
     private final Map<Long, Work> cache = new ConcurrentHashMap<>();
 
-    private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     private CascadeWorkAuthorPersistence cascadePersistence;
 
@@ -34,11 +37,17 @@ public class WorkRepository implements DomainRepository<Work> {
 
     private AtomicLong lastId;
 
+    private TableProcessor<Work> workTable;
+
     @Autowired
     public WorkRepository(RowMapper<Work> workMapper,
-                          NamedParameterJdbcTemplate namedJdbcTemplate) {
+                          JdbcTemplate jdbcTemplate,
+                          TableProcessor<Work> workTableProcessor,
+                          CascadeWorkAuthorPersistence cascadePersistence) {
         this.workMapper = workMapper;
-        this.namedJdbcTemplate = namedJdbcTemplate;
+        this.jdbcTemplate = jdbcTemplate;
+        this.workTable = workTableProcessor;
+        this.cascadePersistence = cascadePersistence;
         initLastId();
     }
 
@@ -47,21 +56,15 @@ public class WorkRepository implements DomainRepository<Work> {
         this.workStateListener = workStateListener;
     }
 
-    @Autowired
-    public void setCascadePersistence(CascadeWorkAuthorPersistence cascadePersistence) {
-        this.cascadePersistence = cascadePersistence;
-    }
-
     @Override
     public Work findById(long id) {
         var work = cache.get(id);
         if (work != null)
             return work;
         var QUERY =
-            "SELECT * FROM Work WHERE id = :id";
+            "SELECT * FROM Work WHERE id = ?";
         try {
-            var params = new MapSqlParameterSource("id", id);
-            work = namedJdbcTemplate.queryForObject(QUERY, params, workMapper);
+            work = jdbcTemplate.queryForObject(QUERY, workMapper, id);
             cache.put(id, work);
             return work;
         } catch (RuntimeException e) {
@@ -72,12 +75,12 @@ public class WorkRepository implements DomainRepository<Work> {
     @Override
     public List<Work> findAll() {
         var QUERY = "SELECT * FROM Work";
-        return namedJdbcTemplate.query(QUERY, Utils.emptyParams(), workMapper);
+        return jdbcTemplate.query(QUERY, workMapper);
     }
 
     @Override
     public boolean exists(Work work) {
-        return findById(work.getId()) != null;
+        return workTable.exists(work);
     }
 
     @Override
@@ -89,6 +92,7 @@ public class WorkRepository implements DomainRepository<Work> {
     public boolean save(Work work) {
         if (exists(work))
             return false;
+        cache.put(work.getId(), work);
         cascadePersistence.saveWork(work);
         work.addEventListener(workStateListener);
         return true;
@@ -106,9 +110,7 @@ public class WorkRepository implements DomainRepository<Work> {
     public boolean remove(Work work) {
         if (!exists(work))
             return false;
-        var DELETE = "DELETE FROM Work WHERE id = :id";
-        var params = new MapSqlParameterSource("id", work.getId());
-        namedJdbcTemplate.update(DELETE, params);
+        workTable.delete(work);
         cache.remove(work.getId());
         work.removeListener(workStateListener);
         var authors = work.getAuthors();
@@ -119,7 +121,7 @@ public class WorkRepository implements DomainRepository<Work> {
 
     private void initLastId() {
         var QUERY = "SELECT MAX(id) FROM Work";
-        var res = namedJdbcTemplate.queryForRowSet(QUERY, Utils.emptyParams());
+        var res = jdbcTemplate.queryForRowSet(QUERY);
         res.next();
         this.lastId = new AtomicLong(res.getLong(1));
     }
