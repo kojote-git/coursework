@@ -30,12 +30,22 @@ public class Book extends DomainEntity {
         this.bookInstances = instances;
     }
 
+    public Book(long id, Work basedOn, DomainList<BookInstance> bookInstances) {
+        super(id);
+        this.basedOn = basedOn;
+        this.bookInstances = bookInstances;
+    }
+
     public Work getBasedOn() {
         return basedOn;
     }
 
     public int getEdition() {
         return edition;
+    }
+
+    public void setEdition(int edition) {
+        this.edition = edition;
     }
 
     public Publisher getPublisher() {

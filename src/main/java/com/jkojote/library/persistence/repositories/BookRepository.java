@@ -4,6 +4,7 @@ import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
+import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,6 +39,8 @@ public class BookRepository implements DomainRepository<Book> {
     private DomainRepository<Publisher> publisherRepository;
 
     private final Map<Long, Book> cache;
+
+    private DomainEventListener<Book> bookStateListener;
 
     @Autowired
     public BookRepository(NamedParameterJdbcTemplate namedJdbcTemplate,
@@ -134,6 +137,7 @@ public class BookRepository implements DomainRepository<Book> {
                     book.getEdition(),
                     book.getId()
             );
+        book.addEventListener(bookStateListener);
         return true;
     }
 
@@ -147,6 +151,7 @@ public class BookRepository implements DomainRepository<Book> {
         cache.remove(book.getId());
         for (var inst : book.getBookInstances())
             bookInstanceRepository.remove(inst);
+        book.removeListener(bookStateListener);
         return true;
     }
 

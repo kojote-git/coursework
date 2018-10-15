@@ -98,7 +98,7 @@ public class Work extends DomainEntity {
     }
 
     public boolean removeAuthor(Author author) {
-        if (!authors.contains(author))
+        if (author == null || !authors.contains(author))
             return false;
         authors.remove(author);
         if (author.getWorks().contains(this)) {
@@ -110,7 +110,7 @@ public class Work extends DomainEntity {
     }
 
     public boolean addAuthor(Author author) {
-        if (authors.contains(author))
+        if (author == null || authors.contains(author))
             return false;
         authors.add(author);
         if (!author.getWorks().contains(this)) {
@@ -123,6 +123,16 @@ public class Work extends DomainEntity {
 
     public DateRange whenAppeared() {
         return appeared;
+    }
+
+    public void changeAppearedDate(DateRange appeared) {
+        checkNotNull(appeared);
+        this.appeared = appeared;
+    }
+
+    public void changeTitle(String newTitle) {
+        checkNotNull(newTitle);
+        this.title = newTitle;
     }
 
     public String getTitle() {

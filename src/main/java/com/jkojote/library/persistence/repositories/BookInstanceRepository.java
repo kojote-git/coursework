@@ -5,6 +5,7 @@ import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.LazyObject;
+import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -27,28 +28,22 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
 
     private JdbcTemplate jdbcTemplate;
 
-    private NamedParameterJdbcTemplate namedJdbcTemplate;
-
-    private DomainRepository<Book> bookRepository;
-
     private AtomicLong lastId;
+
+    private TableProcessor<BookInstance> bookInstanceTable;
 
     @Autowired
     public BookInstanceRepository(JdbcTemplate jdbcTemplate,
-                                  NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+                                  NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                                  TableProcessor<BookInstance> bookInstanceTable) {
         this.jdbcTemplate = jdbcTemplate;
-        this.namedJdbcTemplate = namedParameterJdbcTemplate;
+        this.bookInstanceTable = bookInstanceTable;
         initLastId();
     }
 
     @Autowired
     public void setMapper(RowMapper<BookInstance> mapper) {
         this.mapper = mapper;
-    }
-
-    @Autowired
-    public void setBookRepository(DomainRepository<Book> bookRepository) {
-        this.bookRepository = bookRepository;
     }
 
     @Override
@@ -80,23 +75,15 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
 
     @Override
     public boolean exists(BookInstance entity) {
-        return findById(entity.getId()) != null;
+        return bookInstanceTable.exists(entity);
     }
 
     @Override
     public boolean save(BookInstance instance) {
         if (exists(instance))
             return false;
-        var INSERT =
-            "INSERT INTO BookInstance (id, bookId, format, isbn13, file) " +
-            "VALUES (:id, :bookId, :format, :isbn13, :file)";
-        var params = new MapSqlParameterSource("id", instance.getId())
-                .addValue("bookId", instance.getBook().getId())
-                .addValue("format", instance.getFormat().asString())
-                .addValue("isbn13", instance.getIsbn13().asString())
-                .addValue("file", instance.getFile().asBlob());
+        bookInstanceTable.insert(instance);
         cache.put(instance.getId(), instance);
-        namedJdbcTemplate.update(INSERT, params);
         return true;
     }
 
@@ -104,42 +91,18 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
     public boolean remove(BookInstance instance) {
         if (!exists(instance))
             return false;
-        var DELETE = "DELETE FROM BookInstance WHERE id = ?";
-        jdbcTemplate.update(DELETE, instance.getId());
+        bookInstanceTable.delete(instance);
+        instance.getBook().removeBookInstance(instance);
         cache.remove(instance.getId());
         return true;
     }
 
     @Override
-    public boolean update(BookInstance entity) {
-        if (!exists(entity))
+    public boolean update(BookInstance instance) {
+        if (!exists(instance))
             return false;
-        var UPDATE = "UPDATE BookInstance SET id = :id, isbn13 = :isbn13, format = :format";
-        var file = entity.getFile();
-        var isFetched = file instanceof LazyObject && ((LazyObject) file).isFetched();
-        var params = new MapSqlParameterSource("id", entity.getId())
-                .addValue("isbn13", entity.getIsbn13().asString())
-                .addValue("format", entity.getFormat().asString())
-                .addValue("bookId", entity.getBook().getId());
-        if (isFetched) {
-            UPDATE += ", file = :file WHERE id = :id";
-            params.addValue("file", entity.getFile().asBlob());
-        } else {
-            UPDATE += "WHERE id = :id";
-        }
-        namedJdbcTemplate.update(UPDATE, params);
+        bookInstanceTable.update(instance);
         return true;
-    }
-
-    @Override
-    public void saveAll(Collection<BookInstance> instances) {
-        var INSERT = BookInstancesBatchSetter.STATEMENT;
-        var copy = new HashSet<>(instances);
-        for (var instance : copy) {
-            if (!bookRepository.exists(instance.getBook()))
-                copy.remove(instance);
-        }
-        jdbcTemplate.batchUpdate(INSERT, new BookInstancesBatchSetter(copy));
     }
 
     private void initLastId() {

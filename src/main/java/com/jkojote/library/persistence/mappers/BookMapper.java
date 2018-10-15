@@ -4,10 +4,12 @@ import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
+import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.persistence.fetchers.LazyBookInstancesListFetcher;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
+import com.jkojote.library.persistence.listeners.BookStateListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,13 @@ public class BookMapper implements RowMapper<Book> {
     private DomainRepository<Publisher> publisherRepository;
 
     private ListFetcher<Book, BookInstance> listFetcher;
+
+    private DomainEventListener<Book> bookStateListener;
+
+    @Autowired
+    public BookMapper(DomainEventListener<Book> bookStateListener) {
+        this.bookStateListener = bookStateListener;
+    }
 
     @Autowired
     public void setPublisherRepository(DomainRepository<Publisher> publisherRepository) {
@@ -49,6 +58,8 @@ public class BookMapper implements RowMapper<Book> {
         var work = workRepository.findById(workId);
         var publisher = publisherRepository.findById(publisherId);
         var list = new LazyListImpl<>(listFetcher);
-        return new Book(id, work, publisher, edition, list);
+        var book = new Book(id, work, publisher, edition, list);
+        book.addEventListener(bookStateListener);
+        return book;
     }
 }
