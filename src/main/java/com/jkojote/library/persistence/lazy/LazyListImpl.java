@@ -5,13 +5,14 @@ import com.jkojote.library.domain.shared.domain.DomainEntity;
 import com.jkojote.library.domain.shared.domain.DomainObject;
 import com.jkojote.library.persistence.LazyList;
 import com.jkojote.library.persistence.ListFetcher;
+import com.jkojote.library.persistence.Refreshable;
 
 import java.util.List;
 
 public class LazyListImpl<ParentEntity extends DomainEntity, Child extends DomainObject>
-extends ForwardingList<Child> implements LazyList<Child> {
+extends ForwardingList<Child> implements LazyList<Child>, Refreshable<List<Child>> {
 
-    private ParentEntity entity;
+    private ParentEntity parent;
 
     private List<Child> list;
 
@@ -20,7 +21,7 @@ extends ForwardingList<Child> implements LazyList<Child> {
     private boolean canSetParentEntity;
 
     public LazyListImpl(ParentEntity entity, ListFetcher<ParentEntity, Child> fetcher) {
-        this.entity = entity;
+        this.parent = entity;
         this.fetcher = fetcher;
         canSetParentEntity = false;
     }
@@ -41,12 +42,12 @@ extends ForwardingList<Child> implements LazyList<Child> {
     }
 
     public ParentEntity getEntity() {
-        return entity;
+        return parent;
     }
 
     public void setParentEntity(ParentEntity entity) {
         if (canSetParentEntity) {
-            this.entity = entity;
+            this.parent = entity;
         } else {
             throw new ParentEntityCannotBeSet("cannot perform this " +
                     "action because object is sealed for external modifications");
@@ -60,9 +61,14 @@ extends ForwardingList<Child> implements LazyList<Child> {
     @Override
     public List<Child> get() {
         if (list == null) {
-            list = fetcher.fetchFor(entity);
+            list = fetcher.fetchFor(parent);
         }
         return list;
+    }
+
+    @Override
+    public void refresh() {
+        list = fetcher.fetchFor(parent);
     }
 
     public static class ParentEntityCannotBeSet extends RuntimeException {

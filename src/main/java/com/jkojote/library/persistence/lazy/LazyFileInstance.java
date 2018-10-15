@@ -4,6 +4,7 @@ import com.jkojote.library.domain.shared.domain.DomainEntity;
 import com.jkojote.library.files.FileInstance;
 import com.jkojote.library.persistence.LazyObject;
 import com.jkojote.library.persistence.LazyObjectFetcher;
+import com.jkojote.library.persistence.Refreshable;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
@@ -11,7 +12,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 public class LazyFileInstance<T extends DomainEntity>
-implements FileInstance, LazyObject<FileInstance> {
+implements FileInstance, LazyObject<FileInstance>, Refreshable<FileInstance> {
 
     private LazyObjectFetcher<T, byte[]> fetcher;
 
@@ -89,5 +90,12 @@ implements FileInstance, LazyObject<FileInstance> {
     public FileInstance get() {
         fetch();
         return this;
+    }
+
+    @Override
+    public void refresh() {
+        if (!fetched)
+            fetched = true;
+        this.file = fetcher.fetchFor(parentEntity);
     }
 }
