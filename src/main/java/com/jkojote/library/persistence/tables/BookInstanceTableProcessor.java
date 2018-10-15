@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 @Component
 @Transactional
+@SuppressWarnings("Duplicates")
 public class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
 
     private static final String INSERT =
@@ -55,18 +56,20 @@ public class BookInstanceTableProcessor implements TableProcessor<BookInstance> 
             return false;
         if (cache.contains(e.getId()))
             return true;
-        var count = jdbcTemplate.queryForObject(QUERY_EXISTS, (rs, rn) -> rs.getLong(1));
+        var count = jdbcTemplate.queryForObject(QUERY_EXISTS, (rs, rn) -> rs.getLong(1), e.getId());
         var res = count != null && count == 1;
-        if (res && cache.size() < CACHE_MAX_SIZE)
-            cache.add(e.getId());
+        if (res)
+            tryPutToCache(e.getId());
         return res;
     }
 
     @Override
     public boolean insert(BookInstance e) {
+        if (e == null)
+            return false;
         if (exists(e))
             return false;
-        cache.add(e.getId());
+        tryPutToCache(e.getId());
         jdbcTemplate.update(INSERT, e.getId(),
                 e.getBook().getId(),
                 e.getIsbn13().asString(),
@@ -108,12 +111,11 @@ public class BookInstanceTableProcessor implements TableProcessor<BookInstance> 
 
     @Override
     public void batchInsert(Collection<BookInstance> c) {
-        var INSERT = BookInstancesBatchSetter.STATEMENT;
-        var copy = new HashSet<>(c);
-        for (var instance : copy) {
-            if (!bookTableProcessor.exists(instance.getBook()))
-                copy.remove(instance);
-        }
-        jdbcTemplate.batchUpdate(INSERT, new BookInstancesBatchSetter(copy));
+
+    }
+
+    private void tryPutToCache(long value) {
+        if (cache.size() < CACHE_MAX_SIZE)
+            cache.add(value);
     }
 }

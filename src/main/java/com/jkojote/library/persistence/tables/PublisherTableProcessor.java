@@ -1,6 +1,6 @@
 package com.jkojote.library.persistence.tables;
 
-import com.jkojote.library.domain.model.book.Book;
+import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,20 +13,19 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @Component
 @Transactional
 @SuppressWarnings("Duplicates")
-public class BookTableProcessor implements TableProcessor<Book> {
+public class PublisherTableProcessor implements TableProcessor<Publisher> {
 
     private static final String INSERT =
-        "INSERT INTO Book (id, workId, publisherId, edition) " +
-          "VALUES (?, ?, ?, ?)";
+        "INSERT INTO Publisher (id, name) VALUES (?, ?)";
 
     private static final String UPDATE =
-        "UPDATE Book SET workId = ?, publisherId = ?, edition = ? WHERE id = ?";
+        "UPDATE Publisher SET name = ? WHERE id = ?";
 
     private static final String DELETE =
-        "DELETE FROM Book WHERE id = ?";
+        "DELETE FROM Publisher WHERE id = ?";
 
     private static final String QUERY_EXISTS =
-        "SELECT COUNT(*) FROM Book WHERE id = ?";
+        "SELECT COUNT(*) FROM Publisher WHERE id = ?";
 
     private static final int CACHE_MAX_SIZE = 512;
 
@@ -35,12 +34,12 @@ public class BookTableProcessor implements TableProcessor<Book> {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public BookTableProcessor(JdbcTemplate jdbcTemplate) {
+    public PublisherTableProcessor(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public boolean exists(Book e) {
+    public boolean exists(Publisher e) {
         if (e == null)
             return false;
         if (cache.contains(e.getId()))
@@ -53,21 +52,18 @@ public class BookTableProcessor implements TableProcessor<Book> {
     }
 
     @Override
-    public boolean insert(Book e) {
+    public boolean insert(Publisher e) {
         if (e == null)
             return false;
         if (exists(e))
             return false;
         tryPutToCache(e.getId());
-        jdbcTemplate.update(INSERT, e.getId(),
-                e.getBasedOn().getId(),
-                e.getPublisher().getId(),
-                e.getEdition());
+        jdbcTemplate.update(INSERT, e.getId(), e.getName());
         return true;
     }
 
     @Override
-    public boolean delete(Book e) {
+    public boolean delete(Publisher e) {
         if (!exists(e))
             return false;
         cache.remove(e.getId());
@@ -81,13 +77,10 @@ public class BookTableProcessor implements TableProcessor<Book> {
     }
 
     @Override
-    public boolean update(Book e) {
+    public boolean update(Publisher e) {
         if (!exists(e))
             return false;
-        jdbcTemplate.update(UPDATE, e.getBasedOn().getId(),
-                e.getPublisher().getId(),
-                e.getEdition(),
-                e.getId());
+        jdbcTemplate.update(UPDATE, e.getName(), e.getId());
         return true;
     }
 }

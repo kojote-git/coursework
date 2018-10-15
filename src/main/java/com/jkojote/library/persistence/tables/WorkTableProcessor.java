@@ -27,7 +27,7 @@ public class WorkTableProcessor implements TableProcessor<Work> {
     private static final String EXISTS_QUERY =
         "SELECT COUNT(id) FROM Work WHERE id = ?";
 
-    private static final int MAX_CACHE_SIZE = 128;
+    private static final int CACHE_MAX_SIZE = 256;
 
     private final Set<Long> cache = new ConcurrentSkipListSet<>();
 
@@ -45,8 +45,8 @@ public class WorkTableProcessor implements TableProcessor<Work> {
             return true;
         var count = jdbcTemplate.queryForObject(EXISTS_QUERY, (rs, rn) -> rs.getLong(1), e.getId());
         var res = count != null && count == 1;
-        if (res && cache.size() < MAX_CACHE_SIZE)
-            cache.add(e.getId());
+        if (res)
+            tryPutToCache(e.getId());
         return res;
     }
 
@@ -56,6 +56,7 @@ public class WorkTableProcessor implements TableProcessor<Work> {
             return false;
         if (exists(e))
             return false;
+        tryPutToCache(e.getId());
         jdbcTemplate.update(INSERT, e.getId(),
                 e.getTitle(),
                 e.whenAppeared().getBegins(),
@@ -66,8 +67,6 @@ public class WorkTableProcessor implements TableProcessor<Work> {
 
     @Override
     public boolean delete(Work e) {
-        if (e == null)
-            return false;
         if (!exists(e))
             return false;
         cache.remove(e.getId());
@@ -77,8 +76,6 @@ public class WorkTableProcessor implements TableProcessor<Work> {
 
     @Override
     public boolean update(Work e) {
-        if (e == null)
-            return false;
         if (!exists(e))
             return false;
         jdbcTemplate.update(UPDATE, e.getTitle(),
@@ -86,6 +83,11 @@ public class WorkTableProcessor implements TableProcessor<Work> {
                 e.whenAppeared().getEnds(),
                 e.whenAppeared().getPrecision().code());
         return true;
+    }
+
+    private void tryPutToCache(long value) {
+        if (cache.size() < CACHE_MAX_SIZE)
+            cache.add(value);
     }
 }
 

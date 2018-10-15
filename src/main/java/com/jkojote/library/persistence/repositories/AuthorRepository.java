@@ -109,7 +109,6 @@ public class AuthorRepository implements DomainRepository<Author> {
             return false;
         authorTable.delete(author);
         cache.remove(author.getId());
-
         author.removeListener(authorStateListener);
         var works = author.getWorks();
         for (int i = 0; i < works.size(); i++)

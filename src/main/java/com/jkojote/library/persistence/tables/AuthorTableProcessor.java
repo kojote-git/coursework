@@ -67,8 +67,6 @@ public class AuthorTableProcessor implements TableProcessor<Author> {
 
     @Override
     public boolean delete(Author e) {
-        if (e == null)
-            return false;
         if (!exists(e))
             return false;
         cache.remove(e.getId());
@@ -78,8 +76,6 @@ public class AuthorTableProcessor implements TableProcessor<Author> {
 
     @Override
     public boolean update(Author e) {
-        if (e == null)
-            return false;
         if (!exists(e))
             return false;
         jdbcTemplate.update(UPDATE, e.getName().getFirstName(),

@@ -6,15 +6,13 @@ import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,8 +21,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository
 @Transactional
 public class BookRepository implements DomainRepository<Book> {
-
-    private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -40,14 +36,18 @@ public class BookRepository implements DomainRepository<Book> {
 
     private final Map<Long, Book> cache;
 
+    private TableProcessor<Book> bookTable;
+
     private DomainEventListener<Book> bookStateListener;
 
     @Autowired
-    public BookRepository(NamedParameterJdbcTemplate namedJdbcTemplate,
-                          JdbcTemplate jdbcTemplate) {
-        this.namedJdbcTemplate = namedJdbcTemplate;
+    public BookRepository(JdbcTemplate jdbcTemplate,
+                          TableProcessor<Book> bookTableProcessor,
+                          DomainEventListener<Book> bookStateListener) {
         this.jdbcTemplate = jdbcTemplate;
         cache = new ConcurrentHashMap<>();
+        this.bookTable = bookTableProcessor;
+        this.bookStateListener = bookStateListener;
         initLastId();
     }
 
@@ -76,8 +76,7 @@ public class BookRepository implements DomainRepository<Book> {
         var book = cache.get(id);
         if (book != null)
             return book;
-        final var QUERY =
-            "SELECT * FROM Book WHERE id = ?";
+        final var QUERY = "SELECT * FROM Book WHERE id = ?";
         try {
             book = jdbcTemplate.queryForObject(QUERY, bookMapper, id);
             cache.put(id, book);
@@ -106,9 +105,6 @@ public class BookRepository implements DomainRepository<Book> {
     public boolean save(Book book) {
         if (exists(book))
             return false;
-        final var INSERT =
-            "INSERT INTO Book (id, workId, publisherId, edition) " +
-              "VALUES (:id, :workId, :publisherId, :edition)";
         if (!publisherRepository.exists(book.getPublisher())) {
             publisherRepository.save(book.getPublisher());
         }
@@ -116,11 +112,7 @@ public class BookRepository implements DomainRepository<Book> {
             workRepository.save(book.getBasedOn());
         }
         cache.put(book.getId(), book);
-        var params = new MapSqlParameterSource("id", book.getId())
-                .addValue("workId", book.getBasedOn().getId())
-                .addValue("publisherId", book.getPublisher().getId())
-                .addValue("edition", book.getEdition());
-        namedJdbcTemplate.update(INSERT, params);
+        bookTable.insert(book);
         bookInstanceRepository.saveAll(book.getBookInstances());
         return true;
     }
@@ -129,14 +121,7 @@ public class BookRepository implements DomainRepository<Book> {
     public boolean update(Book book) {
         if (!exists(book))
             return false;
-        var UPDATE =
-            "UPDATE Book SET workId = ?, publisherId = ?, edition = ? WHERE id = ?";
-        jdbcTemplate
-            .update(UPDATE, book.getBasedOn().getId(),
-                    book.getPublisher().getId(),
-                    book.getEdition(),
-                    book.getId()
-            );
+        bookTable.insert(book);
         book.addEventListener(bookStateListener);
         return true;
     }
@@ -145,9 +130,7 @@ public class BookRepository implements DomainRepository<Book> {
     public boolean remove(Book book) {
         if (!exists(book))
             return false;
-        var DELETE =
-            "DELETE FROM Book WHERE id = ?";
-        jdbcTemplate.update(DELETE, book.getId());
+        bookTable.delete(book);
         cache.remove(book.getId());
         for (var inst : book.getBookInstances())
             bookInstanceRepository.remove(inst);

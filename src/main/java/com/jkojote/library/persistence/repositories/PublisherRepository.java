@@ -3,13 +3,11 @@ package com.jkojote.library.persistence.repositories;
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
-import com.jkojote.library.persistence.mappers.PublisherMapper;
+import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -25,19 +23,19 @@ public class PublisherRepository implements DomainRepository<Publisher> {
 
     private JdbcTemplate jdbcTemplate;
 
-    private NamedParameterJdbcTemplate namedJdbcTemplate;
-
     private RowMapper<Publisher> publisherMapper;
 
     private DomainRepository<Book> bookRepository;
 
+    private TableProcessor<Publisher> publisherTable;
+
     private AtomicLong lastId;
 
     public PublisherRepository(JdbcTemplate jdbcTemplate,
-                               NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+                               TableProcessor<Publisher> publisherTableProcessor) {
         this.jdbcTemplate = jdbcTemplate;
-        this.namedJdbcTemplate = namedParameterJdbcTemplate;
         cache = new ConcurrentHashMap<>();
+        this.publisherTable = publisherTableProcessor;
         initLastId();
     }
 
@@ -81,10 +79,8 @@ public class PublisherRepository implements DomainRepository<Publisher> {
     public boolean save(Publisher publisher) {
         if (exists(publisher))
             return false;
-        var INSERT =
-            "INSERT INTO Publisher (id, name) VALUES (?, ?)";
-        jdbcTemplate.update(INSERT, publisher.getId(), publisher.getName());
         cache.put(publisher.getId(), publisher);
+        publisherTable.insert(publisher);
         bookRepository.saveAll(publisher.getBooks());
         return true;
     }
@@ -104,15 +100,13 @@ public class PublisherRepository implements DomainRepository<Publisher> {
     public boolean update(Publisher publisher) {
         if (!exists(publisher))
             return false;
-        var UPDATE =
-            "UPDATE Publisher SET name = ? WHERE id = ?";
-        jdbcTemplate.update(UPDATE, publisher.getName(), publisher.getId());
+        publisherTable.update(publisher);
         return true;
     }
 
     @Override
     public boolean exists(Publisher publisher) {
-        return findById(publisher.getId()) != null;
+        return publisherTable.exists(publisher);
     }
 
     private void initLastId() {

@@ -1,4 +1,4 @@
-package com.jkojote.library.persistence.tables;
+package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;

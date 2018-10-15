@@ -32,12 +32,15 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
 
     private TableProcessor<BookInstance> bookInstanceTable;
 
+    private DomainRepository<Book> bookRepository;
+
     @Autowired
     public BookInstanceRepository(JdbcTemplate jdbcTemplate,
-                                  NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                                  TableProcessor<BookInstance> bookInstanceTable) {
+                                  TableProcessor<BookInstance> bookInstanceTable,
+                                  DomainRepository<Book> bookRepository) {
         this.jdbcTemplate = jdbcTemplate;
         this.bookInstanceTable = bookInstanceTable;
+        this.bookRepository = bookRepository;
         initLastId();
     }
 
@@ -110,5 +113,16 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
         var rs = jdbcTemplate.queryForRowSet(QUERY);
         rs.next();
         lastId = new AtomicLong(rs.getLong(1));
+    }
+
+    @Override
+    public void saveAll(Collection<BookInstance> entities) {
+        var INSERT = BookInstancesBatchSetter.STATEMENT;
+        var copy = new HashSet<>(entities);
+        for (var instance : copy) {
+            if (!bookRepository.exists(instance.getBook()))
+                copy.remove(instance);
+        }
+        jdbcTemplate.batchUpdate(INSERT, new BookInstancesBatchSetter(copy));
     }
 }
