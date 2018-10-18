@@ -6,12 +6,13 @@ import com.jkojote.library.persistence.ListFetcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Component
+@Component("subjectsFetcher")
 @Transactional
 public class LazySubjectListFetcher implements ListFetcher<Work, Subject> {
 
@@ -30,7 +31,7 @@ public class LazySubjectListFetcher implements ListFetcher<Work, Subject> {
 
     @Override
     public List<Subject> fetchFor(Work work) {
-        var params = new MapSqlParameterSource("workId", work.getId());
+        SqlParameterSource params = new MapSqlParameterSource("workId", work.getId());
         return namedJdbcTemplate.query(QUERY, params, (rs, rn) -> Subject.of(rs.getString("subject")));
     }
 }

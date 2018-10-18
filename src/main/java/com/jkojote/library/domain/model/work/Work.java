@@ -58,7 +58,7 @@ public class Work extends DomainEntity {
         checkNotNull(title);
         checkNotNull(authors);
         Work work = new Work(id, title, appeared, authors, new DomainArrayList<>());
-        for (var author : authors)
+        for (Author author : authors)
             author.addWork(work);
         return work;
     }

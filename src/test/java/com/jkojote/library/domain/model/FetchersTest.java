@@ -42,7 +42,7 @@ public class FetchersTest {
         // only id is used
         Author dawkins = Author.createNew(1, Name.of("", "", ""));
         Author doyle = Author.createNew(3, Name.of("", "", ""));
-        var titles = workFetcher.fetchFor(dawkins).stream()
+        List<String> titles = workFetcher.fetchFor(dawkins).stream()
                 .map(Work::getTitle)
                 .collect(Collectors.toList());
         assertEquals(2, titles.size());
@@ -62,7 +62,7 @@ public class FetchersTest {
         // only id is used to fetch authors
         Work w1 = Work.create(1, "W1", a1, DateRange.unknown());
         Work w2 = Work.create(3, "W2", a1, DateRange.unknown());
-        var authorsNames = authorFetcher.fetchFor(w1).stream()
+        List<Name> authorsNames = authorFetcher.fetchFor(w1).stream()
                 .map(Author::getName)
                 .collect(Collectors.toList());
         assertEquals(1, authorsNames.size());
@@ -80,7 +80,7 @@ public class FetchersTest {
         Author a1 = Author.createNew(1, Name.of("", "", ""));
         // only id is used to fetch authors
         Work w1 = Work.create(1, "W1", a1, DateRange.unknown());
-        var subjects = subjectFetcher.fetchFor(w1);
+        List<Subject> subjects = subjectFetcher.fetchFor(w1);
         assertEquals(3, subjects.size());
         assertTrue(subjects.contains(Subject.of("Science")));
         assertTrue(subjects.contains(Subject.of("Biology")));

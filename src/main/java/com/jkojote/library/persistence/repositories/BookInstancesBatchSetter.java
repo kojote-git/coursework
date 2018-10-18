@@ -25,7 +25,7 @@ class BookInstancesBatchSetter implements BatchPreparedStatementSetter {
 
     @Override
     public void setValues(PreparedStatement ps, int i) throws SQLException {
-        var instance = iterator.next();
+        BookInstance instance = iterator.next();
         ps.setLong(1, instance.getId());
         ps.setString(2, instance.getIsbn13().asString());
         ps.setLong(3, instance.getBook().getId());

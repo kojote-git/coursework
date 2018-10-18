@@ -8,17 +8,19 @@ import com.jkojote.library.domain.shared.domain.DomainEvent;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Component("bookStateListener")
 @Transactional
 public class BookStateListener implements DomainEventListener<Book> {
 
     private TableProcessor<BookInstance> bookInstanceTable;
 
     @Autowired
-    public BookStateListener(TableProcessor<BookInstance> tableProcessor) {
+    public BookStateListener(@Qualifier("bookInstanceTable")
+                             TableProcessor<BookInstance> tableProcessor) {
         this.bookInstanceTable = tableProcessor;
     }
 
@@ -31,12 +33,12 @@ public class BookStateListener implements DomainEventListener<Book> {
     }
 
     private void onBookInstanceAdded(BookInstanceAddedEvent e) {
-        var bookInstance = e.getBookInstance();
+        BookInstance bookInstance = e.getBookInstance();
         bookInstanceTable.insert(bookInstance);
     }
 
     private void onBookInstanceRemoved(BookInstanceRemovedEvent e) {
-        var bookInstance = e.getBookInstance();
+        BookInstance bookInstance = e.getBookInstance();
         bookInstanceTable.delete(bookInstance);
     }
 }

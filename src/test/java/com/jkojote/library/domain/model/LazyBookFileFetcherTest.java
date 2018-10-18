@@ -5,6 +5,7 @@ import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookFormat;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.book.instance.isbn.Isbn13;
+import com.jkojote.library.files.FileInstance;
 import com.jkojote.library.files.StandardFileInstance;
 import com.jkojote.library.persistence.LazyObjectFetcher;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -49,17 +51,17 @@ public class LazyBookFileFetcherTest {
     }
 
     private void initData(BookInstance bookInstance) {
-        var INSERT =
+        String INSERT =
                 "INSERT INTO BookInstance (id, file, format, bookId, isbn13) " +
                         "VALUES (:id, :file, :format, :bookId, :isbn13)";
-        var file = new StandardFileInstance("src/main/resources/file1.txt");
+        FileInstance file = new StandardFileInstance("src/main/resources/file1.txt");
         Blob blob;
         try {
             blob = new SerialBlob(file.asBytes());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        var params = new MapSqlParameterSource("id", bookInstance.getId())
+        SqlParameterSource params = new MapSqlParameterSource("id", bookInstance.getId())
                 .addValue("file", blob)
                 .addValue("format", bookInstance.getFormat().asString())
                 .addValue("bookId", bookInstance.getBook().getId())

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-@Component
+@Component("publisherTable")
 @Transactional
 @SuppressWarnings("Duplicates")
 public class PublisherTableProcessor implements TableProcessor<Publisher> {
@@ -44,8 +44,8 @@ public class PublisherTableProcessor implements TableProcessor<Publisher> {
             return false;
         if (cache.contains(e.getId()))
             return true;
-        var count = jdbcTemplate.queryForObject(QUERY_EXISTS, (rs, rn) -> rs.getLong(1), e.getId());
-        var res = count != null && count == 1;
+        Long count = jdbcTemplate.queryForObject(QUERY_EXISTS, (rs, rn) -> rs.getLong(1), e.getId());
+        boolean res = count != null && count == 1;
         if (res)
             tryPutToCache(e.getId());
         return res;

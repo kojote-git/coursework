@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Component("authorStateListener")
 @Transactional
 public class AuthorStateListener implements DomainEventListener<Author> {
 
@@ -23,12 +23,13 @@ public class AuthorStateListener implements DomainEventListener<Author> {
     private BridgeTableProcessor<Work, Author> bridgeTableProcessor;
 
     @Autowired
-    @Qualifier("WorkAuthor")
+    @Qualifier("workAuthorBridge")
     public void setBridgeTableProcessor(BridgeTableProcessor<Work, Author> bridgeTableProcessor) {
         this.bridgeTableProcessor = bridgeTableProcessor;
     }
 
     @Autowired
+    @Qualifier("workRepository")
     public void setWorkRepository(DomainRepository<Work> workRepository) {
         this.workRepository = workRepository;
     }
@@ -42,8 +43,8 @@ public class AuthorStateListener implements DomainEventListener<Author> {
     }
 
     private void onWorkAdded(WorkAddedEvent e) {
-        var author = e.getTarget();
-        var work = e.getWork();
+        Author author = e.getTarget();
+        Work work = e.getWork();
         if (!workRepository.exists(work))
             workRepository.save(work);
         else
@@ -51,8 +52,8 @@ public class AuthorStateListener implements DomainEventListener<Author> {
     }
 
     private void onWorkRemoved(WorkRemovedEvent e) {
-        var author = e.getTarget();
-        var work = e.getWork();
+        Author author = e.getTarget();
+        Work work = e.getWork();
         if (!workRepository.exists(work))
             return;
         bridgeTableProcessor.removeRecord(work, author);

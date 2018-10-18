@@ -22,7 +22,7 @@ public interface DomainRepository<T extends DomainEntity> {
     boolean exists(T entity);
 
     default void saveAll(Collection<T> entities) {
-        for (var entity : entities)
+        for (T entity : entities)
             save(entity);
     }
 

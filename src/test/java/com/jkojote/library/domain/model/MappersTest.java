@@ -1,6 +1,8 @@
 package com.jkojote.library.domain.model;
 
 import com.jkojote.library.config.tests.ForRepositories;
+import com.jkojote.library.domain.model.author.Author;
+import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.values.DateRange;
 import com.jkojote.library.values.Name;
 import com.jkojote.library.persistence.mappers.AuthorMapper;
@@ -47,7 +49,7 @@ public class MappersTest {
 
     @Test
     public void testWorkMapper() throws SQLException {
-        var work = workMapper.mapRow(forWorkMapper, 1);
+        Work work = workMapper.mapRow(forWorkMapper, 1);
         assertEquals("The Tower", work.getTitle());
         assertEquals(1, work.getId());
 
@@ -60,7 +62,7 @@ public class MappersTest {
 
     @Test
     public void testAuthorMapper() throws SQLException {
-        var author = authorMapper.mapRow(forAuthorMapper, 1);
+        Author author = authorMapper.mapRow(forAuthorMapper, 1);
         assertNotNull(author);
         assertEquals(1, author.getId());
         assertEquals(Name.of("Jordan", "Smith"), author.getName());
@@ -73,7 +75,7 @@ public class MappersTest {
 
     private void initResultSetForWorkMapper() throws SQLException {
         forWorkMapper = mock(ResultSet.class);
-        var calendar = new GregorianCalendar();
+        Calendar calendar = new GregorianCalendar();
         calendar.set(76, Calendar.APRIL, 28);
         long begins = calendar.toInstant().toEpochMilli();
         calendar.set(78, Calendar.AUGUST, 15);

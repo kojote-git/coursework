@@ -5,15 +5,17 @@ import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.persistence.mappers.AuthorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Component
+@Component("authorsFetcher")
 @Transactional
 public class LazyAuthorListFetcher implements ListFetcher<Work, Author> {
 
@@ -26,12 +28,14 @@ public class LazyAuthorListFetcher implements ListFetcher<Work, Author> {
 
     private RowMapper<Author> authorMapper;
 
+
     @Autowired
     public LazyAuthorListFetcher(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Autowired
+    @Qualifier("authorMapper")
     public void setAuthorMapper(RowMapper<Author> authorMapper) {
         this.authorMapper = authorMapper;
     }
@@ -42,7 +46,7 @@ public class LazyAuthorListFetcher implements ListFetcher<Work, Author> {
 
     @Override
     public List<Author> fetchFor(Work work) {
-        var params = new MapSqlParameterSource("workId", work.getId());
+        SqlParameterSource params = new MapSqlParameterSource("workId", work.getId());
         return jdbcTemplate.query(QUERY, params, authorMapper);
     }
 }

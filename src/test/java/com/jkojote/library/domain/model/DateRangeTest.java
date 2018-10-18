@@ -21,7 +21,7 @@ public class DateRangeTest {
         dr2 = DateRange.of(LocalDate.now(), null, DateRangePrecision.FULL_RANGE);
         assertNotEquals(dr1, dr2);
 
-        var now = LocalDate.now();
+        LocalDate now = LocalDate.now();
         dr1 = DateRange.of(null, now, DateRangePrecision.FULL_RANGE);
         dr2 = DateRange.of(null, now, DateRangePrecision.FULL_RANGE);
         assertEquals(dr1, dr2);

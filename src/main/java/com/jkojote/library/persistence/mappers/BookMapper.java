@@ -11,6 +11,7 @@ import com.jkojote.library.persistence.fetchers.LazyBookInstancesListFetcher;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
 import com.jkojote.library.persistence.listeners.BookStateListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-@Component
+@Component("bookMapper")
 public class BookMapper implements RowMapper<Book> {
 
     private DomainRepository<Work> workRepository;
@@ -30,7 +31,8 @@ public class BookMapper implements RowMapper<Book> {
     private DomainEventListener<Book> bookStateListener;
 
     @Autowired
-    public BookMapper(DomainEventListener<Book> bookStateListener) {
+    public BookMapper(@Qualifier("bookStateListener")
+                      DomainEventListener<Book> bookStateListener) {
         this.bookStateListener = bookStateListener;
     }
 
@@ -51,14 +53,14 @@ public class BookMapper implements RowMapper<Book> {
 
     @Override
     public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
-        var id = rs.getLong("id");
-        var publisherId = rs.getLong("publisherId");
-        var workId = rs.getLong("workId");
-        var edition = rs.getInt("edition");
-        var work = workRepository.findById(workId);
-        var publisher = publisherRepository.findById(publisherId);
-        var list = new LazyListImpl<>(listFetcher);
-        var book = new Book(id, work, publisher, edition, list);
+        long id = rs.getLong("id");
+        long publisherId = rs.getLong("publisherId");
+        long workId = rs.getLong("workId");
+        int edition = rs.getInt("edition");
+        Work work = workRepository.findById(workId);
+        Publisher publisher = publisherRepository.findById(publisherId);
+        LazyListImpl<Book, BookInstance> list = new LazyListImpl<>(listFetcher);
+        Book book = new Book(id, work, publisher, edition, list);
         book.addEventListener(bookStateListener);
         return book;
     }

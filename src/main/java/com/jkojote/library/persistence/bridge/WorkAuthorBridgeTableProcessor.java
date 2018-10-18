@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component("WorkAuthor")
+@Component("workAuthorBridge")
 @Transactional
 public class WorkAuthorBridgeTableProcessor implements BridgeTableProcessor<Work, Author> {
 
@@ -25,9 +27,9 @@ public class WorkAuthorBridgeTableProcessor implements BridgeTableProcessor<Work
     public boolean removeRecord(Work work, Author author) {
         if (!exists(work, author))
             return false;
-        var DELETE =
+        String DELETE =
             "DELETE FROM WorkAuthor WHERE workId = :workId AND authorId = :authorId";
-        var params = new MapSqlParameterSource("workId", work.getId())
+        SqlParameterSource params = new MapSqlParameterSource("workId", work.getId())
                 .addValue("authorId", author.getId());
         namedJdbcTemplate.update(DELETE, params);
         return true;
@@ -37,10 +39,10 @@ public class WorkAuthorBridgeTableProcessor implements BridgeTableProcessor<Work
     public boolean addRecord(Work work, Author author) {
         if (exists(work, author))
             return false;
-        var INSERT =
+        String INSERT =
             "INSERT INTO WorkAuthor (workId, authorId) " +
               "VALUES (:workId, :authorId)";
-        var params = new MapSqlParameterSource("workId", work.getId())
+        SqlParameterSource params = new MapSqlParameterSource("workId", work.getId())
                 .addValue("authorId", author.getId());
         namedJdbcTemplate.update(INSERT, params);
         return true;
@@ -48,10 +50,10 @@ public class WorkAuthorBridgeTableProcessor implements BridgeTableProcessor<Work
 
     @Override
     public boolean exists(Work work, Author author) {
-        var QUERY = "SELECT * FROM WorkAuthor WHERE workId = :workId AND authorId = :authorId";
-        var params = new MapSqlParameterSource("workId", work.getId())
+        String QUERY = "SELECT * FROM WorkAuthor WHERE workId = :workId AND authorId = :authorId";
+        SqlParameterSource params = new MapSqlParameterSource("workId", work.getId())
                 .addValue("authorId", author.getId());
-        var rs = namedJdbcTemplate.queryForRowSet(QUERY, params);
+        SqlRowSet rs = namedJdbcTemplate.queryForRowSet(QUERY, params);
         return rs.next();
     }
 }

@@ -9,14 +9,18 @@ import com.jkojote.library.values.DateRange;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
 import com.jkojote.library.persistence.fetchers.LazyAuthorListFetcher;
 import com.jkojote.library.persistence.fetchers.LazySubjectListFetcher;
+import com.jkojote.library.values.DateRangePrecision;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
-@Component
+@Component("workMapper")
 public class WorkMapper implements RowMapper<Work> {
 
     private ListFetcher<Work, Author> lazyAuthorListFetcher;
@@ -25,11 +29,13 @@ public class WorkMapper implements RowMapper<Work> {
 
 
     @Autowired
+    @Qualifier("authorsFetcher")
     public void setLazyAuthorListFetcher(ListFetcher<Work, Author> lazyAuthorListFetcher) {
         this.lazyAuthorListFetcher = lazyAuthorListFetcher;
     }
 
     @Autowired
+    @Qualifier("subjectsFetcher")
     public void setLazySubjectListFetcher(ListFetcher<Work, Subject> lazySubjectListFetcher) {
         this.lazySubjectListFetcher = lazySubjectListFetcher;
     }
@@ -44,21 +50,22 @@ public class WorkMapper implements RowMapper<Work> {
 
     @Override
     public Work mapRow(ResultSet rs, int rowNum) throws SQLException {
-        var id       = rs.getLong("id");
-        var title    = rs.getString("title");
-        var authors  = new LazyListImpl<>(lazyAuthorListFetcher);
-        var subjects = new LazyListImpl<>(lazySubjectListFetcher);
-        var appearedBeginsDate = rs.getDate("appearedBegins");
-        var appearedEndsDate   = rs.getDate("appearedEnds");
-        var rangePrecision = Utils.convertIntToDateRangePrecision(rs.getInt("rangePrecision"));
-        var appearedBegins = appearedBeginsDate == null ? null : appearedBeginsDate.toLocalDate();
-        var appearedEnds   = appearedEndsDate == null ? null : appearedEndsDate.toLocalDate();
-        var whenAppeared = DateRange.of(
+        long id       = rs.getLong("id");
+        String title    = rs.getString("title");
+        LazyListImpl authors  = new LazyListImpl<>(lazyAuthorListFetcher);
+        LazyListImpl subjects = new LazyListImpl<>(lazySubjectListFetcher);
+        Date appearedBeginsDate = rs.getDate("appearedBegins");
+        Date appearedEndsDate   = rs.getDate("appearedEnds");
+        DateRangePrecision rangePrecision =
+                Utils.convertIntToDateRangePrecision(rs.getInt("rangePrecision"));
+        LocalDate appearedBegins = appearedBeginsDate == null ? null : appearedBeginsDate.toLocalDate();
+        LocalDate appearedEnds   = appearedEndsDate == null ? null : appearedEndsDate.toLocalDate();
+        DateRange whenAppeared = DateRange.of(
             appearedBegins,
             appearedEnds,
             rangePrecision
         );
-        var work = Work.restore(id, title, whenAppeared, authors, subjects);
+        Work work = Work.restore(id, title, whenAppeared, authors, subjects);
         subjects.setParentEntity(work);
         authors.setParentEntity(work);
         subjects.seal();

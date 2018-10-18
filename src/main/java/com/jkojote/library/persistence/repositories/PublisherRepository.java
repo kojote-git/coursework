@@ -5,8 +5,10 @@ import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Repository
+@Repository("publisherRepository")
 @Transactional
 public class PublisherRepository implements DomainRepository<Publisher> {
 
@@ -32,6 +34,7 @@ public class PublisherRepository implements DomainRepository<Publisher> {
     private AtomicLong lastId;
 
     public PublisherRepository(JdbcTemplate jdbcTemplate,
+                               @Qualifier("publisherTable")
                                TableProcessor<Publisher> publisherTableProcessor) {
         this.jdbcTemplate = jdbcTemplate;
         cache = new ConcurrentHashMap<>();
@@ -51,10 +54,10 @@ public class PublisherRepository implements DomainRepository<Publisher> {
 
     @Override
     public Publisher findById(long id) {
-        var publisher = cache.get(id);
+        Publisher publisher = cache.get(id);
         if (publisher != null)
             return publisher;
-        var QUERY =
+        String QUERY =
             "SELECT id, name FROM Publisher WHERE id = ?";
         try {
             publisher = jdbcTemplate.queryForObject(QUERY, publisherMapper, id);
@@ -89,7 +92,7 @@ public class PublisherRepository implements DomainRepository<Publisher> {
     public boolean remove(Publisher publisher) {
         if (!exists(publisher))
             return false;
-        var DELETE =
+        String DELETE =
             "DELETE FROM Publisher WHERE id = ?";
         jdbcTemplate.update(DELETE, publisher.getId());
         cache.remove(publisher.getId(), 1);
@@ -110,8 +113,8 @@ public class PublisherRepository implements DomainRepository<Publisher> {
     }
 
     private void initLastId() {
-        var QUERY = "SELECT MAX(id) FROM Publisher";
-        var rs = jdbcTemplate.queryForRowSet(QUERY);
+        String QUERY = "SELECT MAX(id) FROM Publisher";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(QUERY);
         rs.next();
         lastId = new AtomicLong(rs.getLong(1));
     }

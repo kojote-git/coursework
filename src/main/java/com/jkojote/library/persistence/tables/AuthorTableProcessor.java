@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 @SuppressWarnings("ALL")
-@Component
+@Component("authorTable")
 @Transactional
 public class AuthorTableProcessor implements TableProcessor<Author> {
 
@@ -45,8 +45,8 @@ public class AuthorTableProcessor implements TableProcessor<Author> {
             return false;
         if (cache.contains(e.getId()))
             return true;
-        var count = jdbcTemplate.queryForObject(EXISTS_QUERY, (rs, rn) -> rs.getLong(1), e.getId());
-        var res = count != null && count == 1;
+        Long count = jdbcTemplate.queryForObject(EXISTS_QUERY, (rs, rn) -> rs.getLong(1), e.getId());
+        boolean res = count != null && count == 1;
         if (res && cache.size() < MAX_CACHE_SIZE)
             cache.add(e.getId());
         return res;

@@ -1,16 +1,14 @@
 package com.jkojote.library.persistence.repositories;
 
-import com.google.common.collect.Iterators;
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
-import com.jkojote.library.persistence.LazyObject;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +16,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Repository
+@Repository("bookInstanceRepository")
 @Transactional
 public class BookInstanceRepository implements DomainRepository<BookInstance> {
 
@@ -36,7 +34,9 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
 
     @Autowired
     public BookInstanceRepository(JdbcTemplate jdbcTemplate,
+                                  @Qualifier("bookInstanceTable")
                                   TableProcessor<BookInstance> bookInstanceTable,
+                                  @Qualifier("bookRepository")
                                   DomainRepository<Book> bookRepository) {
         this.jdbcTemplate = jdbcTemplate;
         this.bookInstanceTable = bookInstanceTable;
@@ -45,15 +45,16 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
     }
 
     @Autowired
+    @Qualifier("bookInstanceMapper")
     public void setMapper(RowMapper<BookInstance> mapper) {
         this.mapper = mapper;
     }
 
     @Override
     public BookInstance findById(long id) {
-        var QUERY =
+        String QUERY =
             "SELECT id, bookId, format, isbn13 FROM BookInstance WHERE id = ?";
-        var bookInstance = cache.get(id);
+        BookInstance bookInstance = cache.get(id);
         if (bookInstance != null)
             return bookInstance;
         try {
@@ -67,7 +68,7 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
 
     @Override
     public List<BookInstance> findAll() {
-        var QUERY = "SELECT id, bookId, format, isbn13 FROM BookInstance";
+        String QUERY = "SELECT id, bookId, format, isbn13 FROM BookInstance";
         return jdbcTemplate.query(QUERY, mapper);
     }
 
@@ -109,17 +110,17 @@ public class BookInstanceRepository implements DomainRepository<BookInstance> {
     }
 
     private void initLastId() {
-        var QUERY = "SELECT MAX(id) FROM BookInstance";
-        var rs = jdbcTemplate.queryForRowSet(QUERY);
+        String QUERY = "SELECT MAX(id) FROM BookInstance";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(QUERY);
         rs.next();
         lastId = new AtomicLong(rs.getLong(1));
     }
 
     @Override
     public void saveAll(Collection<BookInstance> entities) {
-        var INSERT = BookInstancesBatchSetter.STATEMENT;
-        var copy = new HashSet<>(entities);
-        for (var instance : copy) {
+        String INSERT = BookInstancesBatchSetter.STATEMENT;
+        Collection<BookInstance> copy = new HashSet<>(entities);
+        for (BookInstance instance : copy) {
             if (!bookRepository.exists(instance.getBook()))
                 copy.remove(instance);
         }

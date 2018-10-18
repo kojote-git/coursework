@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -41,11 +42,13 @@ class CascadeWorkAuthorPersistence {
 
     @Autowired
     public CascadeWorkAuthorPersistence(
-                @Qualifier("WorkAuthor")
+                @Qualifier("workAuthorBridge")
                 BridgeTableProcessor<Work, Author> workAuthorBridgeTableProcessor,
-                @Qualifier("WorkSubject")
+                @Qualifier("workSubjectBridge")
                 BridgeTableProcessor<Work, Subject> workSubjectBridgeTableProcessor,
+                @Qualifier("authorTable")
                 TableProcessor<Author> authorTableProcessor,
+                @Qualifier("workTable")
                 TableProcessor<Work> workWorkTableProcessor) {
         this.workAuthorBridge = workAuthorBridgeTableProcessor;
         this.workSubjectBridge = workSubjectBridgeTableProcessor;
@@ -86,11 +89,11 @@ class CascadeWorkAuthorPersistence {
             return;
         workTable.update(work);
         updatedWorks.add(work.getId());
-        var authors = work.getAuthors();
-        var authorsIsFetched = !(authors instanceof LazyList) || ((LazyList<Author>) authors).isFetched();
+        List<Author> authors = work.getAuthors();
+        boolean authorsIsFetched = !(authors instanceof LazyList) || ((LazyList<Author>) authors).isFetched();
         if (!authorsIsFetched)
             return;
-        for (var author : authors) {
+        for (Author author : authors) {
             if (updatedAuthors.contains(author.getId()))
                 continue;
             if (!authorTable.exists(author))
@@ -105,12 +108,12 @@ class CascadeWorkAuthorPersistence {
             return;
         authorTable.update(author);
         updatedAuthors.add(author.getId());
-        var works = author.getWorks();
-        var worksIsLazyList = works instanceof LazyList;
-        var worksIsFetched = !worksIsLazyList || ((LazyList) works).isFetched();
+        List<Work> works = author.getWorks();
+        boolean worksIsLazyList = works instanceof LazyList;
+        boolean worksIsFetched = !worksIsLazyList || ((LazyList) works).isFetched();
         if (!worksIsFetched)
             return;
-        for (var work : works) {
+        for (Work work : works) {
             if (updatedWorks.contains(work.getId()))
                 continue;
             if (!workTable.exists(work))
@@ -132,12 +135,12 @@ class CascadeWorkAuthorPersistence {
             return;
         }
         savedAuthors.add(author.getId());
-        var works = author.getWorks();
-        var worksIsLazyList = works instanceof LazyList;
-        var worksIsFetched = !worksIsLazyList || ((LazyList) works).isFetched();
+        List<Work> works = author.getWorks();
+        boolean worksIsLazyList = works instanceof LazyList;
+        boolean worksIsFetched = !worksIsLazyList || ((LazyList) works).isFetched();
         if (!worksIsFetched)
             return;
-        for (var work : works) {
+        for (Work work : works) {
             if (savedWorks.contains(work.getId()))
                 continue;
             saveWork(work, savedAuthors, savedWorks);
@@ -157,11 +160,11 @@ class CascadeWorkAuthorPersistence {
             return;
         }
         savedWorks.add(work.getId());
-        var authors = work.getAuthors();
-        var authorsIsLazyList = authors instanceof LazyList;
-        var authorsIsFetched = !authorsIsLazyList || ((LazyList) authors).isFetched();
+        List<Author> authors = work.getAuthors();
+        boolean authorsIsLazyList = authors instanceof LazyList;
+        boolean authorsIsFetched = !authorsIsLazyList || ((LazyList) authors).isFetched();
         if (authorsIsFetched) {
-            for (var author : authors) {
+            for (Author author : authors) {
                 if (savedAuthors.contains(author.getId()))
                     continue;
                 saveAuthor(author, savedAuthors, savedWorks);
@@ -172,12 +175,12 @@ class CascadeWorkAuthorPersistence {
     }
 
     private void saveSubjects(Work work) {
-        var subjects = work.getSubjects();
-        var subjectsIsLazyList = subjects instanceof LazyList;
-        var subjectsIsFetched = !subjectsIsLazyList || ((LazyList) subjects).isFetched();
+        List<Subject> subjects = work.getSubjects();
+        boolean subjectsIsLazyList = subjects instanceof LazyList;
+        boolean subjectsIsFetched = !subjectsIsLazyList || ((LazyList) subjects).isFetched();
         if (!subjectsIsFetched)
             return;
-        for (var subject : subjects) {
+        for (Subject subject : subjects) {
             workSubjectBridge.addRecord(work, subject);
         }
     }

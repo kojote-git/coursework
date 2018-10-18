@@ -5,6 +5,7 @@ import com.jkojote.library.domain.model.work.SubjectTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +30,8 @@ public class SubjectTableImpl implements SubjectTable {
     public int exists(Subject subject) {
         Integer subjectId = cache.get(subject.asString());
         if (subjectId == null) {
-            var query = "SELECT id FROM Subject WHERE subject = :subject";
-            var params = new MapSqlParameterSource("subject", subject.asString());
+            String query = "SELECT id FROM Subject WHERE subject = :subject";
+            SqlParameterSource params = new MapSqlParameterSource("subject", subject.asString());
             try {
                 subjectId = namedJdbcTemplate.queryForObject(query, params, (rs, rn) -> rs.getInt("id"));
             } catch (RuntimeException e) {
@@ -42,26 +43,26 @@ public class SubjectTableImpl implements SubjectTable {
 
     @Override
     public int save(Subject subject) {
-        var t = exists(subject);
+        int t = exists(subject);
         if (t != -1)
             return t;
-        var INSERT =
+        String INSERT =
             "INSERT INTO Subject (subject) VALUES (:subject)";
-        var params = new MapSqlParameterSource("subject", subject.asString());
+        SqlParameterSource params = new MapSqlParameterSource("subject", subject.asString());
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         namedJdbcTemplate.update(INSERT, params, keyHolder);
-        var value = keyHolder.getKey().intValue();
+        int value = keyHolder.getKey().intValue();
         cache.put(subject.asString(), value);
         return value;
     }
 
     @Override
     public void remove(Subject subject) {
-        var t = exists(subject);
+        int t = exists(subject);
         if (t == -1)
             return;
-        var DELETE = "DELETE FROM Subject WHERE id = :id";
-        var params = new MapSqlParameterSource("id", t);
+        String DELETE = "DELETE FROM Subject WHERE id = :id";
+        SqlParameterSource params = new MapSqlParameterSource("id", t);
         namedJdbcTemplate.update(DELETE, params);
         cache.remove(subject.asString());
     }

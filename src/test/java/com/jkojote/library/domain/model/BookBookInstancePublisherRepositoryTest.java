@@ -9,12 +9,14 @@ import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.DomainArrayList;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.files.FileInstance;
 import com.jkojote.library.files.StandardFileInstance;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -72,12 +74,12 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
         initBook(this.book);
         bookRepository.save(this.book);
 
-        var tBook  = bookRepository.findById(id);
-        var tPublisher = publisherRepository.findById(4);
-        var tInstanceId1 = tBook.getBookInstances().get(0).getId();
-        var tInstanceId2 = tBook.getBookInstances().get(1).getId();
-        var tInstance1 = bookInstanceRepository.findById(tInstanceId1);
-        var tInstance2 = bookInstanceRepository.findById(tInstanceId2);
+        Book tBook  = bookRepository.findById(id);
+        Publisher tPublisher = publisherRepository.findById(4);
+        long tInstanceId1 = tBook.getBookInstances().get(0).getId();
+        long tInstanceId2 = tBook.getBookInstances().get(1).getId();
+        BookInstance tInstance1 = bookInstanceRepository.findById(tInstanceId1);
+        BookInstance tInstance2 = bookInstanceRepository.findById(tInstanceId2);
 
         assertNotNull(tBook);
         assertNotNull(tPublisher);
@@ -99,8 +101,8 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
         book = new Book(id, work, this.publisher, 2, new DomainArrayList<>());
         initBook(book);
         bookRepository.save(book);
-        var tInstanceId1 = book.getBookInstances().get(0).getId();
-        var tInstanceId2 = book.getBookInstances().get(1).getId();
+        long tInstanceId1 = book.getBookInstances().get(0).getId();
+        long tInstanceId2 = book.getBookInstances().get(1).getId();
         bookRepository.remove(book);
 
         assertFalse(bookRepository.exists(book));
@@ -119,8 +121,8 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
     }
 
     private void initBook(Book book) {
-        var file1 = new StandardFileInstance("src/main/resources/file1.txt");
-        var file2 = new StandardFileInstance("src/main/resources/file2.pdf");
+        FileInstance file1 = new StandardFileInstance("src/main/resources/file1.txt");
+        FileInstance file2 = new StandardFileInstance("src/main/resources/file2.pdf");
         bi1 = new BookInstance(bookInstanceRepository.nextId(),
                 book, Isbn13.of("978-90-1235-321-1"), BookFormat.TXT, file1);
         bi2 = new BookInstance(bookInstanceRepository.nextId(),
@@ -133,8 +135,8 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
      * Check if any record in table with specified id exists
      */
     private boolean recordExists(String table, long id) {
-        var QUERY = "SELECT COUNT(id) FROM " + table + " WHERE id = ?";
-        var rs = jdbcTemplate.queryForRowSet(QUERY, id);
+        String QUERY = "SELECT COUNT(id) FROM " + table + " WHERE id = ?";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(QUERY, id);
         rs.next();
         return rs.getLong(1) == 1;
     }

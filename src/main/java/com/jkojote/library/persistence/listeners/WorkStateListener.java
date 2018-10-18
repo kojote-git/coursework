@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Component("workStateListener")
 @Transactional
 public class WorkStateListener implements DomainEventListener<Work> {
 
@@ -28,13 +28,18 @@ public class WorkStateListener implements DomainEventListener<Work> {
 
     @Autowired
     public WorkStateListener(
-            @Qualifier("WorkSubject")
+            @Qualifier("workSubjectBridge")
             BridgeTableProcessor<Work, Subject> bridgeTableProcessor,
-            @Qualifier("WorkAuthor")
-            BridgeTableProcessor<Work, Author> workAuthorBridgeTableProcessor,
-            DomainRepository<Author> authorRepository) {
+            @Qualifier("workAuthorBridge")
+            BridgeTableProcessor<Work, Author> workAuthorBridgeTableProcessor) {
         this.bridgeTableProcessor = bridgeTableProcessor;
         this.waBridgeTableProcessor = workAuthorBridgeTableProcessor;
+    }
+
+
+    @Autowired
+    @Qualifier("authorRepository")
+    public void setAuthorRepository(DomainRepository<Author> authorRepository) {
         this.authorRepository = authorRepository;
     }
 
@@ -51,20 +56,20 @@ public class WorkStateListener implements DomainEventListener<Work> {
     }
 
     private void onSubjectRemoved(SubjectRemovedEvent e) {
-        var work = e.getTarget();
-        var subject = e.getSubject();
+        Work work = e.getTarget();
+        Subject subject = e.getSubject();
         bridgeTableProcessor.removeRecord(work, subject);
     }
 
     private void onSubjectAdded(SubjectAddedEvent e) {
-        var work = e.getTarget();
-        var subject = e.getSubject();
+        Work work = e.getTarget();
+        Subject subject = e.getSubject();
         bridgeTableProcessor.addRecord(work, subject);
     }
 
     private void onAuthorAdded(AuthorAddedEvent e) {
-        var author = e.getAuthor();
-        var work = e.getTarget();
+        Author author = e.getAuthor();
+        Work work = e.getTarget();
         if (!authorRepository.exists(author))
             authorRepository.save(author);
         else
@@ -72,8 +77,8 @@ public class WorkStateListener implements DomainEventListener<Work> {
     }
 
     private void onAuthorRemoved(AuthorRemovedEvent e) {
-        var author = e.getAuthor();
-        var work = e.getTarget();
+        Author author = e.getAuthor();
+        Work work = e.getTarget();
         if (!authorRepository.exists(author))
             return;
         waBridgeTableProcessor.removeRecord(work, author);

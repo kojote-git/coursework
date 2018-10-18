@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -52,8 +53,8 @@ public class AuthorRepositoryTest {
     }
 
     private boolean recordExists(String table, String idColumn, long id) {
-        var QUERY = "SELECT COUNT(*) FROM " + table + " WHERE "+ idColumn +" = ?";
-        var rs = jdbcTemplate.queryForRowSet(QUERY, id);
+        String QUERY = "SELECT COUNT(*) FROM " + table + " WHERE "+ idColumn +" = ?";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(QUERY, id);
         rs.next();
         return rs.getLong(1) == 1;
     }

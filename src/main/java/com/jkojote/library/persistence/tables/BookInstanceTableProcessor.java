@@ -2,9 +2,11 @@ package com.jkojote.library.persistence.tables;
 
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
+import com.jkojote.library.files.FileInstance;
 import com.jkojote.library.persistence.LazyObject;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-@Component
+@Component("bookInstanceTable")
 @Transactional
 @SuppressWarnings("Duplicates")
 public class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
@@ -45,6 +47,7 @@ public class BookInstanceTableProcessor implements TableProcessor<BookInstance> 
 
     @Autowired
     public BookInstanceTableProcessor(JdbcTemplate jdbcTemplate,
+                                      @Qualifier("bookTable")
                                       TableProcessor<Book> bookTableProcessor) {
         this.jdbcTemplate = jdbcTemplate;
         this.bookTableProcessor = bookTableProcessor;
@@ -56,8 +59,8 @@ public class BookInstanceTableProcessor implements TableProcessor<BookInstance> 
             return false;
         if (cache.contains(e.getId()))
             return true;
-        var count = jdbcTemplate.queryForObject(QUERY_EXISTS, (rs, rn) -> rs.getLong(1), e.getId());
-        var res = count != null && count == 1;
+        Long count = jdbcTemplate.queryForObject(QUERY_EXISTS, (rs, rn) -> rs.getLong(1), e.getId());
+        boolean res = count != null && count == 1;
         if (res)
             tryPutToCache(e.getId());
         return res;
@@ -91,8 +94,8 @@ public class BookInstanceTableProcessor implements TableProcessor<BookInstance> 
     public boolean update(BookInstance e) {
         if (!exists(e))
             return false;
-        var file = e.getFile();
-        var fileIsLazy = file instanceof LazyObject;
+        FileInstance file = e.getFile();
+        boolean fileIsLazy = file instanceof LazyObject;
         if (fileIsLazy && ((LazyObject)file).isFetched())
             jdbcTemplate.update(UPDATE_WITH_FILE, e.getBook().getId(),
                     e.getIsbn13().asString(),

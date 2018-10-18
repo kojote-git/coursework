@@ -23,7 +23,7 @@ public abstract class DomainEntity implements DomainObject {
      * @param event event that has occurred
      */
     protected void notifyAllListeners(DomainEvent event) {
-        for (var listener: eventListeners) {
+        for (DomainEventListener listener: eventListeners) {
             listener.perform(event);
         }
     }
