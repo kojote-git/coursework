@@ -57,7 +57,6 @@ public class MappersTest {
         assertNotNull(work);
         assertEquals(2, work.getId());
         assertEquals("Two Towers", work.getTitle());
-        assertEquals(work.whenAppeared(), DateRange.unknown());
     }
 
     @Test

@@ -44,10 +44,10 @@ public class RepositoriesTest {
         Author a2 = Author.createNew(authorRepository.nextId(), Name.of("Jordan", "Smith"));
         Author a3 = Author.createNew(authorRepository.nextId(), Name.of("Peter", "Lincoln"));
 
-        Work w1 = Work.create(workRepository.nextId(), "Spin", a1, DateRange.unknown());
-        Work w2 = Work.create(workRepository.nextId(), "Soul", a1, DateRange.unknown());
-        Work w3 = Work.create(workRepository.nextId(), "Newton", a2, DateRange.unknown());
-        Work w4 = Work.create(workRepository.nextId(), "Tesla", a2, DateRange.unknown());
+        Work w1 = Work.create(workRepository.nextId(), "Spin", a1);
+        Work w2 = Work.create(workRepository.nextId(), "Soul", a1);
+        Work w3 = Work.create(workRepository.nextId(), "Newton", a2);
+        Work w4 = Work.create(workRepository.nextId(), "Tesla", a2);
 
         // author's been saved
         assertTrue(authorRepository.save(a1));

@@ -52,10 +52,7 @@ public final class Utils {
 
     public static SqlParameterSource paramsForWork(Work work) {
         return new MapSqlParameterSource("id", work.getId())
-                .addValue("title", work.getTitle())
-                .addValue("appearedBegins", work.whenAppeared().getBegins())
-                .addValue("appearedEnds", work.whenAppeared().getEnds())
-                .addValue("rangePrecision", work.whenAppeared().getPrecision().code());
+                .addValue("title", work.getTitle());
     }
 
     private static class UnmodifiableDomainList<T extends DomainObject>

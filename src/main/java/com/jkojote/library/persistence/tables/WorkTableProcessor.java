@@ -15,11 +15,11 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public class WorkTableProcessor implements TableProcessor<Work> {
 
     private static final String INSERT =
-        "INSERT INTO Work (id, title, appearedBegins, appearedEnds, rangePrecision) "+
-          "VALUES (?, ?, ?, ?, ?)";
+        "INSERT INTO Work (id, title) "+
+          "VALUES (?, ?)";
 
     private static final String UPDATE =
-        "UPDATE Work SET title = ?, appearedBegins = ?, appearedEnds = ?, rangePrecision = ? WHERE id = ?";
+        "UPDATE Work SET title = ? WHERE id = ?";
 
     private static final String DELETE =
         "DELETE FROM Work WHERE id = ?";
@@ -57,11 +57,7 @@ public class WorkTableProcessor implements TableProcessor<Work> {
         if (exists(e))
             return false;
         tryPutToCache(e.getId());
-        jdbcTemplate.update(INSERT, e.getId(),
-                e.getTitle(),
-                e.whenAppeared().getBegins(),
-                e.whenAppeared().getEnds(),
-                e.whenAppeared().getPrecision().code());
+        jdbcTemplate.update(INSERT, e.getId(), e.getTitle());
         return true;
     }
 
@@ -78,10 +74,7 @@ public class WorkTableProcessor implements TableProcessor<Work> {
     public boolean update(Work e) {
         if (!exists(e))
             return false;
-        jdbcTemplate.update(UPDATE, e.getTitle(),
-                e.whenAppeared().getBegins(),
-                e.whenAppeared().getEnds(),
-                e.whenAppeared().getPrecision().code());
+        jdbcTemplate.update(UPDATE, e.getTitle(), e.getId());
         return true;
     }
 

@@ -60,8 +60,8 @@ public class FetchersTest {
     public void testAuthorFetcher() {
         Author a1 = Author.createNew(1, Name.of("", "", ""));
         // only id is used to fetch authors
-        Work w1 = Work.create(1, "W1", a1, DateRange.unknown());
-        Work w2 = Work.create(3, "W2", a1, DateRange.unknown());
+        Work w1 = Work.create(1, "W1", a1);
+        Work w2 = Work.create(3, "W2", a1);
         List<Name> authorsNames = authorFetcher.fetchFor(w1).stream()
                 .map(Author::getName)
                 .collect(Collectors.toList());
@@ -79,7 +79,7 @@ public class FetchersTest {
     public void testSubjectFetcher() {
         Author a1 = Author.createNew(1, Name.of("", "", ""));
         // only id is used to fetch authors
-        Work w1 = Work.create(1, "W1", a1, DateRange.unknown());
+        Work w1 = Work.create(1, "W1", a1);
         List<Subject> subjects = subjectFetcher.fetchFor(w1);
         assertEquals(3, subjects.size());
         assertTrue(subjects.contains(Subject.of("Science")));

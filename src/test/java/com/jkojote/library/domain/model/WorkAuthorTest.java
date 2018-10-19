@@ -23,7 +23,7 @@ public class WorkAuthorTest {
 
     @Test
     public void addWork_AddsWorkToAuthorsWork() {
-        Work work = Work.create(1, "Work1", a1, DateRange.unknown());
+        Work work = Work.create(1, "Work1", a1);
         assertTrue(work.getAuthors().contains(a1));
         assertTrue(a1.getWorks().contains(work));
         // work already has this author
@@ -34,7 +34,7 @@ public class WorkAuthorTest {
 
     @Test
     public void addAuthor_AddsAuthorToWorksAuthors() {
-        Work work = Work.create(1, "Work1", a1, DateRange.unknown());
+        Work work = Work.create(1, "Work1", a1);
         work.addAuthor(a2);
         // author's been successfully added
         assertTrue(work.getAuthors().contains(a2));
@@ -47,7 +47,7 @@ public class WorkAuthorTest {
 
     @Test
     public void removeAuthor_RemovesAuthorFromWorksAuthors() {
-        Work work = Work.create(1, "Work1", a1, DateRange.unknown());
+        Work work = Work.create(1, "Work1", a1);
         work.addAuthor(a2);
         assertTrue(work.removeAuthor(a2));
         assertFalse(work.getAuthors().contains(a2));
@@ -63,8 +63,8 @@ public class WorkAuthorTest {
 
     @Test
     public void removeWork_RemovesWorkFromAuthorsWorks() {
-        Work work  = Work.create(1, "Work1", a1, DateRange.unknown());
-        Work work1 = Work.create(2, "Work2", a1, DateRange.unknown());
+        Work work  = Work.create(1, "Work1", a1);
+        Work work1 = Work.create(2, "Work2", a1);
         work.addAuthor(a2);
         a2.addWork(work1);
         // work's been successfully removed

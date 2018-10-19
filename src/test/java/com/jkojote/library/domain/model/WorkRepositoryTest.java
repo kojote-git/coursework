@@ -36,7 +36,7 @@ public class WorkRepositoryTest {
     @Test
     public void save_SavesWork() {
         Author a1 = Author.createNew(authorRepository.nextId(), Name.of("Samuel", "Saurus"));
-        Work w1 = Work.create(workRepository.nextId(), "Saurus", a1, DateRange.unknown());
+        Work w1 = Work.create(workRepository.nextId(), "Saurus", a1);
         assertTrue(workRepository.save(w1));
         assertTrue(workRepository.exists(w1));
         assertFalse(workRepository.save(w1));
@@ -50,7 +50,7 @@ public class WorkRepositoryTest {
     @Test
     public void remove_RemovesWorkAndChecksIfRecordsWhereDeletedFromRelatedToWorkTables() {
         Author a1 = Author.createNew(authorRepository.nextId(), Name.of("Peter", "Smith"));
-        Work w1 = Work.create(workRepository.nextId(), "Smith", a1, DateRange.unknown());
+        Work w1 = Work.create(workRepository.nextId(), "Smith", a1);
         workRepository.save(w1);
         workRepository.remove(w1);
 

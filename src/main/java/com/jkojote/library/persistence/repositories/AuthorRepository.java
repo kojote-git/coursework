@@ -42,15 +42,18 @@ public class AuthorRepository implements DomainRepository<Author> {
     private AtomicLong lastId;
 
     @Autowired
-    public AuthorRepository(@Qualifier("authorMapper")
-                            RowMapper<Author> authorMapper,
-                            @Qualifier("authorTable")
+    public AuthorRepository(@Qualifier("authorTable")
                             TableProcessor<Author> authorTable,
                             JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.authorTable = authorTable;
-        this.authorMapper = authorMapper;
         initLastId();
+    }
+
+    @Autowired
+    @Qualifier("authorMapper")
+    public void setAuthorMapper(RowMapper<Author> authorMapper) {
+        this.authorMapper = authorMapper;
     }
 
     @Autowired

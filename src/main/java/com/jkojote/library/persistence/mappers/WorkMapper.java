@@ -52,20 +52,9 @@ public class WorkMapper implements RowMapper<Work> {
     public Work mapRow(ResultSet rs, int rowNum) throws SQLException {
         long id       = rs.getLong("id");
         String title    = rs.getString("title");
-        LazyListImpl authors  = new LazyListImpl<>(lazyAuthorListFetcher);
-        LazyListImpl subjects = new LazyListImpl<>(lazySubjectListFetcher);
-        Date appearedBeginsDate = rs.getDate("appearedBegins");
-        Date appearedEndsDate   = rs.getDate("appearedEnds");
-        DateRangePrecision rangePrecision =
-                Utils.convertIntToDateRangePrecision(rs.getInt("rangePrecision"));
-        LocalDate appearedBegins = appearedBeginsDate == null ? null : appearedBeginsDate.toLocalDate();
-        LocalDate appearedEnds   = appearedEndsDate == null ? null : appearedEndsDate.toLocalDate();
-        DateRange whenAppeared = DateRange.of(
-            appearedBegins,
-            appearedEnds,
-            rangePrecision
-        );
-        Work work = Work.restore(id, title, whenAppeared, authors, subjects);
+        LazyListImpl<Work, Author> authors  = new LazyListImpl<>(lazyAuthorListFetcher);
+        LazyListImpl<Work, Subject> subjects = new LazyListImpl<>(lazySubjectListFetcher);
+        Work work = Work.restore(id, title, authors, subjects);
         subjects.setParentEntity(work);
         authors.setParentEntity(work);
         subjects.seal();
