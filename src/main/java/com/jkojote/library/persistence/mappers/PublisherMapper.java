@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 @Component("publisherMapper")
 @Transactional
-public class PublisherMapper implements RowMapper<Publisher> {
+class PublisherMapper implements RowMapper<Publisher> {
 
     private ListFetcher<Publisher, Book> bookListFetcher;
 

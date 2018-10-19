@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @Component("publisherTable")
 @Transactional
 @SuppressWarnings("Duplicates")
-public class PublisherTableProcessor implements TableProcessor<Publisher> {
+class PublisherTableProcessor implements TableProcessor<Publisher> {
 
     private static final String INSERT =
         "INSERT INTO Publisher (id, name) VALUES (?, ?)";

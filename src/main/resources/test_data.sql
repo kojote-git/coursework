@@ -14,8 +14,8 @@ INSERT INTO Work (id, title)
 INSERT INTO Work (id, title)
   VALUES (4, 'A Study in Scarlet');
 
-INSERT INTO Work (id, title)
-  VALUES (5, 'Imaginary');
+INSERT INTO Work (id, title, description)
+  VALUES (5, 'Imaginary', 'Assume that this is a very long description');
 
 INSERT INTO WorkAuthor (workId, authorId)
   VALUES (1, 1);

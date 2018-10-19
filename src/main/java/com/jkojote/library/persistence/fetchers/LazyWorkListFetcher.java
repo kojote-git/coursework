@@ -3,7 +3,6 @@ package com.jkojote.library.persistence.fetchers;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.persistence.ListFetcher;
-import com.jkojote.library.persistence.mappers.WorkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,7 +16,7 @@ import java.util.List;
 
 @Component("worksFetcher")
 @Transactional
-public class LazyWorkListFetcher implements ListFetcher<Author, Work> {
+class LazyWorkListFetcher implements ListFetcher<Author, Work> {
 
     private static final String QUERY =
         "SELECT id, title FROM Work w " +

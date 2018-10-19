@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 @Component("bookFileFetcher")
 @Transactional
-public class LazyBookFileFetcher implements LazyObjectFetcher<BookInstance, byte[]> {
+class LazyBookFileFetcher implements LazyObjectFetcher<BookInstance, byte[]> {
 
     private JdbcTemplate jdbcTemplate;
 

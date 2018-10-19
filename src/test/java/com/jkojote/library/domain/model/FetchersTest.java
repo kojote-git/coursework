@@ -4,12 +4,12 @@ import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.Work;
+import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.persistence.LazyObject;
+import com.jkojote.library.persistence.LazyObjectFetcher;
 import com.jkojote.library.persistence.ListFetcher;
-import com.jkojote.library.values.DateRange;
 import com.jkojote.library.values.Name;
-import com.jkojote.library.persistence.fetchers.LazyAuthorListFetcher;
-import com.jkojote.library.persistence.fetchers.LazySubjectListFetcher;
-import com.jkojote.library.persistence.fetchers.LazyWorkListFetcher;
+import com.jkojote.library.values.Text;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,6 +37,9 @@ public class FetchersTest {
 
     @Autowired
     private ListFetcher<Work, Subject> subjectFetcher;
+
+    @Autowired
+    private DomainRepository<Work> workRepository;
 
     @Test
     public void testWorksFetcher() {
@@ -85,6 +89,18 @@ public class FetchersTest {
         assertTrue(subjects.contains(Subject.of("Science")));
         assertTrue(subjects.contains(Subject.of("Biology")));
         assertTrue(subjects.contains(Subject.of("Religion")));
+    }
+
+    @Test
+    public void testTextIsFetchedLazily() {
+        Work work = workRepository.findById(5);
+        Text descr = work.getDescription();
+        assertTrue(descr instanceof LazyObject);
+        LazyObject lazy = (LazyObject) descr;
+        assertFalse(lazy.isFetched());
+        // fetch description from database
+        descr.toString();
+        assertTrue(lazy.isFetched());
     }
 
     private <T> boolean contains(List<T> objects, T object) {

@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository("publisherRepository")
 @Transactional
-public class PublisherRepository implements DomainRepository<Publisher> {
+class PublisherRepository implements DomainRepository<Publisher> {
 
     private final Map<Long, Publisher> cache;
 

@@ -3,7 +3,6 @@ package com.jkojote.library.persistence.fetchers;
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.persistence.ListFetcher;
-import com.jkojote.library.persistence.mappers.BookMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,7 +14,7 @@ import java.util.List;
 
 @Component("booksFetcher")
 @Transactional
-public class LazyBookFetcher implements ListFetcher<Publisher, Book> {
+class LazyBookFetcher implements ListFetcher<Publisher, Book> {
 
     private JdbcTemplate jdbcTemplate;
 

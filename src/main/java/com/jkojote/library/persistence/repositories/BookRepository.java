@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository("bookRepository")
 @Transactional
-public class BookRepository implements DomainRepository<Book> {
+class BookRepository implements DomainRepository<Book> {
 
     private JdbcTemplate jdbcTemplate;
 

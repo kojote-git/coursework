@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @Transactional
-public class SubjectTableImpl implements SubjectTable {
+class SubjectTableImpl implements SubjectTable {
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 

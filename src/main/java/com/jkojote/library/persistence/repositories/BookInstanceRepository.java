@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository("bookInstanceRepository")
 @Transactional
-public class BookInstanceRepository implements DomainRepository<BookInstance> {
+class BookInstanceRepository implements DomainRepository<BookInstance> {
 
     private final Map<Long, BookInstance> cache = new ConcurrentHashMap<>();
 

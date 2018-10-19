@@ -1,7 +1,10 @@
 package com.jkojote.library.persistence.tables;
 
 import com.jkojote.library.domain.model.work.Work;
+import com.jkojote.library.persistence.LazyObject;
 import com.jkojote.library.persistence.TableProcessor;
+import com.jkojote.library.values.Text;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,14 +15,17 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @SuppressWarnings("ALL")
 @Component("workTable")
 @Transactional
-public class WorkTableProcessor implements TableProcessor<Work> {
+class WorkTableProcessor implements TableProcessor<Work> {
 
     private static final String INSERT =
-        "INSERT INTO Work (id, title) "+
-          "VALUES (?, ?)";
+        "INSERT INTO Work (id, title, description) "+
+          "VALUES (?, ?, ?)";
 
     private static final String UPDATE =
         "UPDATE Work SET title = ? WHERE id = ?";
+
+    private static final String UPDATE_WITH_DESCRIPTION =
+        "UPDATE Work SET title = ?, description = ? WHERE id = ?";
 
     private static final String DELETE =
         "DELETE FROM Work WHERE id = ?";
@@ -33,6 +39,7 @@ public class WorkTableProcessor implements TableProcessor<Work> {
 
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public WorkTableProcessor(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -57,7 +64,7 @@ public class WorkTableProcessor implements TableProcessor<Work> {
         if (exists(e))
             return false;
         tryPutToCache(e.getId());
-        jdbcTemplate.update(INSERT, e.getId(), e.getTitle());
+        jdbcTemplate.update(INSERT, e.getId(), e.getTitle(), e.getDescription().toString());
         return true;
     }
 
@@ -74,7 +81,12 @@ public class WorkTableProcessor implements TableProcessor<Work> {
     public boolean update(Work e) {
         if (!exists(e))
             return false;
-        jdbcTemplate.update(UPDATE, e.getTitle(), e.getId());
+        Text description = e.getDescription();
+        boolean isFetched = description instanceof LazyObject && ((LazyObject) description).isFetched();
+        if (isFetched)
+            jdbcTemplate.update(UPDATE_WITH_DESCRIPTION, e.getTitle(), description.toString(), e.getId());
+        else
+            jdbcTemplate.update(UPDATE, e.getTitle(), e.getId());
         return true;
     }
 

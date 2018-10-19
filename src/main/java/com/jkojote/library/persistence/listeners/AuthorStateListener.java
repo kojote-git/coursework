@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("authorStateListener")
 @Transactional
-public class AuthorStateListener implements DomainEventListener<Author> {
+class AuthorStateListener implements DomainEventListener<Author> {
 
     private DomainRepository<Work> workRepository;
 

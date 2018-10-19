@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("workSubjectBridge")
 @Transactional
-public class WorkSubjectBridgeTableProcessor implements BridgeTableProcessor<Work, Subject> {
+class WorkSubjectBridgeTableProcessor implements BridgeTableProcessor<Work, Subject> {
 
     private SubjectTable subjectRepository;
 

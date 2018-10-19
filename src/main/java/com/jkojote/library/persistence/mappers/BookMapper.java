@@ -7,9 +7,7 @@ import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.ListFetcher;
-import com.jkojote.library.persistence.fetchers.LazyBookInstancesListFetcher;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
-import com.jkojote.library.persistence.listeners.BookStateListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.RowMapper;
@@ -20,7 +18,7 @@ import java.sql.SQLException;
 
 
 @Component("bookMapper")
-public class BookMapper implements RowMapper<Book> {
+class BookMapper implements RowMapper<Book> {
 
     private DomainRepository<Work> workRepository;
 

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @SuppressWarnings("ALL")
 @Component("authorTable")
 @Transactional
-public class AuthorTableProcessor implements TableProcessor<Author> {
+class AuthorTableProcessor implements TableProcessor<Author> {
 
     private static final String INSERT =
         "INSERT INTO Author (id, firstName, middleName, lastName) "+

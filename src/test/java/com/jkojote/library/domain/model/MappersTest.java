@@ -3,13 +3,11 @@ package com.jkojote.library.domain.model;
 import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.values.DateRange;
 import com.jkojote.library.values.Name;
-import com.jkojote.library.persistence.mappers.AuthorMapper;
-import com.jkojote.library.persistence.mappers.WorkMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -31,10 +29,10 @@ import static org.mockito.Mockito.when;
 public class MappersTest {
 
     @Autowired
-    private AuthorMapper authorMapper;
+    private RowMapper<Author> authorMapper;
 
     @Autowired
-    private WorkMapper workMapper;
+    private RowMapper<Work> workMapper;
 
     private ResultSet forWorkMapper;
 

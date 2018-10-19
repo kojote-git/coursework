@@ -14,7 +14,7 @@ import java.util.List;
 
 @Component("subjectsFetcher")
 @Transactional
-public class LazySubjectListFetcher implements ListFetcher<Work, Subject> {
+class LazySubjectListFetcher implements ListFetcher<Work, Subject> {
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 

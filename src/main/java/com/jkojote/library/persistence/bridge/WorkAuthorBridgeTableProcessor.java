@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("workAuthorBridge")
 @Transactional
-public class WorkAuthorBridgeTableProcessor implements BridgeTableProcessor<Work, Author> {
+class WorkAuthorBridgeTableProcessor implements BridgeTableProcessor<Work, Author> {
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 

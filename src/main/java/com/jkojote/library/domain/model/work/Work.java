@@ -9,6 +9,8 @@ import com.jkojote.library.domain.shared.domain.DomainEntity;
 import com.jkojote.library.domain.shared.DomainArrayList;
 import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.domain.shared.domain.DomainList;
+import com.jkojote.library.values.OrdinaryText;
+import com.jkojote.library.values.Text;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -16,7 +18,7 @@ public class Work extends DomainEntity {
 
     private String title;
 
-    private String description;
+    private Text description;
 
     private DomainList<Author> authors;
 
@@ -30,6 +32,7 @@ public class Work extends DomainEntity {
         this.authors  = new DomainArrayList<>();
         this.subjects = new DomainArrayList<>();
         this.authors.add(author);
+        this.description = OrdinaryText.EMPTY;
     }
 
     private Work(long id, String title,
@@ -39,6 +42,7 @@ public class Work extends DomainEntity {
         this.title    = title;
         this.authors  = authors;
         this.subjects = subjects;
+        this.description = OrdinaryText.EMPTY;
     }
 
     public static Work create(long id, String title, Author author) {
@@ -115,12 +119,12 @@ public class Work extends DomainEntity {
         return false;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(Text description) {
         checkNotNull(description);
         this.description = description;
     }
 
-    public String getDescription() {
+    public Text getDescription() {
         return description;
     }
 

@@ -2,13 +2,12 @@ package com.jkojote.library.domain.model;
 
 import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.author.Author;
+import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.SubjectTable;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
-import com.jkojote.library.values.DateRange;
+import com.jkojote.library.persistence.BridgeTableProcessor;
 import com.jkojote.library.values.Name;
-import com.jkojote.library.persistence.bridge.WorkAuthorBridgeTableProcessor;
-import com.jkojote.library.persistence.bridge.WorkSubjectBridgeTableProcessor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +32,10 @@ public class RepositoriesTest {
     private SubjectTable subjectRepository;
 
     @Autowired
-    private WorkAuthorBridgeTableProcessor waBridgeTable;
+    private BridgeTableProcessor<Work, Author> waBridgeTable;
 
     @Autowired
-    private WorkSubjectBridgeTableProcessor wsBridgeTable;
+    private BridgeTableProcessor<Work, Subject> wsBridgeTable;
 
     @Test
     public void test1_TryingSaveNewEntitiesAndChecksWhetherTheirStateIsManagedAfterPersistence() {

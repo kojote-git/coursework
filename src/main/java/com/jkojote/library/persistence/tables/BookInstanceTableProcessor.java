@@ -12,14 +12,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 @Component("bookInstanceTable")
 @Transactional
 @SuppressWarnings("Duplicates")
-public class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
+class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
 
     private static final String INSERT =
         "INSERT INTO BookInstance (id, bookId, isbn13, file, format) " +

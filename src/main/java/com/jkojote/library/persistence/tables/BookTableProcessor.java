@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @Component("bookTable")
 @Transactional
 @SuppressWarnings("Duplicates")
-public class BookTableProcessor implements TableProcessor<Book> {
+class BookTableProcessor implements TableProcessor<Book> {
 
     private static final String INSERT =
         "INSERT INTO Book (id, workId, publisherId, edition) " +

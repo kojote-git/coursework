@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("workStateListener")
 @Transactional
-public class WorkStateListener implements DomainEventListener<Work> {
+class WorkStateListener implements DomainEventListener<Work> {
 
     private BridgeTableProcessor<Work, Subject> bridgeTableProcessor;
 

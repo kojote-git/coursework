@@ -1,6 +1,5 @@
-package com.jkojote.library.config.tests;
+package com.jkojote.library.persistence.fetchers;
 
-import com.jkojote.library.persistence.fetchers.LazyBookFileFetcher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +21,7 @@ import javax.sql.DataSource;
         type = FilterType.ASSIGNABLE_TYPE, value = LazyBookFileFetcher.class
 ))
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class ForBookInstance {
+public class ForBookInstanceConfig {
 
     private DataSource dataSource;
 

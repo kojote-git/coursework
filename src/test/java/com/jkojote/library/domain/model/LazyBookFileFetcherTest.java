@@ -1,6 +1,6 @@
 package com.jkojote.library.domain.model;
 
-import com.jkojote.library.config.tests.ForBookInstance;
+import com.jkojote.library.persistence.fetchers.ForBookInstanceConfig;
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookFormat;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ForBookInstance.class)
+@ContextConfiguration(classes = ForBookInstanceConfig.class)
 @DirtiesContext
 public class LazyBookFileFetcherTest {
 

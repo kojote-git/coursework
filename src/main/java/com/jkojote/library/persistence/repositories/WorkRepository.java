@@ -2,18 +2,13 @@ package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.TableProcessor;
-import com.jkojote.library.persistence.listeners.WorkStateListener;
-import com.jkojote.library.persistence.mappers.WorkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository("workRepository")
 @Transactional
 @SuppressWarnings("Duplicates")
-public class WorkRepository implements DomainRepository<Work> {
+class WorkRepository implements DomainRepository<Work> {
 
     private final Map<Long, Work> cache = new ConcurrentHashMap<>();
 

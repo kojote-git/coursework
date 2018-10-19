@@ -3,7 +3,6 @@ package com.jkojote.library.persistence.fetchers;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.persistence.ListFetcher;
-import com.jkojote.library.persistence.mappers.AuthorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,7 +16,7 @@ import java.util.List;
 
 @Component("authorsFetcher")
 @Transactional
-public class LazyAuthorListFetcher implements ListFetcher<Work, Author> {
+class LazyAuthorListFetcher implements ListFetcher<Work, Author> {
 
     private static final String QUERY =
       "SELECT id, firstName, lastName, middleName FROM Author a "+

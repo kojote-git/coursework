@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("bookStateListener")
 @Transactional
-public class BookStateListener implements DomainEventListener<Book> {
+class BookStateListener implements DomainEventListener<Book> {
 
     private TableProcessor<BookInstance> bookInstanceTable;
 

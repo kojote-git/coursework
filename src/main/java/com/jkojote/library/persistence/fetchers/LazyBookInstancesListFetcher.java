@@ -15,7 +15,7 @@ import java.util.List;
 
 @Component("bookInstancesFetcher")
 @Transactional
-public class LazyBookInstancesListFetcher implements ListFetcher<Book, BookInstance> {
+class LazyBookInstancesListFetcher implements ListFetcher<Book, BookInstance> {
 
     private JdbcTemplate jdbcTemplate;
 
