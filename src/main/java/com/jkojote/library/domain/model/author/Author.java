@@ -41,6 +41,11 @@ public class Author extends DomainEntity {
         return Utils.unmodifiableDomainList(works);
     }
 
+    public void setName(Name name) {
+        checkNotNull(name);
+        this.name = name;
+    }
+
     public Name getName() {
         return name;
     }
