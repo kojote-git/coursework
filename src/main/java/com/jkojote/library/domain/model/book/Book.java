@@ -5,9 +5,10 @@ import com.jkojote.library.domain.model.book.events.BookInstanceRemovedEvent;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
-import com.jkojote.library.domain.shared.domain.DomainList;
+
+import java.util.Collections;
+import java.util.List;
 
 
 public class Book extends DomainEntity {
@@ -18,11 +19,11 @@ public class Book extends DomainEntity {
 
     private int edition;
 
-    private DomainList<BookInstance> bookInstances;
+    private List<BookInstance> bookInstances;
 
     public Book(long id, Work basedOn,
                 Publisher publisher, int edition,
-                DomainList<BookInstance> instances) {
+                List<BookInstance> instances) {
         super(id);
         this.basedOn   = basedOn;
         this.publisher = publisher;
@@ -30,7 +31,7 @@ public class Book extends DomainEntity {
         this.bookInstances = instances;
     }
 
-    public Book(long id, Work basedOn, DomainList<BookInstance> bookInstances) {
+    public Book(long id, Work basedOn, List<BookInstance> bookInstances) {
         super(id);
         this.basedOn = basedOn;
         this.bookInstances = bookInstances;
@@ -52,8 +53,8 @@ public class Book extends DomainEntity {
         return publisher;
     }
 
-    public DomainList<BookInstance> getBookInstances() {
-        return Utils.unmodifiableDomainList(bookInstances);
+    public List<BookInstance> getBookInstances() {
+        return Collections.unmodifiableList(bookInstances);
     }
 
     public boolean addBookInstance(BookInstance instance) {

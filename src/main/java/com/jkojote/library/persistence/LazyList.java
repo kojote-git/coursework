@@ -1,6 +1,5 @@
 package com.jkojote.library.persistence;
 
-import com.jkojote.library.domain.shared.domain.DomainList;
 import com.jkojote.library.domain.shared.domain.DomainObject;
 
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.List;
  * @param <T>
  */
 public interface LazyList<T extends DomainObject>
-extends DomainList<T>, LazyObject<List<T>> {
+extends List<T>, LazyObject<List<T>> {
 
     /**
      * Whether contents of this list has been fetched from data source

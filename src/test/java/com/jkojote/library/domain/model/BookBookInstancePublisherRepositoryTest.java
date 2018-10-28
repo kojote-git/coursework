@@ -7,7 +7,6 @@ import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.book.instance.isbn.Isbn13;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.shared.DomainArrayList;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.files.FileInstance;
 import com.jkojote.library.files.StandardFileInstance;
@@ -20,6 +19,8 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -60,7 +61,7 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
         Work work = workRepository.findById(5);
         // when saving book, NullPointerException is thrown to test
         // transaction management works and it then rolls back
-        this.book = new Book(bookRepository.nextId(), work, null, 1, new DomainArrayList<>());
+        this.book = new Book(bookRepository.nextId(), work, null, 1, new ArrayList<>());
         initBook(this.book);
         bookRepository.save(book);
     }
@@ -70,7 +71,7 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
         // ImaginaryBook
         Work work = workRepository.findById(5);
         long id = bookRepository.nextId();
-        this.book = new Book(id, work, publisher, 1, new DomainArrayList<>());
+        this.book = new Book(id, work, publisher, 1, new ArrayList<>());
         initBook(this.book);
         bookRepository.save(this.book);
 
@@ -98,7 +99,7 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
     public void remove_RemovesBookAndAllAssociatedBookInstances() {
         Work work = workRepository.findById(5);
         long id = bookRepository.nextId();
-        book = new Book(id, work, this.publisher, 2, new DomainArrayList<>());
+        book = new Book(id, work, this.publisher, 2, new ArrayList<>());
         initBook(book);
         bookRepository.save(book);
         long tInstanceId1 = book.getBookInstances().get(0).getId();
@@ -117,7 +118,7 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
 
 
     private void initPublisher() {
-        this.publisher = new Publisher(4, "Imaginary publisher", new DomainArrayList<>());
+        this.publisher = new Publisher(4, "Imaginary publisher", new ArrayList<>());
     }
 
     private void initBook(Book book) {

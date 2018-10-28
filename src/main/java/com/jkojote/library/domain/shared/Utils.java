@@ -4,7 +4,6 @@ import com.google.common.collect.ForwardingList;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainObject;
-import com.jkojote.library.domain.shared.domain.DomainList;
 import com.jkojote.library.values.DateRangePrecision;
 import com.jkojote.library.persistence.LazyList;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
@@ -16,14 +15,6 @@ import java.util.*;
 public final class Utils {
 
     private static final SqlParameterSource EMPTY = new EmptySqlParameterSource();
-
-    @SuppressWarnings("unchecked")
-    public static <T extends DomainObject>
-    DomainList<T> unmodifiableDomainList(DomainList<T> entityList) {
-        return entityList instanceof LazyList ?
-                new UnmodifiableLazyList((LazyList<T>) entityList) :
-                new UnmodifiableDomainList<>(entityList);
-    }
 
     public static DateRangePrecision convertIntToDateRangePrecision(int code) {
         switch (code) {
@@ -53,21 +44,6 @@ public final class Utils {
     public static SqlParameterSource paramsForWork(Work work) {
         return new MapSqlParameterSource("id", work.getId())
                 .addValue("title", work.getTitle());
-    }
-
-    private static class UnmodifiableDomainList<T extends DomainObject>
-    extends ForwardingList<T> implements DomainList<T> {
-
-        private List<T> list;
-
-        UnmodifiableDomainList(DomainList<T> list) {
-            this.list = Collections.unmodifiableList(list);
-        }
-
-        @Override
-        protected List<T> delegate() {
-            return list;
-        }
     }
 
     private static class UnmodifiableLazyList<T extends DomainObject>

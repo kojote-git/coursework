@@ -6,11 +6,12 @@ import com.jkojote.library.domain.model.work.events.AuthorRemovedEvent;
 import com.jkojote.library.domain.model.work.events.SubjectAddedEvent;
 import com.jkojote.library.domain.model.work.events.SubjectRemovedEvent;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
-import com.jkojote.library.domain.shared.DomainArrayList;
-import com.jkojote.library.domain.shared.Utils;
-import com.jkojote.library.domain.shared.domain.DomainList;
 import com.jkojote.library.values.OrdinaryText;
 import com.jkojote.library.values.Text;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,24 +21,24 @@ public class Work extends DomainEntity {
 
     private Text description;
 
-    private DomainList<Author> authors;
+    private List<Author> authors;
 
-    private DomainList<Subject> subjects;
+    private List<Subject> subjects;
 
     private Work(long id,
                  String title,
                  Author author) {
         super(id);
         this.title    = title;
-        this.authors  = new DomainArrayList<>();
-        this.subjects = new DomainArrayList<>();
+        this.authors  = new ArrayList<>();
+        this.subjects = new ArrayList<>();
         this.authors.add(author);
         this.description = OrdinaryText.EMPTY;
     }
 
     private Work(long id, String title,
-                 DomainList<Author> authors,
-                 DomainList<Subject> subjects) {
+                 List<Author> authors,
+                 List<Subject> subjects) {
         super(id);
         this.title    = title;
         this.authors  = authors;
@@ -53,30 +54,30 @@ public class Work extends DomainEntity {
         return work;
     }
 
-    public static Work create(long id, String title, DomainList<Author> authors) {
+    public static Work create(long id, String title, List<Author> authors) {
         checkNotNull(title);
         checkNotNull(authors);
-        Work work = new Work(id, title, authors, new DomainArrayList<>());
+        Work work = new Work(id, title, authors, new ArrayList<>());
         for (Author author : authors)
             author.addWork(work);
         return work;
     }
 
     public static Work restore(long id, String title,
-                               DomainList<Author> authors,
-                               DomainList<Subject> subjects) {
+                               List<Author> authors,
+                               List<Subject> subjects) {
         checkNotNull(authors);
         checkNotNull(title);
         checkNotNull(subjects);
         return new Work(id, title, authors, subjects);
     }
 
-    public DomainList<Author> getAuthors() {
-        return Utils.unmodifiableDomainList(authors);
+    public List<Author> getAuthors() {
+        return Collections.unmodifiableList(authors);
     }
 
-    public DomainList<Subject> getSubjects() {
-        return Utils.unmodifiableDomainList(subjects);
+    public List<Subject> getSubjects() {
+        return Collections.unmodifiableList(subjects);
     }
 
     public boolean addSubject(Subject subject) {

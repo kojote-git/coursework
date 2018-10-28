@@ -13,7 +13,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.sql.RowSet;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -50,9 +49,9 @@ public class WorkTableProcessorTest {
 
     @Test
     public void update() {
-        String queryDescription = "SELECT description FROM Work WHERE id = 55";
+        String queryDescription = "SELECT description FROM Work WHERE id = 505";
         Work work = mock(Work.class);
-        when(work.getId()).thenReturn(55L);
+        when(work.getId()).thenReturn(505L);
         when(work.getTitle()).thenReturn("title");
         when(work.getDescription()).thenReturn(OrdinaryText.of("1"))
                 .thenReturn(OrdinaryText.of("2"));

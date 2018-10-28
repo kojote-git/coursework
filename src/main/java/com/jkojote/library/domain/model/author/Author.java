@@ -5,9 +5,10 @@ import com.jkojote.library.domain.model.author.events.WorkAddedEvent;
 import com.jkojote.library.domain.model.author.events.WorkRemovedEvent;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
-import com.jkojote.library.domain.shared.domain.DomainList;
 import com.jkojote.library.values.Name;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -18,9 +19,9 @@ public class Author extends DomainEntity {
 
     private Name name;
 
-    private DomainList<Work> works;
+    private List<Work> works;
 
-    private Author(long id, Name name, DomainList<Work> works) {
+    private Author(long id, Name name, List<Work> works) {
         super(id);
         this.name = name;
         this.works = works;
@@ -28,17 +29,17 @@ public class Author extends DomainEntity {
 
     public static Author createNew(long id, Name name) {
         checkNotNull(name);
-        return new Author(id, name, new DomainArrayList<>());
+        return new Author(id, name, new ArrayList<>());
     }
 
-    public static Author restore(long id, Name name, DomainList<Work> works) {
+    public static Author restore(long id, Name name, List<Work> works) {
         checkNotNull(name);
         checkNotNull(works);
         return new Author(id, name, works);
     }
 
-    public DomainList<Work> getWorks() {
-        return Utils.unmodifiableDomainList(works);
+    public List<Work> getWorks() {
+        return Collections.unmodifiableList(works);
     }
 
     public void setName(Name name) {
