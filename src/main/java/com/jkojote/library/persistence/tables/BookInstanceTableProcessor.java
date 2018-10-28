@@ -1,12 +1,10 @@
 package com.jkojote.library.persistence.tables;
 
-import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.files.FileInstance;
 import com.jkojote.library.persistence.LazyObject;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,14 +40,9 @@ class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
 
     private JdbcTemplate jdbcTemplate;
 
-    private TableProcessor<Book> bookTableProcessor;
-
     @Autowired
-    public BookInstanceTableProcessor(JdbcTemplate jdbcTemplate,
-                                      @Qualifier("bookTable")
-                                      TableProcessor<Book> bookTableProcessor) {
+    public BookInstanceTableProcessor(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.bookTableProcessor = bookTableProcessor;
     }
 
     @Override
@@ -95,7 +88,7 @@ class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
             return false;
         FileInstance file = e.getFile();
         boolean fileIsLazy = file instanceof LazyObject;
-        if (fileIsLazy && ((LazyObject)file).isFetched())
+        if (!fileIsLazy || ((LazyObject)file).isFetched())
             jdbcTemplate.update(UPDATE_WITH_FILE, e.getBook().getId(),
                     e.getIsbn13().asString(),
                     e.getFormat().asString(),

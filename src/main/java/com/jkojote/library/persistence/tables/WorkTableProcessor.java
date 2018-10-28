@@ -82,7 +82,7 @@ class WorkTableProcessor implements TableProcessor<Work> {
         if (!exists(e))
             return false;
         Text description = e.getDescription();
-        boolean isFetched = description instanceof LazyObject && ((LazyObject) description).isFetched();
+        boolean isFetched = !(description instanceof LazyObject) || ((LazyObject) description).isFetched();
         if (isFetched)
             jdbcTemplate.update(UPDATE_WITH_DESCRIPTION, e.getTitle(), description.toString(), e.getId());
         else

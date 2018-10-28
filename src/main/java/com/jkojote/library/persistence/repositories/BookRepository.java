@@ -6,6 +6,7 @@ import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.persistence.LazyObject;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -129,7 +130,16 @@ class BookRepository implements DomainRepository<Book> {
     public boolean update(Book book) {
         if (!exists(book))
             return false;
-        bookTable.insert(book);
+        bookTable.update(book);
+        List<BookInstance> bookInstances =  book.getBookInstances();
+        boolean isFetched = !(bookInstances instanceof LazyObject) || ((LazyObject) bookInstances).isFetched();
+        if (isFetched) {
+            for (BookInstance bookInstance : bookInstances)
+                if (!bookInstanceRepository.exists(bookInstance))
+                    bookInstanceRepository.save(bookInstance);
+                else
+                    bookInstanceRepository.update(bookInstance);
+        }
         book.addEventListener(bookStateListener);
         return true;
     }
