@@ -3,6 +3,8 @@ package com.jkojote.library.persistence.repositories;
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.persistence.MapCache;
+import com.jkojote.library.persistence.MapCacheImpl;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,9 +20,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository("bookInstanceRepository")
 @Transactional
+@SuppressWarnings("Duplicates")
 class BookInstanceRepository implements DomainRepository<BookInstance> {
 
-    private final Map<Long, BookInstance> cache = new ConcurrentHashMap<>();
+    private final MapCache<Long, BookInstance> cache;
 
     private RowMapper<BookInstance> mapper;
 
@@ -41,6 +44,8 @@ class BookInstanceRepository implements DomainRepository<BookInstance> {
         this.jdbcTemplate = jdbcTemplate;
         this.bookInstanceTable = bookInstanceTable;
         this.bookRepository = bookRepository;
+        this.cache = new MapCacheImpl<>(512);
+        this.cache.disable();
         initLastId();
     }
 

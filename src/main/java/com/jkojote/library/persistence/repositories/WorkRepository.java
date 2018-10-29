@@ -4,6 +4,8 @@ import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.persistence.MapCache;
+import com.jkojote.library.persistence.MapCacheImpl;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,8 +16,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository("workRepository")
@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @SuppressWarnings("Duplicates")
 class WorkRepository implements DomainRepository<Work> {
 
-    private final Map<Long, Work> cache = new ConcurrentHashMap<>();
+    private final MapCache<Long, Work> cache;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -43,6 +43,8 @@ class WorkRepository implements DomainRepository<Work> {
                           TableProcessor<Work> workTableProcessor) {
         this.jdbcTemplate = jdbcTemplate;
         this.workTable = workTableProcessor;
+        this.cache = new MapCacheImpl<>(1024);
+        this.cache.disable();
         initLastId();
     }
 
@@ -99,7 +101,6 @@ class WorkRepository implements DomainRepository<Work> {
     public boolean save(Work work) {
         if (exists(work))
             return false;
-        cache.put(work.getId(), work);
         cascadePersistence.saveWork(work);
         work.addEventListener(workStateListener);
         return true;

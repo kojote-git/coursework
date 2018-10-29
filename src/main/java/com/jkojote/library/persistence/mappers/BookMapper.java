@@ -59,6 +59,8 @@ class BookMapper implements RowMapper<Book> {
         Publisher publisher = publisherRepository.findById(publisherId);
         LazyListImpl<Book, BookInstance> list = new LazyListImpl<>(listFetcher);
         Book book = new Book(id, work, publisher, edition, list);
+        list.setParentEntity(book);
+        list.seal();
         book.addEventListener(bookStateListener);
         return book;
     }

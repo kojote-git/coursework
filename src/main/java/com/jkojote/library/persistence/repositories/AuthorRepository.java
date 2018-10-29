@@ -4,6 +4,8 @@ import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.persistence.MapCache;
+import com.jkojote.library.persistence.MapCacheImpl;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,15 +16,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository("authorRepository")
 @Transactional
 class AuthorRepository implements DomainRepository<Author> {
 
-    private final Map<Long, Author> cache = new ConcurrentHashMap<>();
+    private final MapCache<Long, Author> cache;
 
     private RowMapper<Author> authorMapper;
 
@@ -42,6 +42,8 @@ class AuthorRepository implements DomainRepository<Author> {
                             JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.authorTable = authorTable;
+        cache = new MapCacheImpl<>(512);
+        cache.disable();
         initLastId();
     }
 
@@ -64,7 +66,7 @@ class AuthorRepository implements DomainRepository<Author> {
 
     @Override
     public Author findById(long id) {
-        if (cache.containsKey(id))
+        if (cache.contains(id))
             return cache.get(id);
         final String QUERY =
             "SELECT id, firstName, middleName, lastName FROM Author WHERE id = ?";

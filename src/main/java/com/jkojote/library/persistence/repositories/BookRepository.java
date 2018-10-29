@@ -7,6 +7,8 @@ import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.LazyObject;
+import com.jkojote.library.persistence.MapCache;
+import com.jkojote.library.persistence.MapCacheImpl;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,12 +19,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository("bookRepository")
 @Transactional
+@SuppressWarnings("Duplicates")
 class BookRepository implements DomainRepository<Book> {
 
     private JdbcTemplate jdbcTemplate;
@@ -37,7 +38,7 @@ class BookRepository implements DomainRepository<Book> {
 
     private DomainRepository<Publisher> publisherRepository;
 
-    private final Map<Long, Book> cache;
+    private final MapCache<Long, Book> cache;
 
     private TableProcessor<Book> bookTable;
 
@@ -50,7 +51,8 @@ class BookRepository implements DomainRepository<Book> {
                           @Qualifier("bookStateListener")
                           DomainEventListener<Book> bookStateListener) {
         this.jdbcTemplate = jdbcTemplate;
-        cache = new ConcurrentHashMap<>();
+        this.cache = new MapCacheImpl<>();
+        this.cache.disable();
         this.bookTable = bookTableProcessor;
         this.bookStateListener = bookStateListener;
         initLastId();
@@ -120,7 +122,6 @@ class BookRepository implements DomainRepository<Book> {
         if (!workRepository.exists(book.getBasedOn())) {
             workRepository.save(book.getBasedOn());
         }
-        cache.put(book.getId(), book);
         bookTable.insert(book);
         bookInstanceRepository.saveAll(book.getBookInstances());
         return true;
