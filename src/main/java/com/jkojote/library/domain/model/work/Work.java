@@ -9,10 +9,9 @@ import com.jkojote.library.domain.shared.domain.DomainEntity;
 import com.jkojote.library.values.OrdinaryText;
 import com.jkojote.library.values.Text;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Work extends DomainEntity {
@@ -46,23 +45,21 @@ public class Work extends DomainEntity {
         this.description = OrdinaryText.EMPTY;
     }
 
+    @Deprecated
     public static Work create(long id, String title, Author author) {
         checkNotNull(title);
         checkNotNull(author);
-        Work work = new Work(id, title, author);
-        author.addWork(work);
-        return work;
+        return new Work(id, title, author);
     }
 
+    @Deprecated
     public static Work create(long id, String title, List<Author> authors) {
         checkNotNull(title);
         checkNotNull(authors);
-        Work work = new Work(id, title, authors, new ArrayList<>());
-        for (Author author : authors)
-            author.addWork(work);
-        return work;
+        return new Work(id, title, authors, new ArrayList<>());
     }
 
+    @Deprecated
     public static Work restore(long id, String title,
                                List<Author> authors,
                                List<Subject> subjects) {
@@ -81,7 +78,7 @@ public class Work extends DomainEntity {
     }
 
     public boolean addSubject(Subject subject) {
-        if (subjects.contains(subject))
+        if (subjects == null || subjects.contains(subject))
             return false;
         subjects.add(subject);
         notifyAllListeners(new SubjectAddedEvent(this, subject, null));
@@ -97,15 +94,14 @@ public class Work extends DomainEntity {
     }
 
     public boolean removeAuthor(Author author) {
-        if (author == null || !authors.contains(author))
+        if (!authors.contains(author))
             return false;
         authors.remove(author);
         if (author.getWorks().contains(this)) {
             author.removeWork(this);
-            notifyAllListeners(new AuthorRemovedEvent(this, author, null));
-            return true;
         }
-        return false;
+        notifyAllListeners(new AuthorRemovedEvent(this, author, null));
+        return true;
     }
 
     public boolean addAuthor(Author author) {
@@ -114,10 +110,9 @@ public class Work extends DomainEntity {
         authors.add(author);
         if (!author.getWorks().contains(this)) {
             author.addWork(this);
-            notifyAllListeners(new AuthorAddedEvent(this, author, null));
-            return true;
         }
-        return false;
+        notifyAllListeners(new AuthorAddedEvent(this, author, null));
+        return true;
     }
 
     public void setDescription(Text description) {
@@ -138,4 +133,82 @@ public class Work extends DomainEntity {
         return title;
     }
 
+    public static final class WorkBuilder {
+
+        private long id;
+
+        private String title;
+
+        private Text description;
+
+        private List<Author> authors;
+
+        private List<Subject> subjects;
+
+        private WorkBuilder() {
+        }
+
+        public static WorkBuilder aWork() {
+            return new WorkBuilder();
+        }
+
+        public WorkBuilder withId(long id) {
+            checkArgument(id > 0);
+            this.id = id;
+            return this;
+        }
+
+        public WorkBuilder withTitle(String title) {
+            checkNotNull(title, "title must not be null");
+            this.title = title;
+            return this;
+        }
+
+        public WorkBuilder addAuthor(Author a) {
+            if (authors == null)
+                authors = new LinkedList<>();
+            if (!authors.contains(a))
+                this.authors.add(a);
+            return this;
+        }
+
+        public WorkBuilder withDescription(Text description) {
+            if (description == null)
+                this.description = OrdinaryText.EMPTY;
+            else
+                this.description = description;
+            return this;
+        }
+
+        public WorkBuilder withAuthors(List<Author> authors) {
+            checkNotNull(authors);
+            if (this.authors != null)
+                this.authors.addAll(authors);
+            else
+                this.authors = authors;
+            return this;
+        }
+
+        public WorkBuilder withSubjects(List<Subject> subjects) {
+            if (subjects == null)
+                this.subjects = new LinkedList<>();
+            else
+                this.subjects = subjects;
+            return this;
+        }
+
+        public Work build() {
+            if (id == 0)
+                throw new IllegalStateException("id must be set for work");
+            checkNotNull(title, "title must not be null");
+            checkNotNull(authors);
+            if (description == null)
+                description = OrdinaryText.EMPTY;
+            if (subjects == null)
+                subjects = new LinkedList<>();
+            Work work = new Work(id, title, authors, subjects);
+            work.description = description;
+            return work;
+        }
+    }
 }

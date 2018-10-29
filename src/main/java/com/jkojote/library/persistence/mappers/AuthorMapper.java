@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import static com.jkojote.library.domain.model.author.Author.AuthorBuilder;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -46,7 +48,11 @@ class AuthorMapper implements RowMapper<Author> {
         Name name = Name.of(firstName, middleName, lastName);
         LazyListImpl<Author, Work> works =
                 new LazyListImpl<>(lazyWorkListFetcher);
-        Author author = Author.restore(id, name, works);
+        Author author = AuthorBuilder.anAuthor()
+                .withId(id)
+                .withName(name)
+                .withWorks(works)
+                .build();
         works.setParentEntity(author);
         works.seal();
         author.addEventListener(listener);

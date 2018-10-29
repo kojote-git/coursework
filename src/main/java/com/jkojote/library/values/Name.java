@@ -6,6 +6,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Name extends ValueObject {
 
+    public static final Name EMPTY = Name.of("", "", "");
+
     private String firstName;
 
     private String lastName;
@@ -16,6 +18,8 @@ public final class Name extends ValueObject {
         checkNotNull(firstName);
         checkNotNull(middleName);
         checkNotNull(lastName);
+        if (firstName.length() == 0 && middleName.length() == 0 && lastName.length() == 0)
+            return EMPTY;
         return new Name(firstName, middleName, lastName);
     }
 

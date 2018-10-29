@@ -6,7 +6,6 @@ import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.LazyObject;
-import com.jkojote.library.persistence.LazyObjectFetcher;
 import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.values.Name;
 import com.jkojote.library.values.Text;
@@ -23,6 +22,8 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ForRepositories.class)
@@ -44,8 +45,10 @@ public class FetchersTest {
     @Test
     public void testWorksFetcher() {
         // only id is used
-        Author dawkins = Author.createNew(1, Name.of("", "", ""));
-        Author doyle = Author.createNew(3, Name.of("", "", ""));
+        Author dawkins = mock(Author.class);
+        Author doyle = mock(Author.class);
+        when(dawkins.getId()).thenReturn(1L);
+        when(doyle.getId()).thenReturn(3L);
         List<String> titles = workFetcher.fetchFor(dawkins).stream()
                 .map(Work::getTitle)
                 .collect(Collectors.toList());
@@ -62,10 +65,10 @@ public class FetchersTest {
 
     @Test
     public void testAuthorFetcher() {
-        Author a1 = Author.createNew(1, Name.of("", "", ""));
-        // only id is used to fetch authors
-        Work w1 = Work.create(1, "W1", a1);
-        Work w2 = Work.create(3, "W2", a1);
+        Work w1 = mock(Work.class);
+        Work w2 = mock(Work.class);
+        when(w1.getId()).thenReturn(1L);
+        when(w2.getId()).thenReturn(3L);
         List<Name> authorsNames = authorFetcher.fetchFor(w1).stream()
                 .map(Author::getName)
                 .collect(Collectors.toList());
@@ -81,9 +84,9 @@ public class FetchersTest {
 
     @Test
     public void testSubjectFetcher() {
-        Author a1 = Author.createNew(1, Name.of("", "", ""));
         // only id is used to fetch authors
-        Work w1 = Work.create(1, "W1", a1);
+        Work w1 = mock(Work.class);
+        when(w1.getId()).thenReturn(1L);
         List<Subject> subjects = subjectFetcher.fetchFor(w1);
         assertEquals(3, subjects.size());
         assertTrue(subjects.contains(Subject.of("Science")));

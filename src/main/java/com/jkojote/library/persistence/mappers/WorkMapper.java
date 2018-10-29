@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+
+import static com.jkojote.library.domain.model.work.Work.WorkBuilder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -49,7 +51,12 @@ class WorkMapper implements RowMapper<Work> {
         String title    = rs.getString("title");
         LazyListImpl<Work, Author> authors  = new LazyListImpl<>(lazyAuthorListFetcher);
         LazyListImpl<Work, Subject> subjects = new LazyListImpl<>(lazySubjectListFetcher);
-        Work work = Work.restore(id, title, authors, subjects);
+        Work work = WorkBuilder.aWork()
+                .withId(id)
+                .withTitle(title)
+                .withAuthors(authors)
+                .withSubjects(subjects)
+                .build();
         work.setDescription(new LazyText<>(work, descriptionFetcher));
         subjects.setParentEntity(work);
         authors.setParentEntity(work);

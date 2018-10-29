@@ -122,8 +122,7 @@ class CascadeWorkAuthorPersistence {
         if (!authorTable.exists(author)) {
             authorTable.insert(author);
             author.addEventListener(authorStateListener);
-        }
-        else {
+        } else {
             savedAuthors.add(author.getId());
             return;
         }
@@ -147,8 +146,7 @@ class CascadeWorkAuthorPersistence {
         if (!workTable.exists(work)) {
             workTable.insert(work);
             work.addEventListener(workStateListener);
-        }
-        else {
+        } else {
             savedWorks.add(work.getId());
             return;
         }

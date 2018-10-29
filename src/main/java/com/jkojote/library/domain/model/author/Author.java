@@ -1,6 +1,5 @@
 package com.jkojote.library.domain.model.author;
 
-import com.jkojote.library.domain.shared.*;
 import com.jkojote.library.domain.model.author.events.WorkAddedEvent;
 import com.jkojote.library.domain.model.author.events.WorkRemovedEvent;
 import com.jkojote.library.domain.model.work.Work;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Author extends DomainEntity {
@@ -27,11 +27,13 @@ public class Author extends DomainEntity {
         this.works = works;
     }
 
+    @Deprecated
     public static Author createNew(long id, Name name) {
         checkNotNull(name);
         return new Author(id, name, new ArrayList<>());
     }
 
+    @Deprecated
     public static Author restore(long id, Name name, List<Work> works) {
         checkNotNull(name);
         checkNotNull(works);
@@ -58,7 +60,7 @@ public class Author extends DomainEntity {
     }
 
     public boolean addWork(Work work) {
-        if (works.contains(work))
+        if (work == null || works.contains(work))
             return false;
         works.add(work);
         if (!work.getAuthors().contains(this)) {
@@ -77,5 +79,49 @@ public class Author extends DomainEntity {
         }
         notifyAllListeners(new WorkRemovedEvent(this, work, null));
         return true;
+    }
+
+    public static final class AuthorBuilder {
+
+        private long id;
+
+        private Name name;
+
+        private List<Work> works;
+
+        private AuthorBuilder() {
+        }
+
+        public static AuthorBuilder anAuthor() {
+            return new AuthorBuilder();
+        }
+
+        public AuthorBuilder withId(long id) {
+            checkArgument(id > 0);
+            this.id = id;
+            return this;
+        }
+
+        public AuthorBuilder withName(Name name) {
+            checkNotNull(name);
+            this.name = name;
+            return this;
+        }
+
+        public AuthorBuilder withWorks(List<Work> works) {
+            checkNotNull(works);
+            this.works = works;
+            return this;
+        }
+
+        public Author build() {
+            if (id == 0)
+                throw new IllegalStateException("id must be set for author");
+            if (name == null)
+                name = Name.EMPTY;
+            if (works == null)
+                works = new ArrayList<>();
+            return new Author(id, name, works);
+        }
     }
 }

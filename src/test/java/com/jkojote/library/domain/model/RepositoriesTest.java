@@ -28,14 +28,9 @@ public class RepositoriesTest {
     @Autowired
     private DomainRepository<Author> authorRepository;
 
-    @Autowired
-    private SubjectTable subjectRepository;
 
     @Autowired
     private BridgeTableProcessor<Work, Author> waBridgeTable;
-
-    @Autowired
-    private BridgeTableProcessor<Work, Subject> wsBridgeTable;
 
     @Test
     public void test1_TryingSaveNewEntitiesAndChecksWhetherTheirStateIsManagedAfterPersistence() {
@@ -47,6 +42,10 @@ public class RepositoriesTest {
         Work w2 = Work.create(workRepository.nextId(), "Soul", a1);
         Work w3 = Work.create(workRepository.nextId(), "Newton", a2);
         Work w4 = Work.create(workRepository.nextId(), "Tesla", a2);
+
+        a1.addWork(w1);
+        a1.addWork(w2);
+        a2.addWork(w3);
 
         // author's been saved
         assertTrue(authorRepository.save(a1));

@@ -9,11 +9,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.test.annotation.DirtiesContext;
 
 import javax.sql.DataSource;
 
 @Configuration
-@ComponentScan("com.jkojote.library")
+@ComponentScan("com.jkojote.library.persistence")
+@DirtiesContext
 public class ForRepositories {
 
     private DataSource dataSource;

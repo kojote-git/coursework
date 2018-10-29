@@ -121,8 +121,10 @@ class WorkRepository implements DomainRepository<Work> {
         cache.remove(work.getId());
         work.removeListener(workStateListener);
         List<Author> authors = work.getAuthors();
-        for (int i = 0; i < authors.size(); )
+        for (int i = 0; i < authors.size(); ) {
             authors.get(i).removeWork(work);
+            work.removeAuthor(authors.get(i));
+        }
         return true;
     }
 

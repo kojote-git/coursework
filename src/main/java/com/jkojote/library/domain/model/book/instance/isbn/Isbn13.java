@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Isbn13 {
 
+    private static final Isbn13FormatValidator validator = new StandardIsbn13FormatValidator();
+
     private String number;
 
     private Isbn13(String number) {
@@ -12,6 +14,7 @@ public final class Isbn13 {
 
     public static Isbn13 of(String number) {
         checkNotNull(number);
+        validator.requireValid(number);
         return new Isbn13(number);
     }
 

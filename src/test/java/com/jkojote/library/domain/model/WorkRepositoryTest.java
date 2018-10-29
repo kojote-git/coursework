@@ -4,7 +4,6 @@ import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
-import com.jkojote.library.values.DateRange;
 import com.jkojote.library.values.Name;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,9 +14,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static com.jkojote.library.domain.model.author.Author.AuthorBuilder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static com.jkojote.library.domain.model.work.Work.WorkBuilder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ForRepositories.class)
@@ -35,8 +36,15 @@ public class WorkRepositoryTest {
 
     @Test
     public void save_SavesWork() {
-        Author a1 = Author.createNew(authorRepository.nextId(), Name.of("Samuel", "Saurus"));
-        Work w1 = Work.create(workRepository.nextId(), "Saurus", a1);
+        Author a1 = AuthorBuilder.anAuthor()
+                .withId(authorRepository.nextId())
+                .withName(Name.of("Samuel", "Saurus"))
+                .build();
+        Work w1 = WorkBuilder.aWork()
+                .withId(workRepository.nextId())
+                .withTitle("Saurus")
+                .addAuthor(a1)
+                .build();
         assertTrue(workRepository.save(w1));
         assertTrue(workRepository.exists(w1));
         assertFalse(workRepository.save(w1));
@@ -49,8 +57,15 @@ public class WorkRepositoryTest {
 
     @Test
     public void remove_RemovesWorkAndChecksIfRecordsWhereDeletedFromRelatedToWorkTables() {
-        Author a1 = Author.createNew(authorRepository.nextId(), Name.of("Peter", "Smith"));
-        Work w1 = Work.create(workRepository.nextId(), "Smith", a1);
+        Author a1 = AuthorBuilder.anAuthor()
+                .withId(authorRepository.nextId())
+                .withName(Name.of("Peter", "Smith"))
+                .build();
+        Work w1 = WorkBuilder.aWork()
+                .withId(workRepository.nextId())
+                .withTitle("Smith")
+                .addAuthor(a1)
+                .build();
         workRepository.save(w1);
         workRepository.remove(w1);
 

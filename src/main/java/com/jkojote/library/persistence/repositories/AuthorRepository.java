@@ -117,8 +117,10 @@ class AuthorRepository implements DomainRepository<Author> {
         cache.remove(author.getId());
         author.removeListener(authorStateListener);
         List<Work> works = author.getWorks();
-        for (int i = 0; i < works.size(); i++)
+        for (int i = 0; i < works.size(); ) {
             works.get(i).removeAuthor(author);
+            author.removeWork(works.get(i));
+        }
         return true;
     }
 
