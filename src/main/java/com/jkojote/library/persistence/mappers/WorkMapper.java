@@ -3,6 +3,7 @@ package com.jkojote.library.persistence.mappers;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Subject;
 import com.jkojote.library.domain.model.work.Work;
+import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.persistence.LazyObjectFetcher;
 import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
@@ -27,6 +28,8 @@ class WorkMapper implements RowMapper<Work> {
 
     private LazyObjectFetcher<Work, Text> descriptionFetcher;
 
+    private DomainEventListener<Work> workStateListener;
+
     @Autowired
     @Qualifier("authorsFetcher")
     public void setLazyAuthorListFetcher(ListFetcher<Work, Author> lazyAuthorListFetcher) {
@@ -45,6 +48,12 @@ class WorkMapper implements RowMapper<Work> {
         this.lazySubjectListFetcher = lazySubjectListFetcher;
     }
 
+    @Autowired
+    @Qualifier("workStateListener")
+    public void setWorkStateListener(DomainEventListener<Work> workStateListener) {
+        this.workStateListener = workStateListener;
+    }
+
     @Override
     public Work mapRow(ResultSet rs, int rowNum) throws SQLException {
         long id       = rs.getLong("id");
@@ -60,6 +69,7 @@ class WorkMapper implements RowMapper<Work> {
         work.setDescription(new LazyText<>(work, descriptionFetcher));
         subjects.setParentEntity(work);
         authors.setParentEntity(work);
+        work.addEventListener(workStateListener);
         subjects.seal();
         authors.seal();
         return work;

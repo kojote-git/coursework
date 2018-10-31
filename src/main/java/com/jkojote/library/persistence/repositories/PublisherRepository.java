@@ -3,6 +3,8 @@ package com.jkojote.library.persistence.repositories;
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.persistence.MapCache;
+import com.jkojote.library.persistence.MapCacheImpl;
 import com.jkojote.library.persistence.TableProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,15 +15,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository("publisherRepository")
 @Transactional
 class PublisherRepository implements DomainRepository<Publisher> {
 
-    private final Map<Long, Publisher> cache;
+    private final MapCache<Long, Publisher> cache;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -37,7 +37,8 @@ class PublisherRepository implements DomainRepository<Publisher> {
                                @Qualifier("publisherTable")
                                TableProcessor<Publisher> publisherTableProcessor) {
         this.jdbcTemplate = jdbcTemplate;
-        cache = new ConcurrentHashMap<>();
+        cache = new MapCacheImpl<>();
+        cache.disable();
         this.publisherTable = publisherTableProcessor;
         initLastId();
     }
@@ -95,7 +96,7 @@ class PublisherRepository implements DomainRepository<Publisher> {
         String DELETE =
             "DELETE FROM Publisher WHERE id = ?";
         jdbcTemplate.update(DELETE, publisher.getId());
-        cache.remove(publisher.getId(), 1);
+        cache.remove(publisher.getId());
         return true;
     }
 
