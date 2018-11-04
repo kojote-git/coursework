@@ -31,6 +31,8 @@ class PublisherRepository implements DomainRepository<Publisher> {
 
     private TableProcessor<Publisher> publisherTable;
 
+    private static final int UNKNOWN_PUBLISHER_ID = 0;
+
     private AtomicLong lastId;
 
     public PublisherRepository(JdbcTemplate jdbcTemplate,
@@ -91,6 +93,8 @@ class PublisherRepository implements DomainRepository<Publisher> {
 
     @Override
     public boolean remove(Publisher publisher) {
+        if (publisher.getId() == UNKNOWN_PUBLISHER_ID)
+            return false;
         if (!exists(publisher))
             return false;
         String DELETE =
@@ -102,6 +106,8 @@ class PublisherRepository implements DomainRepository<Publisher> {
 
     @Override
     public boolean update(Publisher publisher) {
+        if (publisher.getId() == UNKNOWN_PUBLISHER_ID)
+            return false;
         if (!exists(publisher))
             return false;
         publisherTable.update(publisher);

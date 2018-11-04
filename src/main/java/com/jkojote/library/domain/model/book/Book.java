@@ -53,6 +53,10 @@ public class Book extends DomainEntity {
         return publisher;
     }
 
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
+
     public List<BookInstance> getBookInstances() {
         return Collections.unmodifiableList(bookInstances);
     }

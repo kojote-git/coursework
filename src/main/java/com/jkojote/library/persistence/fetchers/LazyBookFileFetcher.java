@@ -28,11 +28,18 @@ class LazyBookFileFetcher implements LazyObjectFetcher<BookInstance, byte[]> {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(QUERY, bookInstance.getId());
         if (!rowSet.next())
             return new byte[0];
-        Blob blob = (Blob) rowSet.getObject(1);
-        try {
-            return blob.getBytes(1, (int)blob.length());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        Object res = rowSet.getObject(1);
+        if (res instanceof Blob) {
+            try {
+                Blob blob = (Blob) res;
+                return blob.getBytes(1, (int)blob.length());
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (res instanceof byte[]) {
+            return (byte[])res;
+        } else {
+            return null;
         }
     }
 }
