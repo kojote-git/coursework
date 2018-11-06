@@ -2,8 +2,6 @@ package com.jkojote.library.domain.model;
 
 import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.author.Author;
-import com.jkojote.library.domain.model.work.Subject;
-import com.jkojote.library.domain.model.work.SubjectTable;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.BridgeTableProcessor;
