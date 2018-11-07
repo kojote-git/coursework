@@ -1,8 +1,10 @@
 package com.jkojote.library.persistence.repositories;
 
+import com.jkojote.library.clauses.SqlClause;
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.domain.shared.domain.FilteringAndSortingRepository;
 import com.jkojote.library.persistence.MapCache;
 import com.jkojote.library.persistence.MapCacheImpl;
 import com.jkojote.library.persistence.TableProcessor;
@@ -21,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository("bookInstanceRepository")
 @Transactional
 @SuppressWarnings("Duplicates")
-class BookInstanceRepository implements DomainRepository<BookInstance> {
+class BookInstanceRepository implements FilteringAndSortingRepository<BookInstance> {
 
     private final MapCache<Long, BookInstance> cache;
 
@@ -130,5 +132,11 @@ class BookInstanceRepository implements DomainRepository<BookInstance> {
                 copy.remove(instance);
         }
         jdbcTemplate.batchUpdate(INSERT, new BookInstancesBatchSetter(copy));
+    }
+
+    @Override
+    public List<BookInstance> findAll(SqlClause clause) {
+        String all = "SELECT id, bookId, format, isbn13 FROM BookInstance ";
+        return jdbcTemplate.query(all + clause.asString(), mapper);
     }
 }

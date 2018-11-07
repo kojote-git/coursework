@@ -1,9 +1,11 @@
 package com.jkojote.library.persistence.repositories;
 
+import com.jkojote.library.clauses.SqlClause;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.domain.shared.domain.FilteringAndSortingRepository;
 import com.jkojote.library.persistence.MapCache;
 import com.jkojote.library.persistence.MapCacheImpl;
 import com.jkojote.library.persistence.TableProcessor;
@@ -20,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository("authorRepository")
 @Transactional
-class AuthorRepository implements DomainRepository<Author> {
+class AuthorRepository implements FilteringAndSortingRepository<Author> {
 
     private final MapCache<Long, Author> cache;
 
@@ -131,5 +133,10 @@ class AuthorRepository implements DomainRepository<Author> {
         SqlRowSet rs = jdbcTemplate.queryForRowSet(QUERY);
         rs.next();
         this.lastId = new AtomicLong(rs.getLong(1));
+    }
+
+    @Override
+    public List<Author> findAll(SqlClause clause) {
+        return jdbcTemplate.query("SELECT * FROM Author " + clause.asString(), authorMapper);
     }
 }

@@ -3,6 +3,10 @@ INSERT INTO Author (id, firstName, lastName, middleName)
 INSERT INTO Author (id, firstName, lastName, middleName)
   VALUES (3, 'Arthur', 'Doyle', 'Conan');
 INSERT INTO Author (id, firstName, lastName, middleName)
+  VALUES (93, 'L''Done', 'None', 'None');
+INSERT INTO Author (id, firstName, lastName, middleName)
+  VALUES (94, 'L"Done', 'None', 'None');
+INSERT INTO Author (id, firstName, lastName, middleName)
   VALUES (4, 'Imaginary', 'Imaginary', 'Imaginary');
 INSERT INTO Author (id, firstName, lastName, middleName)
   VALUES (55, 'a', 'a', 'a');

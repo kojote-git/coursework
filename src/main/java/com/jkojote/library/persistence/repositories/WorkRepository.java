@@ -1,9 +1,11 @@
 package com.jkojote.library.persistence.repositories;
 
+import com.jkojote.library.clauses.SqlClause;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.domain.shared.domain.FilteringAndSortingRepository;
 import com.jkojote.library.persistence.MapCache;
 import com.jkojote.library.persistence.MapCacheImpl;
 import com.jkojote.library.persistence.TableProcessor;
@@ -21,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository("workRepository")
 @Transactional
 @SuppressWarnings("Duplicates")
-class WorkRepository implements DomainRepository<Work> {
+class WorkRepository implements FilteringAndSortingRepository<Work> {
 
     private final MapCache<Long, Work> cache;
 
@@ -134,5 +136,10 @@ class WorkRepository implements DomainRepository<Work> {
         SqlRowSet res = jdbcTemplate.queryForRowSet(QUERY);
         res.next();
         this.lastId = new AtomicLong(res.getLong(1));
+    }
+
+    @Override
+    public List<Work> findAll(SqlClause clause) {
+        return jdbcTemplate.query("SELECT * FROM Work " + clause.asString(), workMapper);
     }
 }

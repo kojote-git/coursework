@@ -1,8 +1,10 @@
 package com.jkojote.library.persistence.repositories;
 
+import com.jkojote.library.clauses.SqlClause;
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
+import com.jkojote.library.domain.shared.domain.FilteringAndSortingRepository;
 import com.jkojote.library.persistence.MapCache;
 import com.jkojote.library.persistence.MapCacheImpl;
 import com.jkojote.library.persistence.TableProcessor;
@@ -19,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository("publisherRepository")
 @Transactional
-class PublisherRepository implements DomainRepository<Publisher> {
+class PublisherRepository implements FilteringAndSortingRepository<Publisher> {
 
     private final MapCache<Long, Publisher> cache;
 
@@ -124,5 +126,10 @@ class PublisherRepository implements DomainRepository<Publisher> {
         SqlRowSet rs = jdbcTemplate.queryForRowSet(QUERY);
         rs.next();
         lastId = new AtomicLong(rs.getLong(1));
+    }
+
+    @Override
+    public List<Publisher> findAll(SqlClause clause) {
+        return jdbcTemplate.query("SELECT * FROM Publisher " + clause.asString(), publisherMapper);
     }
 }
