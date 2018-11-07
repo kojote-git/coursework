@@ -9,5 +9,9 @@ public interface SqlConditionChain {
 
     SqlOrderByChain orderBy(String attribute, SortOrder order);
 
+    default SqlOrderByChain orderBy(String attribute) {
+        return orderBy(attribute, SortOrder.ASC);
+    }
+
     SqlClause build();
 }

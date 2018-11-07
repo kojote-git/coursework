@@ -4,6 +4,8 @@ import static com.jkojote.library.clauses.mysql.MySqlConditionChain.Comparison;
 
 public class MySqlWhereClauseBuilder implements WhereClauseBuilder {
 
+    private static final Escaping ESCAPER = new Escaping();
+
     @Override
     public StringBuilder build(MySqlConditionChain conditionChain) {
         StringBuilder builder = new StringBuilder();
@@ -19,7 +21,7 @@ public class MySqlWhereClauseBuilder implements WhereClauseBuilder {
                     .append(mComp.getAttribute()).append(" ")
                     .append(mComp.getOp()).append(" ");
             if (mComp.getValueType() == 0) {
-                builder.append("'").append(mComp.getStringValue()).append("'");
+                builder.append("'").append(ESCAPER.escape(mComp.getStringValue())).append("'");
             } else {
                 builder.append(mComp.getLongValue());
             }
