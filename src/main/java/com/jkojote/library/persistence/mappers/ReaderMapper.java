@@ -2,9 +2,11 @@ package com.jkojote.library.persistence.mappers;
 
 import com.jkojote.library.domain.model.reader.Download;
 import com.jkojote.library.domain.model.reader.Reader;
+import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
 import com.jkojote.types.Email;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -20,9 +22,18 @@ class ReaderMapper implements RowMapper<Reader> {
 
     private ListFetcher<Reader, Download> downloadListFetcher;
 
+    private DomainEventListener<Reader> readerStateListener;
+
     @Qualifier("downloadsFetcher")
+    @Autowired
     public void setDownloadListFetcher(ListFetcher<Reader, Download> downloadListFetcher) {
         this.downloadListFetcher = downloadListFetcher;
+    }
+
+    @Qualifier("readerStateListener")
+    @Autowired
+    public void setReaderStateListener(DomainEventListener<Reader> readerStateListener) {
+        this.readerStateListener = readerStateListener;
     }
 
     @Override
@@ -41,6 +52,7 @@ class ReaderMapper implements RowMapper<Reader> {
                 .build();
         list.setParentEntity(reader);
         list.seal();
+        reader.addEventListener(readerStateListener);
         return reader;
     }
 }

@@ -7,14 +7,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Component("downloadTable")
 @Transactional
-public class DownloadTableProcessor implements TableProcessor<Download> {
+class DownloadTableProcessor implements TableProcessor<Download> {
 
     private static final int MAX_CACHE_SIZE = 256;
 
@@ -89,6 +86,11 @@ public class DownloadTableProcessor implements TableProcessor<Download> {
                 e.getReader().getId(),
                 e.getInstance().getId());
         return true;
+    }
+
+    @Override
+    public void batchInsert(Collection<Download> c) {
+        jdbcTemplate.batchUpdate(INSERT, new DownloadBatchSetter(c));
     }
 
     private boolean cacheContains(long readerId, long bookInstanceId) {

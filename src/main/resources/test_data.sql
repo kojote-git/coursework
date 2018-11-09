@@ -90,5 +90,15 @@ INSERT INTO Book (id, workId, publisherId, edition)
 INSERT INTO Book (id, workId, publisherId, edition)
   VALUES (2, 2, 3, 1);
 
+INSERT INTO BookInstance (id, bookId, file, isbn13, format)
+  VALUES (1, 1, null, '978-1234-123-23-3', 'PDF');
+INSERT INTO BookInstance (id, bookId, file, isbn13, format)
+  VALUES (2, 2, null, '978-1234-124-23-3', 'PDF');
+
 INSERT INTO Reader (id, email, password)
-  VALUES (1, 'reader@mail.com', '$2a$12$hEfJ8syqZTc/KzjRU1ySm.N1Q2h4xxO6fBzLTCLzIlbJfAbCaqXLa')
+  VALUES (1, 'reader@mail.com', '$2a$12$hEfJ8syqZTc/KzjRU1ySm.N1Q2h4xxO6fBzLTCLzIlbJfAbCaqXLa');
+
+INSERT INTO Download (readerId, bookInstanceId, readerRating)
+  VALUES (1, 1, 10);
+INSERT INTO Download (readerId, bookInstanceId, readerRating)
+  VALUES (1, 2, 9);
