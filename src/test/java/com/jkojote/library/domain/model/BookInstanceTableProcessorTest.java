@@ -1,6 +1,6 @@
 package com.jkojote.library.domain.model;
 
-import com.jkojote.library.persistence.tables.ForBookInstanceTableProcessorConfig;
+import com.jkojote.library.persistence.tables.ConfigForBookInstanceTableProcessor;
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookFormat;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ForBookInstanceTableProcessorConfig.class)
+@ContextConfiguration(classes = ConfigForBookInstanceTableProcessor.class)
 @DirtiesContext
 public class BookInstanceTableProcessorTest {
 

@@ -22,7 +22,7 @@ import javax.sql.DataSource;
     )
 )
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class ForBookInstanceTableProcessorConfig {
+public class ConfigForBookInstanceTableProcessor {
 
     private DataSource dataSource;
 

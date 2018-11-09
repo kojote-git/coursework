@@ -9,7 +9,7 @@ import com.jkojote.library.domain.shared.domain.DomainEntity;
 import com.jkojote.types.Email;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +23,8 @@ public class Reader extends DomainEntity {
     private List<Download> downloads;
 
     private String encryptedPassword;
+
+    private LocalDateTime timeRegistered;
 
     protected Reader(long id) {
         super(id);
@@ -58,7 +60,7 @@ public class Reader extends DomainEntity {
 
     /**
      * Adds {@code bookInstance} to download history of this reader,
-     * setting date of download to {@link LocalDate#now()} and rating to 0
+     * setting date of download to {@link LocalDateTime#now()} and rating to 0
      * @param bookInstance
      * @return false if history already contains download of the bookInstance
      */
@@ -76,7 +78,7 @@ public class Reader extends DomainEntity {
             return false;
         int idx = Utils.indexOf(downloads, d -> d.getInstance().equals(bookInstance));
         if (idx == -1) {
-            Download d = new Download(this, bookInstance, LocalDate.now(), rating);
+            Download d = new Download(this, bookInstance, LocalDateTime.now(), rating);
             downloads.add(d);
             notifyAllListeners(new DownloadAddedEvent(this, d, null));
             return true;
@@ -102,6 +104,10 @@ public class Reader extends DomainEntity {
         return true;
     }
 
+    public LocalDateTime getTimeRegistered() {
+        return timeRegistered;
+    }
+
     /**
      * Updates rating of the {@code bookInstance} only if it's been downloaded by this reader
      * @param bookInstance
@@ -116,7 +122,7 @@ public class Reader extends DomainEntity {
         if (idx == -1)
             return false;
         Download d = downloads.remove(idx);
-        downloads.add(new Download(this, bookInstance, d.getLastDateDownloaded(), rating));
+        downloads.add(new Download(this, bookInstance, d.getTimeDownloaded(), rating));
         notifyAllListeners(new RatingUpdatedEvent(this, d, null));
         return true;
     }
@@ -130,6 +136,10 @@ public class Reader extends DomainEntity {
         private List<Download> downloads;
 
         private String password;
+
+        private LocalDateTime timeRegistered;
+
+        private boolean passwordEncrypted;
 
         private ReaderBuilder() {
         }
@@ -154,7 +164,19 @@ public class Reader extends DomainEntity {
             return this;
         }
 
+        public ReaderBuilder withTimeRegistered(LocalDateTime time) {
+            this.timeRegistered = time;
+            return this;
+        }
+
         public ReaderBuilder withPassword(String password) {
+            this.password = password;
+            passwordEncrypted = false;
+            return this;
+        }
+
+        public ReaderBuilder withEncryptedPassword(String password) {
+            passwordEncrypted = true;
             this.password = password;
             return this;
         }
@@ -171,7 +193,11 @@ public class Reader extends DomainEntity {
             Reader reader = new Reader(id);
             reader.email = email;
             reader.downloads = downloads;
-            reader.encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+            reader.timeRegistered = timeRegistered;
+            if (!passwordEncrypted)
+                reader.encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+            else
+                reader.encryptedPassword = password;
             return reader;
         }
     }

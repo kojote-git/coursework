@@ -1,11 +1,10 @@
 package com.jkojote.library.persistence;
 
-import com.jkojote.library.domain.shared.domain.DomainEntity;
-import org.springframework.jdbc.core.RowMapper;
+import com.jkojote.library.domain.shared.domain.DomainObject;
 
 import java.util.Collection;
 
-public interface TableProcessor<Entity extends DomainEntity> {
+public interface TableProcessor<Entity extends DomainObject> {
 
     boolean exists(Entity e);
 

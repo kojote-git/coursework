@@ -15,8 +15,8 @@ CREATE TABLE WorkAuthor (
   authorId BIGINT,
   workId BIGINT,
   PRIMARY KEY (authorId, workId),
-  CONSTRAINT author_fk FOREIGN KEY (authorId) REFERENCES Author(id) ON DELETE CASCADE,
-  CONSTRAINT work_fk FOREIGN KEY (workId) REFERENCES Work(id) ON DELETE CASCADE
+  CONSTRAINT FK_WorkAuthor_Author FOREIGN KEY (authorId) REFERENCES Author(id) ON DELETE CASCADE,
+  CONSTRAINT FK_WorkAuthor_Work FOREIGN KEY (workId) REFERENCES Work(id) ON DELETE CASCADE
 ) ENGINE=INNODB;
 
 CREATE TABLE Subject (
@@ -28,8 +28,8 @@ CREATE TABLE WorkSubject (
   workId BIGINT,
   subjectId INT,
   PRIMARY KEY (workId, subjectId),
-  CONSTRAINT work_s_fk FOREIGN KEY (workId) REFERENCES Work(id) ON DELETE CASCADE,
-  CONSTRAINT subject_w_fk FOREIGN KEY (subjectId) REFERENCES Subject(id) ON DELETE CASCADE
+  CONSTRAINT FK_WorkSubject_Work FOREIGN KEY (workId) REFERENCES Work(id) ON DELETE CASCADE,
+  CONSTRAINT FK_WorkSubject_Subject FOREIGN KEY (subjectId) REFERENCES Subject(id) ON DELETE CASCADE
 ) ENGINE=INNODB;
 
 CREATE TABLE Publisher(
@@ -42,9 +42,9 @@ CREATE TABLE Book(
   workId BIGINT,
   publisherId BIGINT,
   edition INT,
-  CONSTRAINT work_b_fk FOREIGN KEY (workId) REFERENCES Work(id)
+  CONSTRAINT FK_Book_Work FOREIGN KEY (workId) REFERENCES Work(id)
   ON DELETE SET NULL,
-  CONSTRAINT publisher_b_fk FOREIGN KEY (publisherId) REFERENCES  Publisher(id)
+  CONSTRAINT FK_Book_Publisher FOREIGN KEY (publisherId) REFERENCES  Publisher(id)
   ON DELETE SET NULL
 ) ENGINE=INNODB;
 
@@ -58,3 +58,21 @@ CREATE TABLE BookInstance (
   CONSTRAINT FK_BookInstance_Book FOREIGN KEY (bookId) REFERENCES Book(id)
   ON DELETE CASCADE
 ) ENGINE=INNODB;
+
+CREATE TABLE Reader (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  email VARCHAR(255),
+  password VARCHAR(60),
+  timeRegistered TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+);
+
+CREATE TABLE Download (
+  readerId BIGINT,
+  bookInstanceId BIGINT,
+  dateDownloaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+  readerRating INT,
+  PRIMARY KEY (readerId, bookInstanceId),
+  CONSTRAINT FK_Download_Reader FOREIGN KEY (readerId) REFERENCES Reader(id) ON DELETE CASCADE,
+  CONSTRAINT FK_Download_BookInstance FOREIGN KEY (bookInstanceId)
+    REFERENCES BookInstance(id) ON DELETE CASCADE
+);

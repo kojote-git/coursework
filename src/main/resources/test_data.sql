@@ -89,3 +89,6 @@ INSERT INTO Book (id, workId, publisherId, edition)
   VALUES (1, 1, 2, 1);
 INSERT INTO Book (id, workId, publisherId, edition)
   VALUES (2, 2, 3, 1);
+
+INSERT INTO Reader (id, email, password)
+  VALUES (1, 'reader@mail.com', '$2a$12$hEfJ8syqZTc/KzjRU1ySm.N1Q2h4xxO6fBzLTCLzIlbJfAbCaqXLa')
