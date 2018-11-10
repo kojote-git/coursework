@@ -11,29 +11,29 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Blob;
 import java.sql.SQLException;
 
-@Component("bookFileFetcher")
+@Component("bookInstanceCoverFetcher")
 @Transactional
 @SuppressWarnings("Duplicates")
-class LazyBookFileFetcher implements LazyObjectFetcher<BookInstance, byte[]> {
+public class LazyBookInstanceCoverFetcher implements LazyObjectFetcher<BookInstance, byte[]> {
 
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public LazyBookFileFetcher(JdbcTemplate jdbcTemplate) {
+    public LazyBookInstanceCoverFetcher(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public byte[] fetchFor(BookInstance bookInstance) {
-        String QUERY = "SELECT file FROM BookInstance WHERE id = ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(QUERY, bookInstance.getId());
+        String query = "SELECT cover FROM BookInstance WHERE id = ?";
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query, bookInstance.getId());
         if (!rowSet.next())
             return new byte[0];
         Object res = rowSet.getObject(1);
         if (res instanceof Blob) {
             try {
-                Blob blob = (Blob) res;
-                return blob.getBytes(1, (int)blob.length());
+                Blob b = (Blob) res;
+                return b.getBytes(1, (int)b.length());
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

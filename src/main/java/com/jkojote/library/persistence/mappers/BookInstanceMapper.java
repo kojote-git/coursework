@@ -22,11 +22,16 @@ class BookInstanceMapper implements RowMapper<BookInstance> {
 
     private LazyObjectFetcher<BookInstance, byte[]> fileFetcher;
 
+    private LazyObjectFetcher<BookInstance, byte[]> coverFetcher;
+
     @Autowired
     public BookInstanceMapper(
             @Qualifier("bookFileFetcher")
-            LazyObjectFetcher<BookInstance, byte[]> fetcher) {
-        this.fileFetcher = fetcher;
+            LazyObjectFetcher<BookInstance, byte[]> fileFetcher,
+            @Qualifier("bookInstanceCoverFetcher")
+            LazyObjectFetcher<BookInstance, byte[]> coverFetcher) {
+        this.fileFetcher = fileFetcher;
+        this.coverFetcher = coverFetcher;
     }
 
     @Autowired
@@ -43,7 +48,9 @@ class BookInstanceMapper implements RowMapper<BookInstance> {
         Book book = bookRepository.findById(bookId);
         BookInstance bookInstance = new BookInstance(id, book, isbn13, format);
         LazyFileInstance<BookInstance> file = new LazyFileInstance<>(bookInstance, fileFetcher);
+        LazyFileInstance<BookInstance> cover = new LazyFileInstance<>(bookInstance, coverFetcher);
         bookInstance.setFile(file);
+        bookInstance.setCover(cover);
         return bookInstance;
     }
 }

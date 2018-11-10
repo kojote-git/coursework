@@ -6,6 +6,7 @@ import com.jkojote.library.domain.model.reader.events.DownloadRemovedEvent;
 import com.jkojote.library.domain.model.reader.events.RatingUpdatedEvent;
 import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
+import com.jkojote.library.domain.shared.domain.Required;
 import com.jkojote.types.Email;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -148,12 +149,13 @@ public class Reader extends DomainEntity {
             return new ReaderBuilder();
         }
 
+        @Required
         public ReaderBuilder withId(long id) {
             this.id = id;
             return this;
         }
 
-
+        @Required
         public ReaderBuilder withEmail(Email email) {
             this.email = email;
             return this;

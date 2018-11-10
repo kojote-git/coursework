@@ -11,9 +11,15 @@ public class StandardFileInstance implements FileInstance {
 
     private static final FileReader FILE_READER = new SimpleFileReader();
 
+    public static final StandardFileInstance EMPTY = new StandardFileInstance();
+
     private File path;
 
-    byte[] file;
+    private byte[] file;
+
+    private StandardFileInstance() {
+        file = new byte[0];
+    }
 
     public StandardFileInstance(File file) {
         if (file == null)

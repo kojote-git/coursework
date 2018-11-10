@@ -47,7 +47,7 @@ public class ReaderRepositoryTest {
     public void findById() {
         Reader reader = readerRepository.findById(1);
         assertTrue(reader.hasSamePassword("password"));
-        assertEquals(Email.of("random@mail.com"), reader.getEmail());
+        assertEquals(Email.of("reader@mail.com"), reader.getEmail());
     }
 
     @Test

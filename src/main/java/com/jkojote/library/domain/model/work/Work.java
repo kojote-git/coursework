@@ -6,6 +6,7 @@ import com.jkojote.library.domain.model.work.events.AuthorRemovedEvent;
 import com.jkojote.library.domain.model.work.events.SubjectAddedEvent;
 import com.jkojote.library.domain.model.work.events.SubjectRemovedEvent;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
+import com.jkojote.library.domain.shared.domain.Required;
 import com.jkojote.library.values.OrdinaryText;
 import com.jkojote.library.values.Text;
 
@@ -152,12 +153,14 @@ public class Work extends DomainEntity {
             return new WorkBuilder();
         }
 
+        @Required
         public WorkBuilder withId(long id) {
             checkArgument(id > 0);
             this.id = id;
             return this;
         }
 
+        @Required
         public WorkBuilder withTitle(String title) {
             checkNotNull(title, "title must not be null");
             this.title = title;

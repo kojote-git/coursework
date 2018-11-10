@@ -55,6 +55,7 @@ CREATE TABLE BookInstance (
   isbn13 VARCHAR(32),
   format VARCHAR(8),
   file LONGBLOB,
+  cover MEDIUMBLOB,
   CONSTRAINT FK_BookInstance_Book FOREIGN KEY (bookId) REFERENCES Book(id)
   ON DELETE CASCADE
 ) ENGINE=INNODB;

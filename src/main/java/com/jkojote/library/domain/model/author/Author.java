@@ -4,6 +4,7 @@ import com.jkojote.library.domain.model.author.events.WorkAddedEvent;
 import com.jkojote.library.domain.model.author.events.WorkRemovedEvent;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
+import com.jkojote.library.domain.shared.domain.Required;
 import com.jkojote.library.values.Name;
 
 import java.util.ArrayList;
@@ -96,6 +97,7 @@ public class Author extends DomainEntity {
             return new AuthorBuilder();
         }
 
+        @Required
         public AuthorBuilder withId(long id) {
             checkArgument(id > 0);
             this.id = id;

@@ -3,5 +3,6 @@ CREATE TABLE BookInstance (
   bookId BIGINT,
   isbn13 VARCHAR(32),
   format VARCHAR(8),
-  file LONGBLOB
+  file LONGBLOB,
+  cover MEDIUMBLOB
 ) ENGINE = InnoDB;

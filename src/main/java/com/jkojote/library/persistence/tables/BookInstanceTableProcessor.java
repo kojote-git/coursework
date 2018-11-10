@@ -19,14 +19,14 @@ import java.util.concurrent.ConcurrentSkipListSet;
 class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
 
     private static final String INSERT =
-        "INSERT INTO BookInstance (id, bookId, isbn13, file, format) " +
-          "VALUES (?, ?, ?, ?, ?)";
+        "INSERT INTO BookInstance (id, bookId, isbn13, file, format, cover) " +
+          "VALUES (?, ?, ?, ?, ?, ?)";
 
     private static final String UPDATE_WITHOUT_FILE =
         "UPDATE BookInstance SET bookId = ?, isbn13 = ?, format = ? WHERE id = ?";
 
     private static final String UPDATE_WITH_FILE =
-        "UPDATE BookInstance SET bookId = ?, isbn13 = ?, format = ?, file = ? WHERE id = ?";
+        "UPDATE BookInstance SET bookId = ?, isbn13 = ?, format = ?, file = ?, cover = ? WHERE id = ?";
 
     private static final String DELETE =
         "DELETE FROM BookInstance WHERE id = ?";
@@ -69,7 +69,8 @@ class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
                 e.getBook().getId(),
                 e.getIsbn13().asString(),
                 e.getFile().asBlob(),
-                e.getFormat().asString());
+                e.getFormat().asString(),
+                e.getCover().asBlob());
         return true;
     }
 
@@ -93,6 +94,7 @@ class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
                     e.getIsbn13().asString(),
                     e.getFormat().asString(),
                     e.getFile().asBlob(),
+                    e.getCover().asBlob(),
                     e.getId()
             );
         else
