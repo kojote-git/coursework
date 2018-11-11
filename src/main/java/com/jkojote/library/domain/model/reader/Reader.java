@@ -66,7 +66,7 @@ public class Reader extends DomainEntity {
      * @return false if history already contains download of the bookInstance
      */
     public boolean addToDownloadHistory(BookInstance bookInstance) {
-        return addToDownloadHistory(bookInstance, 0);
+        return addToDownloadHistory(bookInstance, -1);
     }
     /**
      * Adds {@code bookInstance} to download history of this reader,
@@ -117,6 +117,8 @@ public class Reader extends DomainEntity {
      *         or {@code bookInstance} is {@code null}
      */
     public boolean updateRating(BookInstance bookInstance, int rating) {
+        if (rating < 0 || rating > 10)
+            return false;
         if (bookInstance == null)
             return false;
         int idx = Utils.indexOf(downloads, d -> d.getInstance().equals(bookInstance));

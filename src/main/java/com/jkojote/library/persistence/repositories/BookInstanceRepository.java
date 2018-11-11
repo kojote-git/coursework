@@ -40,15 +40,18 @@ class BookInstanceRepository implements FilteringAndSortingRepository<BookInstan
     @Autowired
     public BookInstanceRepository(JdbcTemplate jdbcTemplate,
                                   @Qualifier("bookInstanceTable")
-                                  TableProcessor<BookInstance> bookInstanceTable,
-                                  @Qualifier("bookRepository")
-                                  DomainRepository<Book> bookRepository) {
+                                  TableProcessor<BookInstance> bookInstanceTable) {
         this.jdbcTemplate = jdbcTemplate;
         this.bookInstanceTable = bookInstanceTable;
-        this.bookRepository = bookRepository;
         this.cache = new MapCacheImpl<>(512);
         this.cache.disable();
         initLastId();
+    }
+
+    @Autowired
+    @Qualifier("bookRepository")
+    public void setBookRepository(DomainRepository<Book> bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
     @Autowired
