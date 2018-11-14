@@ -22,11 +22,17 @@ class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
         "INSERT INTO BookInstance (id, bookId, isbn13, file, format, cover) " +
           "VALUES (?, ?, ?, ?, ?, ?)";
 
-    private static final String UPDATE_WITHOUT_FILE =
+    private static final String UPDATE =
         "UPDATE BookInstance SET bookId = ?, isbn13 = ?, format = ? WHERE id = ?";
 
-    private static final String UPDATE_WITH_FILE =
+    private static final String UPDATE_FULL =
         "UPDATE BookInstance SET bookId = ?, isbn13 = ?, format = ?, file = ?, cover = ? WHERE id = ?";
+
+    private static final String UPDATE_WITH_FILE =
+        "UPDATE BookInstance SET bookId = ?, isbn13 = ?, format = ?, file = ? WHERE id = ?";
+
+    private static final String UPDATE_WITH_COVER =
+        "UPDATE BookInstance SET bookId = ?, isbn13 = ?, format = ?, cover = ? WHERE id = ?";
 
     private static final String DELETE =
         "DELETE FROM BookInstance WHERE id = ?";
@@ -88,21 +94,25 @@ class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
         if (!exists(e))
             return false;
         FileInstance file = e.getFile();
-        boolean fileIsLazy = file instanceof LazyObject;
-        if (!fileIsLazy || ((LazyObject)file).isFetched())
+        FileInstance cover = e.getFile();
+        boolean filePresent = !(file instanceof LazyObject) || ((LazyObject) file).isFetched() ;
+        boolean coverPresent = !(cover instanceof LazyObject) || ((LazyObject) cover).isFetched();
+        if (filePresent && coverPresent)
+            jdbcTemplate.update(UPDATE_FULL, e.getBook().getId(),
+                    e.getIsbn13().asString(), e.getFormat().asString(),
+                    e.getFile().asBlob(), e.getCover().asBlob(), e.getId());
+        else if (filePresent)
             jdbcTemplate.update(UPDATE_WITH_FILE, e.getBook().getId(),
-                    e.getIsbn13().asString(),
-                    e.getFormat().asString(),
-                    e.getFile().asBlob(),
-                    e.getCover().asBlob(),
-                    e.getId()
-            );
+                    e.getIsbn13().asString(), e.getFormat().asString(),
+                    e.getFile().asBlob(), e.getId());
+        else if (coverPresent)
+            jdbcTemplate.update(UPDATE_WITH_COVER, e.getBook().getId(),
+                    e.getIsbn13().asString(), e.getFormat().asString(),
+                    e.getCover().asBlob(), e.getId());
         else
-            jdbcTemplate.update(UPDATE_WITHOUT_FILE, e.getBook().getId(),
-                    e.getIsbn13().asString(),
-                    e.getFormat().asString(),
-                    e.getId()
-            );
+            jdbcTemplate.update(UPDATE, e.getBook().getId(),
+                    e.getIsbn13().asString(), e.getFormat().asString(),
+                    e.getId());
         return true;
     }
 

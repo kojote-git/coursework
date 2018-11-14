@@ -2,7 +2,9 @@ package com.jkojote.library.files;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -68,7 +70,7 @@ public class StandardFileInstance implements FileInstance {
             throw new RuntimeException(e);
         }
     }
-
+    
     @Override
     public Blob asBlob() {
         try {

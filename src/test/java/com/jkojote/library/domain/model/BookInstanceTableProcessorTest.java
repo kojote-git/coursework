@@ -16,7 +16,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.File;
+
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,17 +57,23 @@ public class BookInstanceTableProcessorTest {
         Isbn13 isbn13 = Isbn13.of("978-0-1523-1221-1");
         FileInstance f = new StandardFileInstance("src/main/resources/file1.txt");
         FileInstance f1 = new StandardFileInstance("src/main/resources/file2.pdf");
+        FileInstance cover = new StandardFileInstance("src/main/resources/file1.txt");
         when(book.getId()).thenReturn(1L);
         BookInstance bi = new BookInstance(55, book, isbn13, BookFormat.PDF);
         bi.setFile(f);
         bookInstanceTable.insert(bi);
         bi.setFile(f1);
+        bi.setCover(cover);
         bookInstanceTable.update(bi);
         byte[] bytes = jdbcTemplate.queryForObject("SELECT file FROM BookInstance", (rs, rn) -> {
             return rs.getBytes(1);
         });
+        byte[] coverBytes = jdbcTemplate.queryForObject("SELECT cover FROM BookInstance", (rs, rn) -> {
+            return rs.getBytes(1);
+        });
         assertNotNull(bytes);
         assertArrayEquals(f1.asBytes(), bytes);
+        assertArrayEquals(cover.asBytes(), coverBytes);
     }
 
 }
