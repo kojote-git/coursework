@@ -70,7 +70,7 @@ public class StandardFileInstance implements FileInstance {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public Blob asBlob() {
         try {
