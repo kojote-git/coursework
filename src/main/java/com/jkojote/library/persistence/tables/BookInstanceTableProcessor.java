@@ -94,7 +94,7 @@ class BookInstanceTableProcessor implements TableProcessor<BookInstance> {
         if (!exists(e))
             return false;
         FileInstance file = e.getFile();
-        FileInstance cover = e.getFile();
+        FileInstance cover = e.getCover();
         boolean filePresent = !(file instanceof LazyObject) || ((LazyObject) file).isFetched() ;
         boolean coverPresent = !(cover instanceof LazyObject) || ((LazyObject) cover).isFetched();
         if (filePresent && coverPresent)

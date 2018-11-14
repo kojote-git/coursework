@@ -57,7 +57,7 @@ public class BookInstanceTableProcessorTest {
         Isbn13 isbn13 = Isbn13.of("978-0-1523-1221-1");
         FileInstance f = new StandardFileInstance("src/main/resources/file1.txt");
         FileInstance f1 = new StandardFileInstance("src/main/resources/file2.pdf");
-        FileInstance cover = new StandardFileInstance("src/main/resources/file1.txt");
+        FileInstance cover = new StandardFileInstance("src/main/resources/file2.pdf");
         when(book.getId()).thenReturn(1L);
         BookInstance bi = new BookInstance(55, book, isbn13, BookFormat.PDF);
         bi.setFile(f);
