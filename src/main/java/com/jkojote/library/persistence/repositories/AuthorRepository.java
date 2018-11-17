@@ -3,9 +3,7 @@ package com.jkojote.library.persistence.repositories;
 import com.jkojote.library.clauses.SqlClause;
 import com.jkojote.library.domain.model.author.Author;
 import com.jkojote.library.domain.model.work.Work;
-import com.jkojote.library.domain.shared.domain.DomainEventListener;
-import com.jkojote.library.domain.shared.domain.DomainRepository;
-import com.jkojote.library.domain.shared.domain.FilteringAndSortingRepository;
+import com.jkojote.library.domain.shared.domain.*;
 import com.jkojote.library.persistence.MapCache;
 import com.jkojote.library.persistence.MapCacheImpl;
 import com.jkojote.library.persistence.TableProcessor;
@@ -17,12 +15,14 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 
 @Repository("authorRepository")
 @Transactional
-class AuthorRepository implements FilteringAndSortingRepository<Author> {
+class AuthorRepository implements FilteringAndSortingRepository<Author>, PageableRepository<Author> {
 
     private final MapCache<Long, Author> cache;
 
@@ -138,5 +138,36 @@ class AuthorRepository implements FilteringAndSortingRepository<Author> {
     @Override
     public List<Author> findAll(SqlClause clause) {
         return jdbcTemplate.query("SELECT * FROM Author " + clause.asString(), authorMapper);
+    }
+
+    @Override
+    public List<Author> findAll(int page, int pageSize) {
+        if (page <= 0 || pageSize < 0)
+            throw new IllegalArgumentException("page and pageSize must be positive numbers");
+        return jdbcTemplate.query("SELECT * FROM Author LIMIT ? OFFSET ?", authorMapper,
+                pageSize, (page - 1) * pageSize);
+    }
+
+    @Override
+    public List<Author> findAll(SqlPageSpecification specification) {
+        SqlClause predicate = specification.predicate();
+        int page = specification.page();
+        int pageSize = specification.pageSize();
+        String query = "SELECT * FROM Author " + predicate.asString() + " LIMIT ? OFFSET ?";
+        return jdbcTemplate.query(query, authorMapper, pageSize, (page - 1) * pageSize);
+    }
+
+    @Override
+    public List<Author> findAll(int page, int pageSize, Predicate<Author> predicate) {
+        if (page <= 0 || pageSize < 0)
+            throw new IllegalArgumentException("page and pageSize must be positive numbers");
+        int offset = (page - 1) * pageSize;
+        int limit = offset + pageSize;
+        List<Author> res = findAll(predicate);
+        if (offset > res.size() - 1)
+            return Collections.emptyList();
+        if (limit > res.size() - 1)
+            limit = res.size() - 1;
+        return res.subList(offset, limit);
     }
 }

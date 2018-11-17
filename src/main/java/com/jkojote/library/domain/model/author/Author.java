@@ -82,6 +82,16 @@ public class Author extends DomainEntity {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder("{\n")
+                .append("\t\"firstName\":\"").append(name.getFirstName()).append("\"\n")
+                .append("\t\"middleName\":\"").append(name.getMiddleName()).append("\"\n")
+                .append("\t\"lastName\":\"").append(name.getLastName()).append("\"\n")
+                .append("}")
+                .toString();
+    }
+
     public static final class AuthorBuilder {
 
         private long id;
