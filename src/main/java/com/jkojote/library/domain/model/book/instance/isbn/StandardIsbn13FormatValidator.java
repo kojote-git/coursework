@@ -2,6 +2,7 @@ package com.jkojote.library.domain.model.book.instance.isbn;
 
 import java.util.regex.Pattern;
 
+@Deprecated
 public class StandardIsbn13FormatValidator implements Isbn13FormatValidator {
 
     private final String REGEX = "^97[89]-(0|([1-9][0-9]{0,4}))-([0-9]{1,5})-([0-9]{1,5})-[0-9]$";

@@ -20,7 +20,7 @@ public class StandardFileInstance implements FileInstance {
     private byte[] file;
 
     private StandardFileInstance() {
-        file = new byte[0];
+        file = new byte[1];
     }
 
     public StandardFileInstance(File file) {

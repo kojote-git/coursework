@@ -125,9 +125,9 @@ public class BookBookInstancePublisherRepositoryTest implements InitializingBean
         FileInstance file1 = new StandardFileInstance("src/main/resources/file1.txt");
         FileInstance file2 = new StandardFileInstance("src/main/resources/file2.pdf");
         bi1 = new BookInstance(bookInstanceRepository.nextId(),
-                book, Isbn13.of("978-90-1235-321-1"), BookFormat.TXT, file1);
+                book, Isbn13.of("978-9012353211"), BookFormat.TXT, file1);
         bi2 = new BookInstance(bookInstanceRepository.nextId(),
-                book, Isbn13.of("978-91-1235-321-1"), BookFormat.PDF, file2);
+                book, Isbn13.of("978-9112353211"), BookFormat.PDF, file2);
         book.addBookInstance(bi1);
         book.addBookInstance(bi2);
     }

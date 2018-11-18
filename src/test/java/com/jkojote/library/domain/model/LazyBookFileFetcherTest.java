@@ -43,7 +43,7 @@ public class LazyBookFileFetcherTest {
         Book b = mock(Book.class);
         when(b.getId()).thenReturn(1L);
         when(bi.getBook()).thenReturn(b);
-        when(bi.getIsbn13()).thenReturn(Isbn13.of("978-0-1523-1221-1"));
+        when(bi.getIsbn13()).thenReturn(Isbn13.of("978-0152312211"));
         when(bi.getFormat()).thenReturn(BookFormat.PDF);
         initData(bi);
         byte[] array = fetcher.fetchFor(bi);

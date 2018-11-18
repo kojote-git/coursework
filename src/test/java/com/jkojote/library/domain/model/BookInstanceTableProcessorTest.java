@@ -16,7 +16,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.sql.rowset.serial.SerialBlob;
 import java.io.File;
+import java.sql.SQLException;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -36,11 +38,10 @@ public class BookInstanceTableProcessorTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    public void insert() {
+    public void insert()  {
         Book book = mock(Book.class);
-        Isbn13 isbn13 = Isbn13.of("978-0-1523-1221-1");
+        Isbn13 isbn13 = Isbn13.of("978-0152312211");
         FileInstance f = new StandardFileInstance("src/main/resources/file1.txt");
-        when(book.getId()).thenReturn(0L);
         BookInstance bi = new BookInstance(55, book, isbn13, BookFormat.PDF);
         bi.setFile(f);
         bookInstanceTable.insert(bi);
@@ -54,7 +55,7 @@ public class BookInstanceTableProcessorTest {
     @Test
     public void update() {
         Book book = mock(Book.class);
-        Isbn13 isbn13 = Isbn13.of("978-0-1523-1221-1");
+        Isbn13 isbn13 = Isbn13.of("978-0152312211");
         FileInstance f = new StandardFileInstance("src/main/resources/file1.txt");
         FileInstance f1 = new StandardFileInstance("src/main/resources/file2.pdf");
         FileInstance cover = new StandardFileInstance("src/main/resources/file2.pdf");
@@ -75,5 +76,4 @@ public class BookInstanceTableProcessorTest {
         assertArrayEquals(f1.asBytes(), bytes);
         assertArrayEquals(cover.asBytes(), coverBytes);
     }
-
 }
