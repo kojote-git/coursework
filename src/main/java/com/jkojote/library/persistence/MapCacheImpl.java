@@ -7,9 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class MapCacheImpl<T extends DomainEntity> implements MapCache<Long, T> {
+public class MapCacheImpl<K, V> implements MapCache<K, V> {
 
-    private Map<Long, T> cache;
+    private Map<K, V> cache;
 
     private boolean disabled = false;
 
@@ -27,32 +27,32 @@ public class MapCacheImpl<T extends DomainEntity> implements MapCache<Long, T> {
     }
 
     @Override
-    public boolean contains(Long k) {
+    public boolean contains(K k) {
         if (disabled)
             return false;
         return cache.containsKey(k);
     }
 
     @Override
-    public boolean put(Long id, T e) {
+    public boolean put(K k, V v) {
         if (disabled)
             return false;
-        cache.put(id, e);
+        cache.put(k, v);
         return true;
     }
 
     @Override
-    public T get(Long id) {
+    public V get(K k) {
         if (disabled)
             return null;
-        return cache.get(id);
+        return cache.get(k);
     }
 
     @Override
-    public boolean remove(Long id) {
+    public boolean remove(K k) {
         if (disabled)
             return false;
-        return cache.remove(id) == null;
+        return cache.remove(k) == null;
     }
 
     @Override

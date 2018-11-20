@@ -1,12 +1,15 @@
 package com.jkojote.library.domain.model.reader;
 
+import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.reader.events.DownloadAddedEvent;
 import com.jkojote.library.domain.model.reader.events.DownloadRemovedEvent;
+import com.jkojote.library.domain.model.reader.events.RatingAddedEvent;
 import com.jkojote.library.domain.model.reader.events.RatingUpdatedEvent;
 import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
 import com.jkojote.library.domain.shared.domain.Required;
+import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.types.Email;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -23,6 +26,8 @@ public class Reader extends DomainEntity {
 
     private List<Download> downloads;
 
+    private List<Rating> ratings;
+
     private String encryptedPassword;
 
     private LocalDateTime timeRegistered;
@@ -37,6 +42,10 @@ public class Reader extends DomainEntity {
 
     public List<Download> getDownloads() {
         return Collections.unmodifiableList(downloads);
+    }
+
+    public List<Rating> getRatings() {
+        return Collections.unmodifiableList(ratings);
     }
 
     public String getEncryptedPassword() {
@@ -79,7 +88,7 @@ public class Reader extends DomainEntity {
             return false;
         int idx = Utils.indexOf(downloads, d -> d.getInstance().equals(bookInstance));
         if (idx == -1) {
-            Download d = new Download(this, bookInstance, LocalDateTime.now(), rating);
+            Download d = new Download(this, bookInstance, LocalDateTime.now());
             downloads.add(d);
             notifyAllListeners(new DownloadAddedEvent(this, d, null));
             return true;
@@ -105,29 +114,26 @@ public class Reader extends DomainEntity {
         return true;
     }
 
-    public LocalDateTime getTimeRegistered() {
-        return timeRegistered;
+    public boolean addToRating(Rating rating) {
+        if (rating == null || ratings.contains(rating))
+            return false;
+        ratings.add(rating);
+        notifyAllListeners(new RatingAddedEvent(this, rating, null));
+        return true;
     }
 
-    /**
-     * Updates rating of the {@code bookInstance} only if it's been downloaded by this reader
-     * @param bookInstance
-     * @param rating new rating
-     * @return {@code false} if reader hasn't downloaded the {@code bookInstance} yet
-     *         or {@code bookInstance} is {@code null}
-     */
-    public boolean updateRating(BookInstance bookInstance, int rating) {
-        if (rating < 0 || rating > 10)
-            return false;
-        if (bookInstance == null)
-            return false;
-        int idx = Utils.indexOf(downloads, d -> d.getInstance().equals(bookInstance));
+    public boolean updateRating(Rating rating) {
+        int idx = Utils.indexOf(ratings, r -> r.equals(rating));
         if (idx == -1)
             return false;
-        Download d = downloads.remove(idx);
-        downloads.add(new Download(this, bookInstance, d.getTimeDownloaded(), rating));
-        notifyAllListeners(new RatingUpdatedEvent(this, d, null));
+        ratings.remove(idx);
+        ratings.add(rating);
+        notifyAllListeners(new RatingUpdatedEvent(this, rating, null));
         return true;
+    }
+
+    public LocalDateTime getTimeRegistered() {
+        return timeRegistered;
     }
 
     public static final class ReaderBuilder {
@@ -137,6 +143,8 @@ public class Reader extends DomainEntity {
         private Email email;
 
         private List<Download> downloads;
+
+        private List<Rating> ratings;
 
         private String password;
 
@@ -185,6 +193,11 @@ public class Reader extends DomainEntity {
             return this;
         }
 
+        public ReaderBuilder withRatings(List<Rating> ratings) {
+            this.ratings = ratings;
+            return this;
+        }
+
         public Reader build() {
             if (id <= 0)
                 throw new IllegalStateException("id must be set");
@@ -192,12 +205,15 @@ public class Reader extends DomainEntity {
                 throw new IllegalStateException("email must be set");
             if (downloads == null)
                 downloads = new ArrayList<>();
+            if (ratings == null)
+                ratings = new ArrayList<>();
             if (password == null)
                 password = "";
             Reader reader = new Reader(id);
             reader.email = email;
             reader.downloads = downloads;
             reader.timeRegistered = timeRegistered;
+            reader.ratings = ratings;
             if (!passwordEncrypted)
                 reader.encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             else

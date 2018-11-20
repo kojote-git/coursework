@@ -2,6 +2,7 @@ package com.jkojote.library.persistence.repositories;
 
 import com.jkojote.library.clauses.SqlClause;
 import com.jkojote.library.domain.model.reader.Download;
+import com.jkojote.library.domain.model.reader.Rating;
 import com.jkojote.library.domain.model.reader.Reader;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.FilteringAndSortingRepository;
@@ -28,6 +29,8 @@ class ReaderRepository implements FilteringAndSortingRepository<Reader> {
 
     private TableProcessor<Download> downloadTable;
 
+    private TableProcessor<Rating> ratingTable;
+
     private RowMapper<Reader> readerMapper;
 
     private JdbcTemplate jdbcTemplate;
@@ -46,12 +49,15 @@ class ReaderRepository implements FilteringAndSortingRepository<Reader> {
             @Qualifier("readerMapper")
             RowMapper<Reader> readerMapper,
             @Qualifier("readerStateListener")
-            DomainEventListener<Reader> readerStateListener) {
+            DomainEventListener<Reader> readerStateListener,
+            @Qualifier("ratingTable")
+            TableProcessor<Rating> ratingTable) {
         this.readerTable = readerTable;
         this.jdbcTemplate = jdbcTemplate;
         this.cache = new MapCacheImpl<>();
         this.readerMapper = readerMapper;
         this.downloadTable = downloadTable;
+        this.ratingTable = ratingTable;
         this.readerStateListener = readerStateListener;
         this.cache.disable();
         initLastId();
@@ -93,6 +99,7 @@ class ReaderRepository implements FilteringAndSortingRepository<Reader> {
             return false;
         readerTable.insert(reader);
         downloadTable.batchInsert(reader.getDownloads());
+        ratingTable.batchInsert(reader.getRatings());
         reader.addEventListener(readerStateListener);
         return true;
     }

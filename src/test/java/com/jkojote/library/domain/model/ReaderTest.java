@@ -77,10 +77,5 @@ public class ReaderTest {
     public void updateRating() {
         reader.addToDownloadHistory(bi2);
         Download d = reader.getDownloads().get(0);
-        assertEquals(-1, d.getReaderRating());
-        assertFalse(reader.updateRating(bi1, 10));
-        assertTrue(reader.updateRating(bi2, 10));
-        d = reader.getDownloads().get(0);
-        assertEquals(10, d.getReaderRating());
     }
 }

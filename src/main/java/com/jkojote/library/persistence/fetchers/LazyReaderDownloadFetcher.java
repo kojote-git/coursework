@@ -40,7 +40,7 @@ class LazyReaderDownloadFetcher implements ListFetcher<Reader, Download> {
             BookInstance bi = bookInstanceRepository.findById(bookInstanceId);
             int rating = rs.getInt("readerRating");
             LocalDateTime dateDownloaded = rs.getTimestamp("dateDownloaded").toLocalDateTime();
-            return new Download(reader, bi, dateDownloaded, rating);
+            return new Download(reader, bi, dateDownloaded);
         }, reader.getId());
     }
 }

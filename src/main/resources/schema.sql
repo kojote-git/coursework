@@ -74,9 +74,17 @@ CREATE TABLE Download (
   readerId BIGINT,
   bookInstanceId BIGINT,
   dateDownloaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
-  readerRating INT,
   PRIMARY KEY (readerId, bookInstanceId),
   CONSTRAINT FK_Download_Reader FOREIGN KEY (readerId) REFERENCES Reader(id) ON DELETE CASCADE,
   CONSTRAINT FK_Download_BookInstance FOREIGN KEY (bookInstanceId)
     REFERENCES BookInstance(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Rating (
+  bookId BIGINT,
+  readerId BIGINT,
+  rating INT,
+  PRIMARY KEY (bookId, readerId),
+  CONSTRAINT FK_Rating_Book FOREIGN KEY (bookId) REFERENCES Book(id) ON DELETE CASCADE,
+  CONSTRAINT FK_Rating_Reader FOREIGN KEY (readerId) REFERENCES Reader(id) ON DELETE CASCADE
 );

@@ -1,6 +1,7 @@
 package com.jkojote.library.persistence.mappers;
 
 import com.jkojote.library.domain.model.reader.Download;
+import com.jkojote.library.domain.model.reader.Rating;
 import com.jkojote.library.domain.model.reader.Reader;
 import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.persistence.ListFetcher;
@@ -22,12 +23,20 @@ class ReaderMapper implements RowMapper<Reader> {
 
     private ListFetcher<Reader, Download> downloadListFetcher;
 
+    private ListFetcher<Reader, Rating> readerRatingListFetcher;
+
     private DomainEventListener<Reader> readerStateListener;
 
     @Qualifier("downloadsFetcher")
     @Autowired
     public void setDownloadListFetcher(ListFetcher<Reader, Download> downloadListFetcher) {
         this.downloadListFetcher = downloadListFetcher;
+    }
+
+    @Qualifier("readerRatingsFetcher")
+    @Autowired
+    public void setReaderRatingListFetcher(ListFetcher<Reader, Rating> readerRatingListFetcher) {
+        this.readerRatingListFetcher = readerRatingListFetcher;
     }
 
     @Qualifier("readerStateListener")
@@ -42,12 +51,14 @@ class ReaderMapper implements RowMapper<Reader> {
         String password = rs.getString("password");
         Email email = Email.of(rs.getString("email"));
         LazyListImpl<Reader, Download> list = new LazyListImpl<>(downloadListFetcher);
+        LazyListImpl<Reader, Rating> ratings = new LazyListImpl<>(readerRatingListFetcher);
         LocalDateTime registered = rs.getTimestamp("timeRegistered").toLocalDateTime();
         Reader reader = ReaderBuilder.aReader()
                 .withId(id)
                 .withEncryptedPassword(password)
                 .withEmail(email)
                 .withDownloads(list)
+                .withRatings(ratings)
                 .withTimeRegistered(registered)
                 .build();
         list.setParentEntity(reader);

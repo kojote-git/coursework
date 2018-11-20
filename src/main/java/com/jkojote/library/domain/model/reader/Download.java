@@ -17,13 +17,10 @@ public class Download implements DomainObject {
 
     private LocalDateTime timeDownloaded;
 
-    private int readerRating;
-
-    public Download(Reader reader, BookInstance instance, LocalDateTime dateDownloaded, int readerRating) {
+    public Download(Reader reader, BookInstance instance, LocalDateTime dateDownloaded) {
         this.reader = reader;
         this.instance = instance;
         this.timeDownloaded = dateDownloaded;
-        this.readerRating = readerRating;
     }
 
     public Reader getReader() {
@@ -38,11 +35,4 @@ public class Download implements DomainObject {
         return timeDownloaded;
     }
 
-    public void setReaderRating(int readerRating) {
-        this.readerRating = readerRating;
-    }
-
-    public int getReaderRating() {
-        return readerRating;
-    }
 }

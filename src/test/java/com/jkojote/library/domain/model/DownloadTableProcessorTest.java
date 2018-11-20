@@ -48,7 +48,7 @@ public class DownloadTableProcessorTest {
         BookInstance b = mock(BookInstance.class);
         when(r.getId()).thenReturn(2L);
         when(b.getId()).thenReturn(2L);
-        Download d = new Download(r, b, LocalDateTime.now(), 10);
+        Download d = new Download(r, b, LocalDateTime.now());
         assertFalse(downloadTable.exists(d));
         assertTrue(downloadTable.insert(d));
         assertTrue(downloadTable.exists(d));
@@ -63,17 +63,5 @@ public class DownloadTableProcessorTest {
 
     @Test
     public void update() {
-        Reader r = mock(Reader.class);
-        BookInstance b = mock(BookInstance.class);
-        when(r.getId()).thenReturn(1L);
-        when(b.getId()).thenReturn(1L);
-        Download d = new Download(r, b, LocalDateTime.now(), 5);
-        assertTrue(downloadTable.update(d));
-        String queryRating =
-            "SELECT readerRating FROM Download WHERE readerId = ? AND bookInstanceId = ?";
-        int rating = jdbcTemplate.queryForObject(queryRating, (rs, rn) -> {
-            return rs.getInt(1);
-        }, 1L, 1L);
-        assertEquals(5, rating);
     }
 }

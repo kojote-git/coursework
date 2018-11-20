@@ -16,11 +16,8 @@ class DownloadTableProcessor implements TableProcessor<Download> {
     private static final int MAX_CACHE_SIZE = 256;
 
     private static final String INSERT =
-        "INSERT INTO Download (readerId, bookInstanceId, readerRating) " +
-            "VALUES (?, ?, ?)";
-
-    private static final String UPDATE =
-        "UPDATE Download SET readerRating = ? WHERE readerId = ? AND bookInstanceId = ?";
+        "INSERT INTO Download (readerId, bookInstanceId) " +
+            "VALUES (?, ?)";
 
     private static final String REMOVE =
         "DELETE FROM Download WHERE readerId = ? AND bookInstanceId = ?";
@@ -62,8 +59,7 @@ class DownloadTableProcessor implements TableProcessor<Download> {
             return false;
         jdbcTemplate.update(INSERT,
                 e.getReader().getId(),
-                e.getInstance().getId(),
-                e.getReaderRating());
+                e.getInstance().getId());
         return true;
     }
 
@@ -81,10 +77,6 @@ class DownloadTableProcessor implements TableProcessor<Download> {
     public boolean update(Download e) {
         if (!exists(e))
             return false;
-        jdbcTemplate.update(UPDATE,
-                e.getReaderRating(),
-                e.getReader().getId(),
-                e.getInstance().getId());
         return true;
     }
 

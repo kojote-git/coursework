@@ -24,7 +24,6 @@ class DownloadBatchSetter implements BatchPreparedStatementSetter {
         Download d = iterator.next();
         ps.setLong(1, d.getReader().getId());
         ps.setLong(2, d.getInstance().getId());
-        ps.setInt(3, d.getReaderRating());
     }
 
     @Override

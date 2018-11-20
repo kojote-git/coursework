@@ -98,7 +98,12 @@ INSERT INTO BookInstance (id, bookId, file, isbn13, format)
 INSERT INTO Reader (id, email, password)
   VALUES (1, 'reader@mail.com', '$2a$12$hEfJ8syqZTc/KzjRU1ySm.N1Q2h4xxO6fBzLTCLzIlbJfAbCaqXLa');
 
-INSERT INTO Download (readerId, bookInstanceId, readerRating)
+INSERT INTO Download (readerId, bookInstanceId)
+  VALUES (1, 1);
+INSERT INTO Download (readerId, bookInstanceId)
+  VALUES (1, 2);
+
+INSERT INTO Rating(bookId, readerId, rating)
   VALUES (1, 1, 10);
-INSERT INTO Download (readerId, bookInstanceId, readerRating)
-  VALUES (1, 2, 9);
+INSERT INTO Rating(bookId, readerId, rating)
+  VALUES (2, 1, 10);
