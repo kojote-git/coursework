@@ -32,15 +32,24 @@ public class RepositoriesTest {
 
     @Test
     public void test1_TryingSaveNewEntitiesAndChecksWhetherTheirStateIsManagedAfterPersistence() {
+        Work.WorkBuilder work = Work.WorkBuilder.aWork(true);
+
         Author a1 = Author.createNew(authorRepository.nextId(), Name.of("Oliver", "Peterson"));
         Author a2 = Author.createNew(authorRepository.nextId(), Name.of("Jordan", "Smith"));
         Author a3 = Author.createNew(authorRepository.nextId(), Name.of("Peter", "Lincoln"));
 
-        Work w1 = Work.create(workRepository.nextId(), "Spin", a1);
-        Work w2 = Work.create(workRepository.nextId(), "Soul", a1);
-        Work w3 = Work.create(workRepository.nextId(), "Newton", a2);
-        Work w4 = Work.create(workRepository.nextId(), "Tesla", a2);
-
+        Work w1 = work.withId(workRepository.nextId())
+                .withTitle("Spin").addAuthor(a1)
+                .build();
+        Work w2 = work.withId(workRepository.nextId())
+                .withTitle("Soul").addAuthor(a1)
+                .build();
+        Work w3 = work.withId(workRepository.nextId())
+                .withTitle("Newton").addAuthor(a2)
+                .build();
+        Work w4 = work.withId(workRepository.nextId())
+                .withTitle("Tesla").addAuthor(a2)
+                .build();
         a1.addWork(w1);
         a1.addWork(w2);
         a2.addWork(w3);

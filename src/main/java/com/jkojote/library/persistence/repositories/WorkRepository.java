@@ -73,7 +73,7 @@ class WorkRepository implements FilteringAndSortingRepository<Work> {
         if (work != null)
             return work;
         String QUERY =
-            "SELECT * FROM Work WHERE id = ?";
+            "SELECT id, title, lang FROM Work WHERE id = ?";
         try {
             work = jdbcTemplate.queryForObject(QUERY, workMapper, id);
             cache.put(id, work);
@@ -85,7 +85,7 @@ class WorkRepository implements FilteringAndSortingRepository<Work> {
 
     @Override
     public List<Work> findAll() {
-        String QUERY = "SELECT * FROM Work";
+        String QUERY = "SELECT id, title, lang FROM Work";
         return jdbcTemplate.query(QUERY, workMapper);
     }
 
@@ -140,6 +140,6 @@ class WorkRepository implements FilteringAndSortingRepository<Work> {
 
     @Override
     public List<Work> findAll(SqlClause clause) {
-        return jdbcTemplate.query("SELECT * FROM Work " + clause.asString(), workMapper);
+        return jdbcTemplate.query("SELECT id, title, lang FROM Work " + clause.asString(), workMapper);
     }
 }

@@ -4,6 +4,7 @@ import com.jkojote.library.config.tests.ForRepositories;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.persistence.TableProcessor;
 import com.jkojote.library.values.OrdinaryText;
+import com.neovisionaries.i18n.LanguageCode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ public class WorkTableProcessorTest {
         when(work.getId()).thenReturn(55L);
         when(work.getTitle()).thenReturn("title");
         when(work.getDescription()).thenReturn(OrdinaryText.of("description"));
+        when(work.getLanguage()).thenReturn(LanguageCode.en);
         workTable.insert(work);
         String descr = jdbcTemplate.queryForObject("SELECT description FROM Work WHERE id = 55",
                 this::extractDescription);
@@ -55,6 +57,7 @@ public class WorkTableProcessorTest {
         when(work.getTitle()).thenReturn("title");
         when(work.getDescription()).thenReturn(OrdinaryText.of("1"))
                 .thenReturn(OrdinaryText.of("2"));
+        when(work.getLanguage()).thenReturn(LanguageCode.undefined);
         workTable.insert(work);
         String descr = jdbcTemplate.queryForObject(queryDescription, this::extractDescription);
         assertNotNull(descr);

@@ -9,6 +9,8 @@ import com.jkojote.library.domain.shared.domain.DomainEntity;
 import com.jkojote.library.domain.shared.domain.Required;
 import com.jkojote.library.values.OrdinaryText;
 import com.jkojote.library.values.Text;
+import com.neovisionaries.i18n.LanguageAlpha3Code;
+import com.neovisionaries.i18n.LanguageCode;
 
 import java.util.*;
 
@@ -21,20 +23,11 @@ public class Work extends DomainEntity {
 
     private Text description;
 
+    private LanguageCode language;
+
     private List<Author> authors;
 
     private List<Subject> subjects;
-
-    private Work(long id,
-                 String title,
-                 Author author) {
-        super(id);
-        this.title    = title;
-        this.authors  = new ArrayList<>();
-        this.subjects = new ArrayList<>();
-        this.authors.add(author);
-        this.description = OrdinaryText.EMPTY;
-    }
 
     private Work(long id, String title,
                  List<Author> authors,
@@ -44,30 +37,7 @@ public class Work extends DomainEntity {
         this.authors  = authors;
         this.subjects = subjects;
         this.description = OrdinaryText.EMPTY;
-    }
-
-    @Deprecated
-    public static Work create(long id, String title, Author author) {
-        checkNotNull(title);
-        checkNotNull(author);
-        return new Work(id, title, author);
-    }
-
-    @Deprecated
-    public static Work create(long id, String title, List<Author> authors) {
-        checkNotNull(title);
-        checkNotNull(authors);
-        return new Work(id, title, authors, new ArrayList<>());
-    }
-
-    @Deprecated
-    public static Work restore(long id, String title,
-                               List<Author> authors,
-                               List<Subject> subjects) {
-        checkNotNull(authors);
-        checkNotNull(title);
-        checkNotNull(subjects);
-        return new Work(id, title, authors, subjects);
+        this.language = LanguageCode.undefined;
     }
 
     public List<Author> getAuthors() {
@@ -134,6 +104,14 @@ public class Work extends DomainEntity {
         return title;
     }
 
+    public void setLanguage(LanguageCode language) {
+        this.language = language;
+    }
+
+    public LanguageCode getLanguage() {
+        return language;
+    }
+
     public static final class WorkBuilder {
 
         private long id;
@@ -146,12 +124,19 @@ public class Work extends DomainEntity {
 
         private List<Subject> subjects;
 
-        private WorkBuilder() {
+        private LanguageCode language;
+
+        private boolean autoClear;
+
+        private WorkBuilder(boolean autoClear) {
+            this.autoClear = autoClear;
         }
 
         public static WorkBuilder aWork() {
-            return new WorkBuilder();
+            return new WorkBuilder(false);
         }
+
+        public static WorkBuilder aWork(boolean autoClear) { return new WorkBuilder(autoClear); }
 
         @Required
         public WorkBuilder withId(long id) {
@@ -183,6 +168,11 @@ public class Work extends DomainEntity {
             return this;
         }
 
+        public WorkBuilder withLanguage(LanguageCode language) {
+            this.language = language;
+            return this;
+        }
+
         public WorkBuilder withAuthors(List<Author> authors) {
             checkNotNull(authors);
             if (this.authors != null)
@@ -209,9 +199,21 @@ public class Work extends DomainEntity {
                 description = OrdinaryText.EMPTY;
             if (subjects == null)
                 subjects = new LinkedList<>();
+            if (language == null)
+                language = LanguageCode.undefined;
             Work work = new Work(id, title, authors, subjects);
             work.description = description;
+            work.language = language;
+            if (autoClear)
+                clear();
             return work;
+        }
+
+        public void clear() {
+            this.id = 0;
+            this.description = null;
+            this.subjects = null;
+            this.language = null;
         }
     }
 }

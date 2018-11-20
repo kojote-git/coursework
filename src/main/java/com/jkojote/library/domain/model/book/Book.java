@@ -6,10 +6,10 @@ import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.publisher.Publisher;
 import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
+import com.neovisionaries.i18n.LanguageCode;
 
 import java.util.Collections;
 import java.util.List;
-
 
 public class Book extends DomainEntity {
 
@@ -18,6 +18,10 @@ public class Book extends DomainEntity {
     private Publisher publisher;
 
     private int edition;
+
+    private String title;
+
+    private LanguageCode language;
 
     private List<BookInstance> bookInstances;
 
@@ -29,12 +33,14 @@ public class Book extends DomainEntity {
         this.publisher = publisher;
         this.edition   = edition;
         this.bookInstances = instances;
+        this.language = LanguageCode.undefined;
     }
 
     public Book(long id, Work basedOn, List<BookInstance> bookInstances) {
         super(id);
         this.basedOn = basedOn;
         this.bookInstances = bookInstances;
+        this.language = LanguageCode.undefined;
     }
 
     public Work getBasedOn() {
@@ -47,6 +53,22 @@ public class Book extends DomainEntity {
 
     public void setEdition(int edition) {
         this.edition = edition;
+    }
+
+    public void setLanguage(LanguageCode language) {
+        this.language = language;
+    }
+
+    public LanguageCode getLanguage() {
+        return language;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Publisher getPublisher() {

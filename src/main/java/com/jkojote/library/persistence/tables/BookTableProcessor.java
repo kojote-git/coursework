@@ -2,6 +2,7 @@ package com.jkojote.library.persistence.tables;
 
 import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.persistence.TableProcessor;
+import com.neovisionaries.i18n.LanguageCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -16,11 +17,11 @@ import java.util.concurrent.ConcurrentSkipListSet;
 class BookTableProcessor implements TableProcessor<Book> {
 
     private static final String INSERT =
-        "INSERT INTO Book (id, workId, publisherId, edition) " +
-          "VALUES (?, ?, ?, ?)";
+        "INSERT INTO Book (id, workId, publisherId, edition, title, lang) " +
+          "VALUES (?, ?, ?, ?, ?, ?)";
 
     private static final String UPDATE =
-        "UPDATE Book SET workId = ?, publisherId = ?, edition = ? WHERE id = ?";
+        "UPDATE Book SET workId = ?, publisherId = ?, edition = ?, title = ?, lang = ? WHERE id = ?";
 
     private static final String DELETE =
         "DELETE FROM Book WHERE id = ?";
@@ -59,9 +60,11 @@ class BookTableProcessor implements TableProcessor<Book> {
         if (exists(e))
             return false;
         tryPutToCache(e.getId());
+        String lang = e.getLanguage() == LanguageCode.undefined ? "" : e.getLanguage().toString();
         jdbcTemplate.update(INSERT, e.getId(),
                 e.getBasedOn().getId(),
                 e.getPublisher().getId(),
+                e.getTitle(), lang,
                 e.getEdition());
         return true;
     }
@@ -84,9 +87,11 @@ class BookTableProcessor implements TableProcessor<Book> {
     public boolean update(Book e) {
         if (!exists(e))
             return false;
+        String lang = e.getLanguage() == LanguageCode.undefined ? "" : e.getLanguage().toString();
         jdbcTemplate.update(UPDATE, e.getBasedOn().getId(),
                 e.getPublisher().getId(),
                 e.getEdition(),
+                e.getTitle(), lang,
                 e.getId());
         return true;
     }

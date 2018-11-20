@@ -89,6 +89,9 @@ public class MappersTest {
         when(forWorkMapper.getLong("id"))
                 .thenReturn(1L)
                 .thenReturn(2L);
+        when(forWorkMapper.getString("lang"))
+                .thenReturn("")
+                .thenReturn("");
     }
 
     private void initResultSetForAuthorMapper() throws SQLException {

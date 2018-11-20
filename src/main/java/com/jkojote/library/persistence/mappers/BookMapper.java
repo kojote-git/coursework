@@ -8,6 +8,7 @@ import com.jkojote.library.domain.shared.domain.DomainEventListener;
 import com.jkojote.library.domain.shared.domain.DomainRepository;
 import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.library.persistence.lazy.LazyListImpl;
+import com.neovisionaries.i18n.LanguageCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.RowMapper;
@@ -55,10 +56,16 @@ class BookMapper implements RowMapper<Book> {
         long publisherId = rs.getLong("publisherId");
         long workId = rs.getLong("workId");
         int edition = rs.getInt("edition");
+        String language = rs.getString("lang"),
+               title = rs.getString("title");
         Work work = workRepository.findById(workId);
         Publisher publisher = publisherRepository.findById(publisherId);
         LazyListImpl<Book, BookInstance> list = new LazyListImpl<>(listFetcher);
         Book book = new Book(id, work, publisher, edition, list);
+        LanguageCode code = language.equals("") ? LanguageCode.undefined :
+                                                  LanguageCode.getByCode(language);
+        book.setLanguage(code);
+        book.setTitle(title);
         list.setParentEntity(book);
         list.seal();
         book.addEventListener(bookStateListener);

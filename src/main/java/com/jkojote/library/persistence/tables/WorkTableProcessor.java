@@ -4,6 +4,7 @@ import com.jkojote.library.domain.model.work.Work;
 import com.jkojote.library.persistence.LazyObject;
 import com.jkojote.library.persistence.TableProcessor;
 import com.jkojote.library.values.Text;
+import com.neovisionaries.i18n.LanguageCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -18,14 +19,14 @@ import java.util.concurrent.ConcurrentSkipListSet;
 class WorkTableProcessor implements TableProcessor<Work> {
 
     private static final String INSERT =
-        "INSERT INTO Work (id, title, description) "+
-          "VALUES (?, ?, ?)";
+        "INSERT INTO Work (id, title, lang, description) "+
+          "VALUES (?, ?, ?, ?)";
 
     private static final String UPDATE =
-        "UPDATE Work SET title = ? WHERE id = ?";
+        "UPDATE Work SET title = ?, lang = ? WHERE id = ?";
 
     private static final String UPDATE_WITH_DESCRIPTION =
-        "UPDATE Work SET title = ?, description = ? WHERE id = ?";
+        "UPDATE Work SET title = ?, lang = ?, description = ? WHERE id = ?";
 
     private static final String DELETE =
         "DELETE FROM Work WHERE id = ?";
@@ -64,7 +65,10 @@ class WorkTableProcessor implements TableProcessor<Work> {
         if (exists(e))
             return false;
         tryPutToCache(e.getId());
-        jdbcTemplate.update(INSERT, e.getId(), e.getTitle(), e.getDescription().toString());
+        String lang = e.getLanguage() == LanguageCode.undefined ? "" : e.getLanguage().toString();
+        jdbcTemplate.update(INSERT,
+                e.getId(), e.getTitle(), lang,
+                e.getDescription().toString());
         return true;
     }
 
@@ -82,11 +86,12 @@ class WorkTableProcessor implements TableProcessor<Work> {
         if (!exists(e))
             return false;
         Text description = e.getDescription();
+        String lang = e.getLanguage() == LanguageCode.undefined ? "" : e.getLanguage().toString();
         boolean isFetched = !(description instanceof LazyObject) || ((LazyObject) description).isFetched();
         if (isFetched)
-            jdbcTemplate.update(UPDATE_WITH_DESCRIPTION, e.getTitle(), description.toString(), e.getId());
+            jdbcTemplate.update(UPDATE_WITH_DESCRIPTION, e.getTitle(), lang, description.toString(), e.getId());
         else
-            jdbcTemplate.update(UPDATE, e.getTitle(), e.getId());
+            jdbcTemplate.update(UPDATE, e.getTitle(), lang, e.getId());
         return true;
     }
 
