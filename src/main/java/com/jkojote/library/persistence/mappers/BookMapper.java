@@ -62,8 +62,8 @@ class BookMapper implements RowMapper<Book> {
         Publisher publisher = publisherRepository.findById(publisherId);
         LazyListImpl<Book, BookInstance> list = new LazyListImpl<>(listFetcher);
         Book book = new Book(id, work, publisher, edition, list);
-        LanguageCode code = language.equals("") ? LanguageCode.undefined :
-                                                  LanguageCode.getByCode(language);
+        LanguageCode code = LanguageCode.getByCode(language);
+        code = code == null ? LanguageCode.undefined : code;
         book.setLanguage(code);
         book.setTitle(title);
         list.setParentEntity(book);

@@ -63,8 +63,8 @@ class WorkMapper implements RowMapper<Work> {
             lang = rs.getString("lang");
         LazyListImpl<Work, Author> authors  = new LazyListImpl<>(lazyAuthorListFetcher);
         LazyListImpl<Work, Subject> subjects = new LazyListImpl<>(lazySubjectListFetcher);
-        LanguageCode language = lang.equals("") ? LanguageCode.undefined :
-                                                  LanguageCode.getByCode(lang);
+        LanguageCode language = LanguageCode.getByCode(lang);
+        language = language == null ? LanguageCode.undefined : language;
         Work work = WorkBuilder.aWork()
                 .withId(id)
                 .withTitle(title)
