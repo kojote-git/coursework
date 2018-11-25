@@ -56,7 +56,6 @@ class ReaderStateListener implements DomainEventListener<Reader> {
     }
 
     private void onRatingAddedEvent(RatingAddedEvent e) {
-        ratingTable.update(e.getRating());
-
+        ratingTable.insert(e.getRating());
     }
 }

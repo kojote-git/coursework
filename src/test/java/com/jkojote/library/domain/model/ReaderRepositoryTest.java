@@ -70,8 +70,8 @@ public class ReaderRepositoryTest {
                 .build();
         BookInstance bi1 = bookInstanceRepository.findById(1);
         BookInstance bi2 = bookInstanceRepository.findById(2);
-        reader.addToDownloadHistory(bi1, 10);
-        reader.addToDownloadHistory(bi2, 10);
+        reader.addToDownloadHistory(bi1);
+        reader.addToDownloadHistory(bi2);
         readerRepository.save(reader);
         for (Download d : reader.getDownloads())
             assertTrue(downloadTable.exists(d));
@@ -88,8 +88,8 @@ public class ReaderRepositoryTest {
                 .build();
         BookInstance bi1 = bookInstanceRepository.findById(1);
         BookInstance bi2 = bookInstanceRepository.findById(2);
-        reader.addToDownloadHistory(bi1, 10);
-        reader.addToDownloadHistory(bi2, 10);
+        reader.addToDownloadHistory(bi1);
+        reader.addToDownloadHistory(bi2);
         readerRepository.save(reader);
         readerRepository.remove(readerRepository.findById(id));
         assertFalse(readerRepository.exists(reader));

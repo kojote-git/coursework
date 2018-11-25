@@ -1,7 +1,9 @@
 package com.jkojote.library.domain.model;
 
+import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.reader.Download;
+import com.jkojote.library.domain.model.reader.Rating;
 import com.jkojote.library.domain.model.reader.Reader;
 import com.jkojote.types.Email;
 import org.junit.Before;
@@ -45,9 +47,12 @@ public class ReaderTest {
     public void changePassword() {
         String newPassword = "readerPassword1";
         String oldPassword = "readerPassword";
+        Book book = mock(Book.class);
+        when(book.getId()).thenReturn(1L);
         reader.changePassword(oldPassword, newPassword);
         assertFalse(reader.hasSamePassword(oldPassword));
         assertTrue(reader.hasSamePassword(newPassword));
+        reader.addToRating(new Rating(reader, book, 10));
     }
 
     @Test
@@ -55,10 +60,10 @@ public class ReaderTest {
         assertFalse(reader.addToDownloadHistory(null));
         // download history doesn't contain these two instances
         assertTrue(reader.addToDownloadHistory(bi1));
-        assertTrue(reader.addToDownloadHistory(bi2, 5));
+        assertTrue(reader.addToDownloadHistory(bi2));
         // now it has
         assertFalse(reader.addToDownloadHistory(bi1));
-        assertFalse(reader.addToDownloadHistory(bi2, 5));
+        assertFalse(reader.addToDownloadHistory(bi2));
     }
 
     @Test

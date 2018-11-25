@@ -1,6 +1,5 @@
 package com.jkojote.library.domain.model.reader;
 
-import com.jkojote.library.domain.model.book.Book;
 import com.jkojote.library.domain.model.book.instance.BookInstance;
 import com.jkojote.library.domain.model.reader.events.DownloadAddedEvent;
 import com.jkojote.library.domain.model.reader.events.DownloadRemovedEvent;
@@ -9,7 +8,6 @@ import com.jkojote.library.domain.model.reader.events.RatingUpdatedEvent;
 import com.jkojote.library.domain.shared.Utils;
 import com.jkojote.library.domain.shared.domain.DomainEntity;
 import com.jkojote.library.domain.shared.domain.Required;
-import com.jkojote.library.persistence.ListFetcher;
 import com.jkojote.types.Email;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -70,20 +68,11 @@ public class Reader extends DomainEntity {
 
     /**
      * Adds {@code bookInstance} to download history of this reader,
-     * setting date of download to {@link LocalDateTime#now()} and rating to 0
-     * @param bookInstance
-     * @return false if history already contains download of the bookInstance
-     */
-    public boolean addToDownloadHistory(BookInstance bookInstance) {
-        return addToDownloadHistory(bookInstance, -1);
-    }
-    /**
-     * Adds {@code bookInstance} to download history of this reader,
      * setting date of download to {@code LocalDate.now()} and rating to {@code rating}
      * @param bookInstance
      * @return {@code false} if history already contains download of the bookInstance
      */
-    public boolean addToDownloadHistory(BookInstance bookInstance, int rating) {
+    public boolean addToDownloadHistory(BookInstance bookInstance) {
         if (bookInstance == null)
             return false;
         int idx = Utils.indexOf(downloads, d -> d.getInstance().equals(bookInstance));
@@ -123,6 +112,8 @@ public class Reader extends DomainEntity {
     }
 
     public boolean updateRating(Rating rating) {
+        if (rating == null)
+            return false;
         int idx = Utils.indexOf(ratings, r -> r.equals(rating));
         if (idx == -1)
             return false;

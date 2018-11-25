@@ -62,6 +62,7 @@ class ReaderMapper implements RowMapper<Reader> {
                 .withTimeRegistered(registered)
                 .build();
         list.setParentEntity(reader);
+        ratings.setParentEntity(reader);
         list.seal();
         reader.addEventListener(readerStateListener);
         return reader;
