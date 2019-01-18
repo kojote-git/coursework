@@ -16,13 +16,15 @@ provide means to do basic manipulations on these entities such as:
 So given that, it has classes for each domain entity located in `com.jkojote.library.domain.model` package and it also has
 interfaces - different kind of repositories in `com.jkojote.library.domain.shared.domain` and, in the sampe package,
 interfaces with classes that form the hierarchy of domain objects and entities. The implementations of these interfaces,
-especially Repositories, can be found in `com.jkojote.library.persistence` package
+especially Repositories, can be found in `com.jkojote.library.persistence` package.
+
+There are also two other modules - [library-server](https://github.com/kojote-git/library-server)
+and [weblib](https://github.com/kojote-git/weblib) - that depend on this module.
 
 #### What's the purpose ?
 
 The main purpose of the module is to do mapping between domain objects and relational model having that no ORM has been used
 in the project (I enjoy SQL).
-
 
 #### Technologies
 - Spring Framework (Core, JDBC)
